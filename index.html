@@ -276,8 +276,8 @@
 <div class="wind-banner">
   <div class="wind-banner-inner">
     <div>
-      <div class="wind-banner-label">NASA POWER — Avg. Wind Speed at 10m (m/s)</div>
-      <div class="wind-note">Coords: 14.9109°N, 121.0493°E · Replace with your downloaded NASA POWER CSV data</div>
+      <div class="wind-banner-label">NASA POWER MERRA-2 — WS10M Monthly Avg (m/s) · 2015–2025</div>
+      <div class="wind-note">Coords: 14.9059°N, 121.0477°E · Elev: 260.5m · 11-year average · Annual mean: 2.75 m/s</div>
     </div>
     <div class="wind-months" id="windMonths"></div>
   </div>
@@ -477,6 +477,7 @@
         <tr><td>Total mech. power (P_mech)</td><td>1075 <span style="font-size:11px;color:var(--muted);">W</span></td><td>P_elec / η_gen</td></tr>
         <tr><td>Total elec. power (P_elec)</td><td>1000 <span style="font-size:11px;color:var(--muted);">W</span></td><td>Design target</td></tr>
         <tr><td>Controller</td><td>MPPT</td><td>Maximum Power Point Tracking</td></tr>
+        <tr><td>Battery capacity</td><td>400 <span style="font-size:11px;color:var(--muted);">Ah</span></td><td>Lead-acid or LiFePO₄</td></tr>
       </table>
     </div>
     <div class="card">
@@ -499,19 +500,20 @@
   <div class="section-label">Site Assessment</div>
   <h2>Wind Resource — Norzagaray, Bulacan</h2>
   <p style="color:var(--muted);font-size:13px;margin-bottom:1.5rem;">
-    Historical monthly wind speed data for Norzagaray (14.9109°N, 121.0493°E) sourced from NASA POWER (power.larc.nasa.gov). 
-    The values below are placeholder estimates based on Central Luzon climate data — 
-    <strong style="color:var(--accent3);">replace with your actual downloaded NASA POWER CSV values.</strong>
+    Historical monthly wind speed data for Norzagaray (14.9059°N, 121.0477°E, Elev. 260.5m) sourced from 
+    NASA POWER MERRA-2 (power.larc.nasa.gov). Values are 11-year monthly averages from January 2015 to December 2025.
   </p>
   <div class="card">
     <canvas id="windChartCanvas" width="800" height="200" style="width:100%;"></canvas>
     <div style="margin-top:12px;display:flex;gap:24px;flex-wrap:wrap;">
-      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">ANNUAL AVERAGE (est.)</span><br><span style="font-family:var(--mono);font-size:1.2rem;color:var(--accent);font-weight:700;">2.8 m/s</span><span style="font-size:11px;color:var(--muted);"> at 10m</span></div>
-      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">PEAK MONTH (est.)</span><br><span style="font-family:var(--mono);font-size:1.2rem;color:var(--accent2);font-weight:700;">Jan–Mar</span><span style="font-size:11px;color:var(--muted);"> NE monsoon</span></div>
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">ANNUAL AVG — WS10M</span><br><span style="font-family:var(--mono);font-size:1.2rem;color:var(--accent);font-weight:700;">2.75 m/s</span><span style="font-size:11px;color:var(--muted);"> at 10m</span></div>
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">ANNUAL AVG — WS50M</span><br><span style="font-family:var(--mono);font-size:1.2rem;color:var(--accent2);font-weight:700;">4.60 m/s</span><span style="font-size:11px;color:var(--muted);"> at 50m</span></div>
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">PEAK MONTH</span><br><span style="font-family:var(--mono);font-size:1.2rem;color:var(--accent2);font-weight:700;">January</span><span style="font-size:11px;color:var(--muted);"> NE monsoon (Amihan)</span></div>
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">DATA PERIOD</span><br><span style="font-family:var(--mono);font-size:1rem;color:var(--text);">2015 – 2025</span><span style="font-size:11px;color:var(--muted);"> (11 years)</span></div>
       <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">DATA SOURCE</span><br><span style="font-family:var(--mono);font-size:1rem;color:var(--text);">NASA POWER</span><span style="font-size:11px;color:var(--muted);"> MERRA-2</span></div>
     </div>
-    <div style="margin-top:12px;background:rgba(246,173,85,0.08);border:1px solid rgba(246,173,85,0.3);border-radius:6px;padding:.75rem;font-size:12px;color:var(--accent3);">
-      To update: Go to power.larc.nasa.gov → Single Point → enter coords above → Renewable Energy → WS10M + WS50M → 2014–2024 → CSV. Then share the file here and we'll plug in the real values.
+    <div style="margin-top:12px;background:rgba(99,179,237,0.07);border:1px solid rgba(99,179,237,0.2);border-radius:6px;padding:.75rem;font-size:12px;color:var(--accent);">
+      Note: WS50M annual average is 4.60 m/s — closer to the design wind speed of 4.75 m/s, supporting the turbine hub height target. WS10M = 2.75 m/s confirms the Savonius rotor's low cut-in speed is critical for this site.
     </div>
   </div>
 </section>
@@ -546,12 +548,13 @@ const MOTOR_RATED = 746;
 const chartData = { gen: [], load: [], net: [] };
 const CHART_LEN = 100;
 
-// ── WIND DATA (placeholder — replace with NASA POWER CSV) ──
+// ── WIND DATA — NASA POWER MERRA-2, 2015–2025, WS10M monthly averages ──
+// Location: 14.9059°N, 121.0477°E | Elevation: 260.5m | 11-year average
 const windMonthData = [
-  { m:'JAN', v:3.8 }, { m:'FEB', v:3.9 }, { m:'MAR', v:3.5 },
-  { m:'APR', v:2.9 }, { m:'MAY', v:2.4 }, { m:'JUN', v:2.3 },
-  { m:'JUL', v:2.5 }, { m:'AUG', v:2.6 }, { m:'SEP', v:2.4 },
-  { m:'OCT', v:2.6 }, { m:'NOV', v:3.0 }, { m:'DEC', v:3.5 }
+  { m:'JAN', v:3.57 }, { m:'FEB', v:3.46 }, { m:'MAR', v:3.08 },
+  { m:'APR', v:2.73 }, { m:'MAY', v:2.18 }, { m:'JUN', v:1.95 },
+  { m:'JUL', v:2.40 }, { m:'AUG', v:2.40 }, { m:'SEP', v:2.08 },
+  { m:'OCT', v:2.52 }, { m:'NOV', v:3.08 }, { m:'DEC', v:3.51 }
 ];
 
 // Render wind month badges
@@ -828,10 +831,10 @@ function drawWindChart() {
   ctx.clearRect(0, 0, W, H);
   const pad = { l: 40, r: 20, t: 20, b: 40 };
   const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
-  const maxV = 6, n = windMonthData.length;
+  const maxV = 5, n = windMonthData.length;
   const bw = iw / n * 0.6, gap = iw / n;
   ctx.strokeStyle = 'rgba(99,179,237,0.1)'; ctx.lineWidth = 0.5;
-  [0, 2, 4, 6].forEach(v => {
+  [0, 1, 2, 3, 4, 5].forEach(v => {
     const y = pad.t + ih * (1 - v / maxV);
     ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(pad.l + iw, y); ctx.stroke();
     ctx.fillStyle = '#4a5568'; ctx.font = '10px Space Mono, monospace'; ctx.textAlign = 'right';
