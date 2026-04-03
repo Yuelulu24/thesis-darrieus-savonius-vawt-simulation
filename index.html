@@ -400,21 +400,31 @@
   </div>
 
   <!-- Info strip -->
-  <div style="margin-top:16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;">
+  <div style="margin-top:16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center;">
     <div>
       <div style="font-family:var(--mono);font-size:10px;color:var(--muted);">CUT-IN SPEED</div>
-      <div style="font-family:var(--mono);font-size:1rem;color:var(--accent2);font-weight:700;">~2.0 m/s</div>
+      <div style="font-family:var(--mono);font-size:1rem;color:var(--accent2);font-weight:700;">~1.5 m/s</div>
       <div style="font-size:11px;color:var(--muted);">Savonius starts</div>
     </div>
     <div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);">DARRIEUS ENGAGEMENT</div>
-      <div style="font-family:var(--mono);font-size:1rem;color:var(--accent);font-weight:700;">~4.0 m/s</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);">DARRIEUS ENGAGES</div>
+      <div style="font-family:var(--mono);font-size:1rem;color:var(--accent);font-weight:700;">~3.0 m/s</div>
       <div style="font-size:11px;color:var(--muted);">Hybrid operation</div>
     </div>
     <div>
-      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);">RATED WIND SPEED</div>
-      <div style="font-family:var(--mono);font-size:1rem;color:var(--accent3);font-weight:700;">8.0 m/s</div>
-      <div style="font-size:11px;color:var(--muted);">Max rated output</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);">DESIGN WIND SPEED</div>
+      <div style="font-family:var(--mono);font-size:1rem;color:var(--accent3);font-weight:700;">4.75 m/s</div>
+      <div style="font-size:11px;color:var(--muted);">Rated output</div>
+    </div>
+    <div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);">RATED RPM</div>
+      <div style="font-family:var(--mono);font-size:1rem;color:var(--accent);font-weight:700;">63.7 RPM</div>
+      <div style="font-size:11px;color:var(--muted);">TSR 4.0 @ design V</div>
+    </div>
+    <div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);">RATED POWER</div>
+      <div style="font-family:var(--mono);font-size:1rem;color:var(--accent2);font-weight:700;">1000 W</div>
+      <div style="font-size:11px;color:var(--muted);">P_elec design target</div>
     </div>
   </div>
 </section>
@@ -423,44 +433,50 @@
 <section id="specs">
   <div class="section-label">Engineering</div>
   <h2>Turbine Design Parameters</h2>
-  <p style="color:var(--muted);font-size:13px;margin-bottom:1.5rem;">Prototype design based on cited literature, adapted for the wind conditions of Norzagaray, Bulacan. Update these values once your group finalizes the design dimensions.</p>
+  <p style="color:var(--muted);font-size:13px;margin-bottom:1.5rem;">Complete sizing parameters from Section 2.5 of the design study, computed from P_rated = 1000 W, V_design = 4.75 m/s, adapted for the wind conditions of Norzagaray, Bulacan.</p>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
     <div class="card">
       <div class="card-title">Darrieus Rotor</div>
       <table>
-        <tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
-        <tr><td>Rotor diameter</td><td>1.2 <span style="font-size:11px;color:var(--muted);">m</span></td><td>Outer swept diameter</td></tr>
-        <tr><td>Rotor height</td><td>1.5 <span style="font-size:11px;color:var(--muted);">m</span></td><td>Blade span</td></tr>
-        <tr><td>Number of blades</td><td>3</td><td>Symmetrical arrangement</td></tr>
-        <tr><td>Blade profile</td><td>NACA 0018</td><td>Symmetric airfoil</td></tr>
-        <tr><td>Chord length</td><td>0.12 <span style="font-size:11px;color:var(--muted);">m</span></td><td>Blade chord</td></tr>
-        <tr><td>Swept area</td><td>1.80 <span style="font-size:11px;color:var(--muted);">m²</span></td><td>H × D</td></tr>
-        <tr><td>Design TSR</td><td>2.5 – 3.5</td><td>Tip speed ratio range</td></tr>
-        <tr><td>Max Cp</td><td>~0.35</td><td>Power coefficient</td></tr>
+        <tr><th>Parameter (Symbol)</th><th>Value</th><th>Notes</th></tr>
+        <tr><td>Radius (R_D)</td><td>2.85 <span style="font-size:11px;color:var(--muted);">m</span></td><td>Computed from P_rated, V_design, Cp = 0.38</td></tr>
+        <tr><td>Diameter (D_D)</td><td>5.70 <span style="font-size:11px;color:var(--muted);">m</span></td><td>D = 2R</td></tr>
+        <tr><td>Blade height (H_D)</td><td>7.65 <span style="font-size:11px;color:var(--muted);">m</span></td><td>H/D ratio = 1.35</td></tr>
+        <tr><td>Swept area (A_D)</td><td>43.6 <span style="font-size:11px;color:var(--muted);">m²</span></td><td>A = H × D</td></tr>
+        <tr><td>No. of blades (N_D)</td><td>3</td><td>Standard for H-blade Darrieus</td></tr>
+        <tr><td>Chord (c_D)</td><td>0.24 <span style="font-size:11px;color:var(--muted);">m</span></td><td>σ = Nc/R = 0.253</td></tr>
+        <tr><td>Solidity (σ_D)</td><td>0.253</td><td>Optimal for low-wind: 0.20–0.30</td></tr>
+        <tr><td>Design TSR (λ_D)</td><td>4.0</td><td>Optimal for NACA 0018 at Re ≈ 80,000</td></tr>
+        <tr><td>Power coeff. (Cp_D)</td><td>0.38</td><td>Realistic at this Re and wind speed</td></tr>
+        <tr><td>Airfoil</td><td>NACA 0018</td><td>Better Cl at low Re vs NACA 0015</td></tr>
       </table>
     </div>
     <div class="card">
       <div class="card-title">Savonius Rotor</div>
       <table>
-        <tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
-        <tr><td>Rotor diameter</td><td>0.3 <span style="font-size:11px;color:var(--muted);">m</span></td><td>Inner rotor</td></tr>
-        <tr><td>Number of buckets</td><td>2</td><td>Semi-cylindrical scoops</td></tr>
-        <tr><td>Bucket height</td><td>0.4 <span style="font-size:11px;color:var(--muted);">m</span></td><td>Overlap ratio 0.15</td></tr>
-        <tr><td>Overlap ratio</td><td>0.15</td><td>S/D</td></tr>
-        <tr><td>Max Cp</td><td>~0.15</td><td>Lower efficiency, high torque</td></tr>
-        <tr><td>Cut-in speed</td><td>~2.0 m/s</td><td>Starts turbine from rest</td></tr>
+        <tr><th>Parameter (Symbol)</th><th>Value</th><th>Notes</th></tr>
+        <tr><td>Radius (R_S)</td><td>1.00 <span style="font-size:11px;color:var(--muted);">m</span></td><td>Fits inside Darrieus with clearance</td></tr>
+        <tr><td>Diameter (D_S)</td><td>2.00 <span style="font-size:11px;color:var(--muted);">m</span></td><td>Bucket diameter = D_S</td></tr>
+        <tr><td>Height (H_S)</td><td>6.00 <span style="font-size:11px;color:var(--muted);">m</span></td><td>0.8 × H_D to reduce high-speed drag</td></tr>
+        <tr><td>No. of buckets (N_S)</td><td>2</td><td>Standard 2-bucket design</td></tr>
+        <tr><td>Overlap ratio (e)</td><td>0.17</td><td>Optimal 0.15–0.20</td></tr>
+        <tr><td>Overlap gap (g)</td><td>0.17 <span style="font-size:11px;color:var(--muted);">m</span></td><td>g = e × D_S</td></tr>
+        <tr><td>Opt. TSR (λ_S)</td><td>0.85</td><td>Optimal drag rotor TSR</td></tr>
+        <tr><td>Power coeff. (Cp_S)</td><td>0.20</td><td>At optimal TSR, 2-bucket helical</td></tr>
+        <tr><td>Helical twist (φ)</td><td>180°</td><td>Full half-turn over H_S</td></tr>
       </table>
     </div>
     <div class="card">
-      <div class="card-title">Generator & Electrical</div>
+      <div class="card-title">Generator & Power Output</div>
       <table>
-        <tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
-        <tr><td>Generator type</td><td>PMSG</td><td>Permanent Magnet Synchronous</td></tr>
-        <tr><td>Rated power</td><td>500 <span style="font-size:11px;color:var(--muted);">W</span></td><td>At rated wind speed</td></tr>
-        <tr><td>Output voltage</td><td>24 <span style="font-size:11px;color:var(--muted);">V DC</span></td><td>After rectification</td></tr>
+        <tr><th>Parameter (Symbol)</th><th>Value</th><th>Notes</th></tr>
+        <tr><td>Design wind speed (V)</td><td>4.75 <span style="font-size:11px;color:var(--muted);">m/s</span></td><td>Midpoint of 4.5–5.0 m/s range</td></tr>
+        <tr><td>Rated shaft speed (ω)</td><td>6.67 <span style="font-size:11px;color:var(--muted);">rad/s</span></td><td>λ_D × V / R_D</td></tr>
+        <tr><td>Rated RPM (n)</td><td>63.7 <span style="font-size:11px;color:var(--muted);">RPM</span></td><td>ω × 60 / (2π)</td></tr>
+        <tr><td>Total mech. power (P_mech)</td><td>1075 <span style="font-size:11px;color:var(--muted);">W</span></td><td>P_elec / η_gen</td></tr>
+        <tr><td>Total elec. power (P_elec)</td><td>1000 <span style="font-size:11px;color:var(--muted);">W</span></td><td>Design target</td></tr>
         <tr><td>Controller</td><td>MPPT</td><td>Maximum Power Point Tracking</td></tr>
-        <tr><td>Battery</td><td>12V / 100Ah</td><td>Lead-acid or LiFePO₄</td></tr>
       </table>
     </div>
     <div class="card">
@@ -471,7 +487,8 @@
         <tr><td>Rated power</td><td>1 <span style="font-size:11px;color:var(--muted);">hp (746 W)</span></td><td>Nominal rating</td></tr>
         <tr><td>Typical load</td><td>75%</td><td>~560 W operating draw</td></tr>
         <tr><td>Purpose</td><td>Feasibility test</td><td>Simulates real consumption</td></tr>
-        <tr><td>Min. wind for balance</td><td>~7 m/s</td><td>Gen = load at 75% draw</td></tr>
+        <tr><td>Break-even wind speed</td><td>~4.75 m/s</td><td>Gen ≥ load at design speed</td></tr>
+        <tr><td>Turbine at rated output</td><td>1000 W</td><td>Surplus: ~254 W for charging</td></tr>
       </table>
     </div>
   </div>
@@ -548,16 +565,24 @@ windMonthData.forEach(d => {
   </div>`;
 });
 
-// ── PHYSICS ──
+// ── PHYSICS — actual design parameters ──
+// Darrieus: R=2.85m, D=5.70m, H=7.65m, A=43.6m², TSR=4.0, Cp=0.38, NACA0018
+// Savonius: D=2.00m, H=6.00m, Cp=0.20, TSR_opt=0.85, overlap=0.17, helical 180deg
+// Rated: 1000W elec, 1075W mech, 63.7 RPM at 4.75 m/s design wind
 function getPhysics(w) {
   if (w < 1.5) return { rpm: 0, power: 0, cpSav: 0, cpDar: 0 };
-  const cpSav = 0.15;
-  const cpDar = w < 4 ? 0 : Math.min(0.38, 0.025 * (w - 4) * (w - 4));
-  const cp = Math.min(cpSav + cpDar, 0.45);
-  const rho = 1.225, A = 1.8;
-  const P = 0.5 * rho * A * w * w * w * cp;
-  const rpm = 15 + w * 10;
-  return { rpm: Math.round(rpm), power: Math.round(P), cpSav, cpDar };
+  const rho = 1.225;
+  const cpSav = 0.20;
+  const A_S = 12.0; // H_S x D_S = 6.0 x 2.0
+  const P_sav = 0.5 * rho * A_S * w * w * w * cpSav;
+  const cpDar = w < 3 ? 0 : Math.min(0.38, 0.038 * (w - 3) * (w - 3));
+  const A_D = 43.6;
+  const P_dar = 0.5 * rho * A_D * w * w * w * cpDar;
+  const P = Math.min(P_sav + P_dar, 1000);
+  // RPM from TSR=4.0, R=2.85m: omega = TSR * V / R
+  const omega = (4.0 * w) / 2.85;
+  const rpm = w < 1.5 ? 0 : (omega * 60) / (2 * Math.PI);
+  return { rpm: Math.round(rpm * 10) / 10, power: Math.round(P), cpSav, cpDar };
 }
 
 // ── DRAW TURBINE ──
@@ -632,7 +657,7 @@ function drawPowerCurve(ctx, W, H) {
   ctx.clearRect(0, 0, W, H);
   const pad = { l: 30, r: 10, t: 10, b: 20 };
   const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
-  const maxW = 15, maxP = 600;
+  const maxW = 12, maxP = 1100;
   ctx.strokeStyle = 'rgba(99,179,237,0.1)'; ctx.lineWidth = 0.5;
   for (let i = 0; i <= 4; i++) {
     const y = pad.t + ih * (1 - i / 4);
@@ -642,37 +667,37 @@ function drawPowerCurve(ctx, W, H) {
   }
   function toX(w) { return pad.l + (w / maxW) * iw; }
   function toY(v, max) { return pad.t + ih * (1 - Math.min(v, max) / max); }
-  // Savonius Cp line (scaled)
+  // Savonius Cp=0.20 line
   ctx.beginPath(); ctx.strokeStyle = '#f6ad55'; ctx.lineWidth = 1.5;
-  for (let w = 0; w <= 15; w += 0.2) {
-    const cp = w < 1.5 ? 0 : 0.15;
-    const P = cp * 200;
+  for (let w = 0; w <= 12; w += 0.2) {
+    const cp = w < 1.5 ? 0 : 0.20;
+    const P = cp * 300;
     w === 0 ? ctx.moveTo(toX(w), toY(P, maxP)) : ctx.lineTo(toX(w), toY(P, maxP));
   }
   ctx.stroke();
-  // Darrieus Cp
+  // Darrieus Cp ramps from 3 m/s
   ctx.beginPath(); ctx.strokeStyle = '#63b3ed'; ctx.lineWidth = 1.5;
-  for (let w = 0; w <= 15; w += 0.2) {
-    const cp = w < 4 ? 0 : Math.min(0.38, 0.025 * (w - 4) * (w - 4));
-    const P = cp * 200;
+  for (let w = 0; w <= 12; w += 0.2) {
+    const cp = w < 3 ? 0 : Math.min(0.38, 0.038 * (w - 3) * (w - 3));
+    const P = cp * 300;
     w === 0 ? ctx.moveTo(toX(w), toY(P, maxP)) : ctx.lineTo(toX(w), toY(P, maxP));
   }
   ctx.stroke();
-  // Combined power
+  // Combined power (capped at 1000W)
   ctx.beginPath(); ctx.strokeStyle = '#48bb78'; ctx.lineWidth = 2;
-  for (let w = 0; w <= 15; w += 0.1) {
+  for (let w = 0; w <= 12; w += 0.1) {
     const { power } = getPhysics(w);
     w === 0 ? ctx.moveTo(toX(w), toY(power, maxP)) : ctx.lineTo(toX(w), toY(power, maxP));
   }
   ctx.stroke();
   // Current wind indicator
-  const curX = toX(wind);
+  const curX = toX(Math.min(wind, 12));
   ctx.beginPath(); ctx.moveTo(curX, pad.t); ctx.lineTo(curX, pad.t + ih);
   ctx.strokeStyle = 'rgba(246,173,85,0.5)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.stroke();
   ctx.setLineDash([]);
   // x-axis labels
   ctx.fillStyle = '#4a5568'; ctx.font = '9px Space Mono, monospace'; ctx.textAlign = 'center';
-  [0, 3, 6, 9, 12, 15].forEach(v => ctx.fillText(v, toX(v), pad.t + ih + 14));
+  [0, 2, 4, 4.75, 6, 8, 10, 12].forEach(v => ctx.fillText(v, toX(v), pad.t + ih + 14));
 }
 
 // ── DRAW CHART ──
