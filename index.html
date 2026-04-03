@@ -896,7 +896,10 @@ function loop() {
   const { rpm, power: gen, cpSav, cpDar } = getPhysics(wind);
   const loadDraw = motorOn && battery > 20 ? MOTOR_RATED * (loadPct / 100) : 0;
   const net = gen - loadDraw;
-  battery = Math.max(0, Math.min(100, battery + net * 0.00007));
+  // Battery physics: 12V × 400Ah = 4800 Wh capacity
+  // Rate = 100% / (4800Wh × 3600s/h × 60fps) = 9.645e-8 per Watt per frame
+  // At 560W net drain → ~6.9 hours to deplete 80% SOC — realistic for 400Ah
+  battery = Math.max(0, Math.min(100, battery + net * 9.645e-8 * 100));
 
   document.getElementById('mRPM').textContent = rpm;
   document.getElementById('mGen').textContent = Math.round(gen);
