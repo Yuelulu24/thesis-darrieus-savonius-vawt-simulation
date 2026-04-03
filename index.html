@@ -394,6 +394,19 @@
           <div class="metric-lbl" style="margin-bottom:4px;">LOAD DRAW</div>
           <div style="font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--accent4);" id="mLoad">0 <span style="font-size:11px;color:var(--muted);">W</span></div>
         </div>
+        <div class="ctrl-group">
+          <div class="ctrl-label">
+            <span>SIM SPEED</span>
+            <span class="ctrl-val" id="simSpeedDisplay">100×</span>
+          </div>
+          <input type="range" id="simSpeedSlider" min="1" max="500" step="1" value="100" oninput="updateSimSpeed(this.value)">
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
+            <span>1× real</span><span style="color:var(--accent3);">100× demo</span><span>500× fast</span>
+          </div>
+          <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
+            At 100×: 80% drains in <span id="drainTime" style="color:var(--accent3);">~4.1 min</span> @ 560W
+          </div>
+        </div>
       </div>
     </div>
 
@@ -543,7 +556,7 @@
 document.getElementById('footerYear').textContent = new Date().getFullYear();
 
 // ── STATE ──
-let wind = 0, battery = 20, angle = 0, motorOn = false, loadPct = 75;
+let wind = 0, battery = 20, angle = 0, motorOn = false, loadPct = 75, simSpeed = 100;
 const MOTOR_RATED = 746;
 const chartData = { gen: [], load: [], net: [] };
 const CHART_LEN = 100;
@@ -870,6 +883,19 @@ function toggleMotor() {
   motorOn = !motorOn;
   document.getElementById('motorToggle').classList.toggle('on', motorOn);
 }
+function updateSimSpeed(v) {
+  simSpeed = parseInt(v);
+  document.getElementById('simSpeedDisplay').textContent = v + '×';
+  // Show estimated drain time at current load
+  const draw = MOTOR_RATED * (loadPct / 100);
+  const baseRate = 9.645e-8;
+  const framesTo80 = 80 / (draw * baseRate * simSpeed);
+  const seconds = framesTo80 / 60;
+  const drainEl = document.getElementById('drainTime');
+  if (seconds < 60) drainEl.textContent = '~' + Math.round(seconds) + 's';
+  else if (seconds < 3600) drainEl.textContent = '~' + (seconds/60).toFixed(1) + ' min';
+  else drainEl.textContent = '~' + (seconds/3600).toFixed(1) + ' hrs';
+}
 function updateLoad(v) {
   loadPct = parseInt(v);
   document.getElementById('loadDisplay').textContent = v + '%';
@@ -896,10 +922,11 @@ function loop() {
   const { rpm, power: gen, cpSav, cpDar } = getPhysics(wind);
   const loadDraw = motorOn && battery > 20 ? MOTOR_RATED * (loadPct / 100) : 0;
   const net = gen - loadDraw;
-  // Battery physics: 12V × 400Ah = 4800 Wh capacity
-  // Rate = 100% / (4800Wh × 3600s/h × 60fps) = 9.645e-8 per Watt per frame
-  // At 560W net drain → ~6.9 hours to deplete 80% SOC — realistic for 400Ah
-  battery = Math.max(0, Math.min(100, battery + net * 9.645e-8 * 100));
+  // Battery physics: 12V × 400Ah = 4800 Wh
+  // Base rate = real physics (1x = 6.9 hrs to drain 80% at 560W)
+  // Speed multiplier compresses time for demo purposes
+  const baseRate = 9.645e-8; // % per Watt per frame at 1x real time
+  battery = Math.max(0, Math.min(100, battery + net * baseRate * simSpeed));
 
   document.getElementById('mRPM').textContent = rpm;
   document.getElementById('mGen').textContent = Math.round(gen);
