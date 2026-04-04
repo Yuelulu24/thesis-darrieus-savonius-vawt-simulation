@@ -102,6 +102,7 @@
 
   /* ── SECTION ── */
   section { padding: 3rem 2rem; max-width: 900px; margin: 0 auto; }
+  section#simulation { max-width: 1300px; padding: 3rem 2rem; margin: 0 auto; }
   .section-label {
     font-family: var(--mono); font-size: 11px; color: var(--accent);
     letter-spacing: 0.1em; text-transform: uppercase;
@@ -127,7 +128,7 @@
 
   /* ── SIMULATION ── */
   .sim-layout {
-    display: grid; grid-template-columns: 200px 1fr 200px; gap: 16px;
+    display: grid; grid-template-columns: 340px 1fr 340px; gap: 20px;
     align-items: start;
   }
   .sim-center { display: flex; flex-direction: column; gap: 12px; }
@@ -291,9 +292,9 @@
   <div class="sim-layout">
 
     <!-- LEFT: Turbine -->
-    <div style="display:flex;flex-direction:column;gap:10px;align-items:center;">
-      <div class="card-title" style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;">VAWT ROTOR</div>
-      <canvas id="turbineCanvas" width="180" height="180"></canvas>
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;">
+      <div class="card-title" style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;align-self:flex-start;">VAWT ROTOR</div>
+      <canvas id="turbineCanvas" width="300" height="300" style="width:100%;max-width:300px;"></canvas>
       <div id="rotBadge" class="badge badge-idle">IDLE</div>
 
       <!-- Controls -->
@@ -347,7 +348,7 @@
       <!-- Real-time chart -->
       <div class="chart-wrap">
         <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;margin-bottom:8px;">REAL-TIME POWER BALANCE</div>
-        <canvas id="chartCanvas" width="500" height="100" style="width:100%;"></canvas>
+        <canvas id="chartCanvas" width="500" height="130" style="width:100%;"></canvas>
         <div class="chart-legend">
           <span class="leg-gen">Generated</span>
           <span class="leg-load">Load draw</span>
@@ -358,7 +359,7 @@
       <!-- Power curve -->
       <div class="power-curve-wrap">
         <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;margin-bottom:8px;">TURBINE POWER CURVE</div>
-        <canvas id="pcCanvas" width="500" height="100" style="width:100%;"></canvas>
+        <canvas id="pcCanvas" width="500" height="130" style="width:100%;"></canvas>
         <div style="display:flex;gap:16px;margin-top:4px;">
           <span style="font-size:11px;font-family:var(--mono);color:var(--muted);display:flex;align-items:center;gap:5px;"><span style="display:block;width:14px;height:2px;background:#f6ad55;border-radius:1px;"></span>Savonius Cp</span>
           <span style="font-size:11px;font-family:var(--mono);color:var(--muted);display:flex;align-items:center;gap:5px;"><span style="display:block;width:14px;height:2px;background:#63b3ed;border-radius:1px;"></span>Darrieus Cp</span>
@@ -368,9 +369,9 @@
     </div>
 
     <!-- RIGHT: Motor + Controls -->
-    <div style="display:flex;flex-direction:column;gap:10px;align-items:center;">
-      <div class="card-title" style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;">1-HP LOAD MOTOR</div>
-      <canvas id="motorCanvas" width="180" height="180"></canvas>
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;">
+      <div class="card-title" style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;align-self:flex-start;">1-HP LOAD MOTOR</div>
+      <canvas id="motorCanvas" width="300" height="300" style="width:100%;max-width:300px;"></canvas>
       <div id="motorBadge" class="badge badge-motor-off">OFF</div>
 
       <div class="controls" style="width:100%">
@@ -967,9 +968,9 @@ function loop() {
     if (chartData.gen.length > CHART_LEN) { chartData.gen.shift(); chartData.load.shift(); chartData.net.shift(); }
   }
 
-  drawTurbine(tc, 180, 180, angle);
+  drawTurbine(tc, 300, 300, angle);
   drawTurbine(heroCtx, 200, 200, angle * 0.8);
-  drawMotor(mc, 180, 180, motorOn && battery > 20, rpm);
+  drawMotor(mc, 300, 300, motorOn && battery > 20, rpm);
   drawChart(chartCtx, chartEl.width, chartEl.height);
   drawPowerCurve(pcCtx, pcEl.width, pcEl.height);
 
