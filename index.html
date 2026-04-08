@@ -192,7 +192,10 @@
       <!-- Wind slider -->
       <div class="ctrl-group" style="width:100%;">
         <div class="ctrl-label"><span>WIND INPUT</span><span class="ctrl-val" id="windDisplay">0.0 m/s</span></div>
-        <input type="range" id="windSlider" min="0" max="5.5" step="0.1" value="0">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="range" id="windSlider" min="0" max="5.5" step="0.1" value="0" style="flex:1;">
+          <input type="number" id="windNum" min="0" max="5.5" step="0.1" value="0" style="width:58px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;" oninput="syncFromNum('windSlider','windNum',0,5.5)">
+        </div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
           <span>0</span><span>2.75</span><span>5.5 m/s</span>
         </div>
@@ -224,6 +227,18 @@
           <div style="text-align:right;">
             <div class="bat-timer-val" id="batTimerVal">—</div>
             <div class="bat-timer-sub" id="batTimerNote">motor off &amp; net surplus needed</div>
+          </div>
+        </div>
+
+        <!-- BATTERY DISCHARGE TIMER -->
+        <div class="bat-timer" id="batDischargeBox" style="background:rgba(252,129,129,0.06);border-color:rgba(252,129,129,0.2);margin-top:6px;">
+          <div>
+            <div class="bat-timer-lbl" style="color:var(--accent4);">TIME TO 20% CUTOFF</div>
+            <div class="bat-timer-sub" id="batDischargeSub">at current sim speed &amp; load</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="bat-timer-val" id="batDischargeVal">—</div>
+            <div class="bat-timer-sub" id="batDischargeNote">motor on &amp; net deficit needed</div>
           </div>
         </div>
       </div>
@@ -263,7 +278,10 @@
           </div>
           <div class="ctrl-group">
             <div class="ctrl-label"><span>LOAD</span><span class="ctrl-val" id="loadDisplay">75%</span></div>
-            <input type="range" id="loadSlider" min="20" max="100" step="5" value="75" oninput="updateLoad(this.value)">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" id="loadSlider" min="20" max="100" step="5" value="75" style="flex:1;" oninput="updateLoad(this.value)">
+              <input type="number" id="loadNum" min="20" max="100" step="5" value="75" style="width:52px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;" oninput="syncFromNum('loadSlider','loadNum',20,100);updateLoad(document.getElementById('loadNum').value)">
+            </div>
             <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">Draw: <span id="drawDisplay" style="color:var(--accent4);">560 W</span></div>
           </div>
           <div class="ctrl-group">
@@ -272,7 +290,10 @@
           </div>
           <div class="ctrl-group">
             <div class="ctrl-label"><span>SIM SPEED</span><span class="ctrl-val" id="simSpeedDisplay">100×</span></div>
-            <input type="range" id="simSpeedSlider" min="1" max="500" step="1" value="100" oninput="updateSimSpeed(this.value)">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="range" id="simSpeedSlider" min="1" max="500" step="1" value="100" style="flex:1;" oninput="updateSimSpeed(this.value)">
+              <input type="number" id="simSpeedNum" min="1" max="500" step="1" value="100" style="width:58px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;" oninput="syncFromNum('simSpeedSlider','simSpeedNum',1,500);updateSimSpeed(document.getElementById('simSpeedNum').value)">
+            </div>
             <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
               <span>1×</span><span style="color:var(--accent3);">100×</span><span>500×</span>
             </div>
@@ -570,19 +591,45 @@ function updateBatteryTimer(net){
     timerNote.textContent='no net surplus — charging paused';
     timerNote.style.color='#fc8181';return;
   }
-  // battery is % of 4800 Wh (12V × 400Ah)
   const capacityWh=4800;
   const remainingPct=100-battery;
   const remainingWh=capacityWh*(remainingPct/100);
-  // net surplus in W, simSpeed compresses time
-  const realSecondsToFull=remainingWh/(net/3600); // net W → Wh/s conversion: net/3600
-  // simSpeed × means 1 real second = simSpeed simulated seconds
+  const realSecondsToFull=remainingWh/(net/3600);
   const wallSecondsToFull=realSecondsToFull/simSpeed;
   timerVal.textContent=formatTime(wallSecondsToFull);
   timerVal.style.color='#48bb78';
   timerNote.textContent='wall-clock time at '+simSpeed+'× speed';
   timerNote.style.color='#718096';
   timerSub.textContent='surplus: +'+Math.round(net)+'W · '+Math.round(remainingPct)+'% remaining';
+}
+
+function updateDischargeTimer(net){
+  const disVal=document.getElementById('batDischargeVal');
+  const disNote=document.getElementById('batDischargeNote');
+  const disSub=document.getElementById('batDischargeSub');
+  if(net>=0){
+    disVal.textContent='—';disVal.style.color='#718096';
+    disNote.textContent='no net deficit — battery not draining';
+    disNote.style.color='#48bb78';return;
+  }
+  // pct available before hitting 20% cutoff
+  const capacityWh=4800;
+  const drainablePct=Math.max(0,battery-20);
+  const drainableWh=capacityWh*(drainablePct/100);
+  const deficit=Math.abs(net); // watts being drained
+  const realSecsToCutoff=drainableWh/(deficit/3600);
+  const wallSecsToCutoff=realSecsToCutoff/simSpeed;
+  if(drainablePct<=0){
+    disVal.textContent='CUTOFF';disVal.style.color='#fc8181';
+    disNote.textContent='battery at minimum — motor cut off';
+    disNote.style.color='#fc8181';
+    disSub.textContent='recharge to resume';return;
+  }
+  disVal.textContent=formatTime(wallSecsToCutoff);
+  disVal.style.color='#fc8181';
+  disNote.textContent='wall-clock time at '+simSpeed+'× speed';
+  disNote.style.color='#718096';
+  disSub.textContent='deficit: '+Math.round(net)+'W · '+Math.round(drainablePct)+'% drainable';
 }
 
 /* ── DRAW TURBINE (uses T object) ── */
@@ -717,10 +764,37 @@ function buildPowerTable(){
 buildPowerTable();
 
 /* ── CONTROLS ── */
-document.getElementById('windSlider').addEventListener('input',function(){wind=parseFloat(this.value);});
+// Keeps slider and number input in sync when typing in the number box
+function syncFromNum(sliderId, numId, min, max){
+  const num=document.getElementById(numId);
+  let v=parseFloat(num.value);
+  if(isNaN(v)) return;
+  v=Math.max(min,Math.min(max,v));
+  document.getElementById(sliderId).value=v;
+}
+// Keeps number input in sync when dragging slider
+function syncToNum(sliderId, numId){
+  document.getElementById(numId).value=document.getElementById(sliderId).value;
+}
+
+document.getElementById('windSlider').addEventListener('input',function(){
+  wind=parseFloat(this.value);
+  syncToNum('windSlider','windNum');
+});
 function toggleMotor(){motorOn=!motorOn;document.getElementById('motorToggle').classList.toggle('on',motorOn);}
-function updateSimSpeed(v){simSpeed=parseInt(v);document.getElementById('simSpeedDisplay').textContent=v+'×';}
-function updateLoad(v){loadPct=parseInt(v);document.getElementById('loadDisplay').textContent=v+'%';document.getElementById('drawDisplay').textContent=Math.round(MOTOR_RATED*loadPct/100)+' W';}
+function updateSimSpeed(v){
+  simSpeed=parseInt(v);
+  document.getElementById('simSpeedDisplay').textContent=v+'×';
+  document.getElementById('simSpeedNum').value=v;
+  document.getElementById('simSpeedSlider').value=v;
+}
+function updateLoad(v){
+  loadPct=parseInt(v);
+  document.getElementById('loadDisplay').textContent=v+'%';
+  document.getElementById('drawDisplay').textContent=Math.round(MOTOR_RATED*loadPct/100)+' W';
+  document.getElementById('loadNum').value=v;
+  document.getElementById('loadSlider').value=v;
+}
 
 /* ── CANVAS REFS ── */
 const tc=document.getElementById('turbineCanvas').getContext('2d');
@@ -757,8 +831,9 @@ function loop(){
   else if(net<0){batSt.textContent='DISCHARGING';batSt.style.color='#f6ad55';}
   else{batSt.textContent='BALANCED';batSt.style.color='#63b3ed';}
 
-  // battery timer — only shows if charging
+  // battery timers
   updateBatteryTimer(net);
+  updateDischargeTimer(net);
 
   angle+=rpm>0?(rpm/60)*2*Math.PI*(1/60):0;
   const rb=document.getElementById('rotBadge');
