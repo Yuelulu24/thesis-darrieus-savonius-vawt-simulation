@@ -194,7 +194,7 @@
         <div class="ctrl-label"><span>WIND INPUT</span><span class="ctrl-val" id="windDisplay">0.0 m/s</span></div>
         <div style="display:flex;align-items:center;gap:8px;">
           <input type="range" id="windSlider" min="0" max="5.5" step="0.1" value="0" style="flex:1;">
-          <input type="number" id="windNum" min="0" max="5.5" step="0.1" value="0" style="width:58px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;" oninput="syncFromNum('windSlider','windNum',0,5.5)">
+          <input type="number" id="windNum" min="0" max="5.5" step="0.1" value="0" style="width:58px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;">
         </div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
           <span>0</span><span>2.75</span><span>5.5 m/s</span>
@@ -280,7 +280,7 @@
             <div class="ctrl-label"><span>LOAD</span><span class="ctrl-val" id="loadDisplay">75%</span></div>
             <div style="display:flex;align-items:center;gap:8px;">
               <input type="range" id="loadSlider" min="20" max="100" step="5" value="75" style="flex:1;" oninput="updateLoad(this.value)">
-              <input type="number" id="loadNum" min="20" max="100" step="5" value="75" style="width:52px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;" oninput="syncFromNum('loadSlider','loadNum',20,100);updateLoad(document.getElementById('loadNum').value)">
+              <input type="number" id="loadNum" min="20" max="100" step="5" value="75" style="width:52px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;">
             </div>
             <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">Draw: <span id="drawDisplay" style="color:var(--accent4);">560 W</span></div>
           </div>
@@ -292,7 +292,7 @@
             <div class="ctrl-label"><span>SIM SPEED</span><span class="ctrl-val" id="simSpeedDisplay">100×</span></div>
             <div style="display:flex;align-items:center;gap:8px;">
               <input type="range" id="simSpeedSlider" min="1" max="500" step="1" value="100" style="flex:1;" oninput="updateSimSpeed(this.value)">
-              <input type="number" id="simSpeedNum" min="1" max="500" step="1" value="100" style="width:58px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;" oninput="syncFromNum('simSpeedSlider','simSpeedNum',1,500);updateSimSpeed(document.getElementById('simSpeedNum').value)">
+              <input type="number" id="simSpeedNum" min="1" max="500" step="1" value="100" style="width:58px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;">
             </div>
             <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
               <span>1×</span><span style="color:var(--accent3);">100×</span><span>500×</span>
@@ -765,36 +765,43 @@ buildPowerTable();
 
 /* ── CONTROLS ── */
 // Keeps slider and number input in sync when typing in the number box
-function syncFromNum(sliderId, numId, min, max){
-  const num=document.getElementById(numId);
-  let v=parseFloat(num.value);
-  if(isNaN(v)) return;
-  v=Math.max(min,Math.min(max,v));
-  document.getElementById(sliderId).value=v;
-}
-// Keeps number input in sync when dragging slider
-function syncToNum(sliderId, numId){
-  document.getElementById(numId).value=document.getElementById(sliderId).value;
-}
-
-document.getElementById('windSlider').addEventListener('input',function(){
-  wind=parseFloat(this.value);
-  syncToNum('windSlider','windNum');
-});
 function toggleMotor(){motorOn=!motorOn;document.getElementById('motorToggle').classList.toggle('on',motorOn);}
+
 function updateSimSpeed(v){
-  simSpeed=parseInt(v);
-  document.getElementById('simSpeedDisplay').textContent=v+'×';
-  document.getElementById('simSpeedNum').value=v;
-  document.getElementById('simSpeedSlider').value=v;
+  const parsed=parseInt(v);
+  if(isNaN(parsed)) return;
+  simSpeed=Math.max(1,Math.min(500,parsed));
+  document.getElementById('simSpeedDisplay').textContent=simSpeed+'×';
+  document.getElementById('simSpeedNum').value=simSpeed;
+  document.getElementById('simSpeedSlider').value=simSpeed;
 }
 function updateLoad(v){
-  loadPct=parseInt(v);
-  document.getElementById('loadDisplay').textContent=v+'%';
+  const parsed=parseInt(v);
+  if(isNaN(parsed)) return;
+  loadPct=Math.max(20,Math.min(100,parsed));
+  document.getElementById('loadDisplay').textContent=loadPct+'%';
   document.getElementById('drawDisplay').textContent=Math.round(MOTOR_RATED*loadPct/100)+' W';
-  document.getElementById('loadNum').value=v;
-  document.getElementById('loadSlider').value=v;
+  document.getElementById('loadNum').value=loadPct;
+  document.getElementById('loadSlider').value=loadPct;
 }
+function setWind(v){
+  const parsed=parseFloat(v);
+  if(isNaN(parsed)) return;
+  wind=Math.max(0,Math.min(5.5,parsed));
+  document.getElementById('windSlider').value=wind;
+  document.getElementById('windNum').value=wind;
+  document.getElementById('windDisplay').textContent=wind.toFixed(1)+' m/s';
+}
+
+// Sliders → update state + sync number box
+document.getElementById('windSlider').addEventListener('input',function(){ setWind(this.value); });
+document.getElementById('loadSlider').addEventListener('input',function(){ updateLoad(this.value); });
+document.getElementById('simSpeedSlider').addEventListener('input',function(){ updateSimSpeed(this.value); });
+
+// Number boxes → update state + sync slider (fires on Enter or blur, not mid-typing)
+document.getElementById('windNum').addEventListener('change',function(){ setWind(this.value); });
+document.getElementById('loadNum').addEventListener('change',function(){ updateLoad(this.value); });
+document.getElementById('simSpeedNum').addEventListener('change',function(){ updateSimSpeed(this.value); });
 
 /* ── CANVAS REFS ── */
 const tc=document.getElementById('turbineCanvas').getContext('2d');
@@ -807,14 +814,14 @@ const pcCtx=pcEl.getContext('2d');
 
 let tick=0;
 function loop(){
-  wind=parseFloat(document.getElementById('windSlider').value);
-  document.getElementById('windDisplay').textContent=wind.toFixed(1)+' m/s';
+  // wind is managed by setWind() — read from state, not DOM, to avoid NaN
   const{pSav,pDar,pTotal:gen}=getPowerComponents(wind);
   const rpm=getRPM(wind);
   const loadDraw=motorOn&&battery>20?MOTOR_RATED*(loadPct/100):0;
   const net=gen-loadDraw;
   const baseRate=9.645e-8;
-  battery=Math.max(0,Math.min(100,battery+net*baseRate*simSpeed));
+  const newBat=battery+net*baseRate*simSpeed;
+  battery=(!isNaN(newBat)&&isFinite(newBat))?Math.max(0,Math.min(100,newBat)):battery;
 
   document.getElementById('mRPM').textContent=rpm;
   document.getElementById('mGen').textContent=Math.round(gen);
@@ -823,7 +830,8 @@ function loop(){
   const netEl=document.getElementById('mNet');
   netEl.textContent=(net>=0?'+':'')+Math.round(net);netEl.style.color=net>=0?'#48bb78':'#fc8181';
   document.getElementById('mLoad').innerHTML=Math.round(loadDraw)+' <span style="font-size:11px;color:var(--muted);">W</span>';
-  document.getElementById('mBat').textContent=Math.round(battery);
+  const batDisplay=isNaN(battery)?20:Math.round(battery);
+  document.getElementById('mBat').textContent=batDisplay;
   const bar=document.getElementById('batBar');bar.style.width=battery+'%';bar.style.background=battery>60?'#48bb78':battery>30?'#f6ad55':'#fc8181';
   const batSt=document.getElementById('batStatus');
   if(battery<=20&&loadDraw>gen){batSt.textContent='LOW — CUTOFF RISK';batSt.style.color='#fc8181';}
