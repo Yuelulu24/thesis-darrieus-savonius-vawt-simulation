@@ -192,10 +192,7 @@
       <!-- Wind slider -->
       <div class="ctrl-group" style="width:100%;">
         <div class="ctrl-label"><span>WIND INPUT</span><span class="ctrl-val" id="windDisplay">0.0 m/s</span></div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <input type="range" id="windSlider" min="0" max="5.5" step="0.1" value="0" style="flex:1;">
-          <input type="number" id="windNum" min="0" max="5.5" step="0.1" value="0" style="width:58px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;">
-        </div>
+        <input type="range" id="windSlider" min="0" max="5.5" step="0.1" value="0">
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
           <span>0</span><span>2.75</span><span>5.5 m/s</span>
         </div>
@@ -218,15 +215,26 @@
         <div class="bat-track"><div class="bat-fill" id="batBar" style="width:20%;background:#48bb78;"></div></div>
         <div class="bat-labels"><span>0%</span><span>CUTOFF 20%</span><span>100%</span></div>
 
+        <!-- Ah readout -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:6px 10px;background:var(--bg);border-radius:6px;border:1px solid var(--border);">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">CURRENT CAPACITY</span>
+          <div style="display:flex;align-items:baseline;gap:4px;">
+            <span style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent2);" id="mAh">80</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">Ah</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">/ 400 Ah</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:6px;" id="mWh">(960 Wh)</span>
+          </div>
+        </div>
+
         <!-- BATTERY CHARGE TIMER -->
-        <div class="bat-timer" id="batTimerBox">
+        <div class="bat-timer" id="batTimerBox" style="margin-top:6px;">
           <div>
             <div class="bat-timer-lbl">TIME TO 100% CHARGE</div>
             <div class="bat-timer-sub" id="batTimerSub">at current sim speed &amp; wind</div>
           </div>
           <div style="text-align:right;">
             <div class="bat-timer-val" id="batTimerVal">—</div>
-            <div class="bat-timer-sub" id="batTimerNote">motor off &amp; net surplus needed</div>
+            <div class="bat-timer-sub" id="batTimerNote">net surplus needed</div>
           </div>
         </div>
 
@@ -238,7 +246,7 @@
           </div>
           <div style="text-align:right;">
             <div class="bat-timer-val" id="batDischargeVal">—</div>
-            <div class="bat-timer-sub" id="batDischargeNote">motor on &amp; net deficit needed</div>
+            <div class="bat-timer-sub" id="batDischargeNote">net deficit needed</div>
           </div>
         </div>
       </div>
@@ -278,10 +286,7 @@
           </div>
           <div class="ctrl-group">
             <div class="ctrl-label"><span>LOAD</span><span class="ctrl-val" id="loadDisplay">75%</span></div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <input type="range" id="loadSlider" min="20" max="100" step="5" value="75" style="flex:1;" oninput="updateLoad(this.value)">
-              <input type="number" id="loadNum" min="20" max="100" step="5" value="75" style="width:52px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;">
-            </div>
+            <input type="range" id="loadSlider" min="20" max="100" step="5" value="75" oninput="updateLoad(this.value)">
             <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">Draw: <span id="drawDisplay" style="color:var(--accent4);">560 W</span></div>
           </div>
           <div class="ctrl-group">
@@ -290,10 +295,7 @@
           </div>
           <div class="ctrl-group">
             <div class="ctrl-label"><span>SIM SPEED</span><span class="ctrl-val" id="simSpeedDisplay">100×</span></div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <input type="range" id="simSpeedSlider" min="1" max="500" step="1" value="100" style="flex:1;" oninput="updateSimSpeed(this.value)">
-              <input type="number" id="simSpeedNum" min="1" max="500" step="1" value="100" style="width:58px;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;text-align:center;">
-            </div>
+            <input type="range" id="simSpeedSlider" min="1" max="500" step="1" value="100" oninput="updateSimSpeed(this.value)">
             <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
               <span>1×</span><span style="color:var(--accent3);">100×</span><span>500×</span>
             </div>
@@ -317,7 +319,7 @@
     <div style="font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
       <span style="display:block;width:16px;height:1px;background:var(--accent);"></span>Power Output Table — 0 to 5.5 m/s
     </div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">ρ = 1.225 kg/m³ · A_S = 12.0 m² · A_D = 43.6 m² · Cp_S = 0.20 · Cp_D = 0.38 (ramps from 3.0 m/s). Highlighted orange row = design wind speed.</p>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">ρ = 1.225 kg/m³ · Cp_S = 0.20 · Cp_D = 0.38 (ramps from 3.0 m/s) · <span style="color:var(--accent4);">Losses applied: η_mech=90% · η_gen=85% · η_conv=95% · η_chg=97% → overall η=70.49%</span> · Highlighted orange row = design wind speed. Table updates when turbine geometry is edited.</p>
     <table><thead><tr>
       <th>Wind (m/s)</th><th>RPM</th>
       <th style="color:#f6ad55;">Savonius P (W)</th>
@@ -430,10 +432,52 @@
         </div>
       </div>
 
-      <!-- Reset button -->
-      <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:8px;">
+      <!-- Reset + Live Physics Readout -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
         <button onclick="resetEditor()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 16px;border-radius:8px;cursor:pointer;">↺ Reset to Default</button>
-        <div style="font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.6;">Changes apply live to the simulation. Geometry sliders are relative fractions of the canvas size.</div>
+
+        <!-- Live physics panel -->
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.9rem;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:8px;">LIVE PHYSICS OUTPUT</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">R_D (real)</span>
+              <span style="color:var(--accent);"><span id="editorRD">2.85</span> m</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">H_D (real)</span>
+              <span style="color:var(--accent);"><span id="editorHD">7.65</span> m</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">A_D swept</span>
+              <span style="color:var(--accent);"><span id="editorAD">43.61</span> m²</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">A_S swept</span>
+              <span style="color:var(--accent3);"><span id="editorAS">12.00</span> m²</span>
+            </div>
+            <div style="border-top:1px solid var(--border);margin:4px 0;"></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">P @ current wind</span>
+              <span style="color:var(--accent2);font-weight:700;"><span id="editorPow">0</span> W</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loss breakdown -->
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.9rem;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:8px;">LOSS CHAIN APPLIED</div>
+          <div style="display:flex;flex-direction:column;gap:4px;font-size:10px;font-family:var(--mono);">
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Mechanical</span><span style="color:var(--accent4);">−10%</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Generation</span><span style="color:var(--accent4);">−15%</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Conv./Trans.</span><span style="color:var(--accent4);">−5%</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Charging (400Ah)</span><span style="color:var(--accent4);">−3%</span></div>
+            <div style="border-top:1px solid var(--border);margin:3px 0;"></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--text);font-weight:700;">Overall η</span><span style="color:var(--accent2);font-weight:700;">70.49%</span></div>
+          </div>
+        </div>
+
+        <div style="font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.6;">Geometry changes update swept areas, power output, and the power table in real time.</div>
       </div>
     </div>
   </div>
@@ -513,8 +557,10 @@ document.getElementById('footerYear').textContent = new Date().getFullYear();
 /* ── STATE ── */
 let wind=0, battery=20, angle=0, motorOn=false, loadPct=75, simSpeed=100;
 const MOTOR_RATED=746, CHART_LEN=100;
+const BAT_VOLTAGE=12, BAT_AH=400;
+const BAT_WH = BAT_VOLTAGE * BAT_AH; // 4800 Wh
 const chartData={gen:[],load:[],net:[]};
-const rho=1.225, A_S=12.0, A_D=43.6;
+const rho=1.225;
 
 /* ── TURBINE EDITOR STATE ── */
 let T = {
@@ -546,6 +592,17 @@ function updateEditor() {
   document.getElementById('savRadiusVal').textContent     = T.savRs.toFixed(2);
   document.getElementById('savArcVal').textContent        = T.savArc.toFixed(2);
   document.getElementById('savStrokeVal').textContent     = T.savStroke.toFixed(3);
+
+  // Update live physics readout so adviser can see swept area + power changes
+  const { A_D, A_S, R_D, H_D } = getSweptAreas();
+  const { pTotal } = getPowerComponents(wind > 0 ? wind : 4.75);
+  document.getElementById('editorAD').textContent  = A_D.toFixed(2);
+  document.getElementById('editorAS').textContent  = A_S.toFixed(2);
+  document.getElementById('editorRD').textContent  = R_D.toFixed(2);
+  document.getElementById('editorHD').textContent  = H_D.toFixed(2);
+  document.getElementById('editorPow').textContent = pTotal;
+  // rebuild power table to reflect new geometry
+  rebuildPowerTable();
 }
 
 function resetEditor() {
@@ -565,15 +622,61 @@ const windMonthData=[{m:'JAN',v:3.57},{m:'FEB',v:3.46},{m:'MAR',v:3.08},{m:'APR'
 const wmEl=document.getElementById('windMonths');
 windMonthData.forEach(d=>{const col=d.v>=3.5?'#48bb78':d.v>=2.5?'#63b3ed':'#718096';wmEl.innerHTML+=`<div class="wind-month"><span class="wind-month-name">${d.m}</span><span class="wind-month-val" style="color:${col}">${d.v}</span></div>`;});
 
-/* ── PHYSICS ── */
-function getPowerComponents(w){
-  if(w<1.5)return{pSav:0,pDar:0,pTotal:0};
-  const pSav=0.5*rho*A_S*Math.pow(w,3)*0.20;
-  const cpDar=w<3.0?0:Math.min(0.38,0.038*Math.pow(w-3.0,2));
-  const pDar=0.5*rho*A_D*Math.pow(w,3)*cpDar;
-  return{pSav:Math.round(pSav),pDar:Math.round(pDar),pTotal:Math.round(pSav+pDar)};
+/* ── LOSS CONSTANTS (from verified study) ── */
+const ETA_MECH = 0.90;   // mechanical loss: 10%
+const ETA_GEN  = 0.85;   // generator/generation loss: 15%
+const ETA_CONV = 0.95;   // conversion/transmission loss: 5%
+const ETA_CHG  = 0.97;   // battery charging loss (400Ah): 3%
+const ETA_TOTAL = ETA_MECH * ETA_GEN * ETA_CONV * ETA_CHG; // = 0.7049
+
+/* ── PHYSICS — uses T object so editor changes affect power ── */
+// Scale factors: editor uses canvas fractions, real geometry uses meters
+// Darrieus: default T.darR=0.41 → real R_D=2.85m → scale=6.951 m/unit
+// Savonius: default T.savRs=0.16 → real R_S=1.00m → scale=6.25 m/unit
+const DAR_SCALE = 2.85 / 0.41;  // 6.951 m per editor unit
+const SAV_SCALE = 1.00 / 0.16;  // 6.250 m per editor unit
+
+function getSweptAreas(){
+  // Darrieus: real R_D = T.darR * DAR_SCALE
+  // H_D/D_D ratio = 1.35 (maintained), so H_D = 1.35 * 2*R_D
+  // A_D = H_D * D_D
+  const R_D = T.darR * DAR_SCALE;
+  const D_D = 2 * R_D;
+  const H_D = 1.35 * D_D;
+  const A_D = H_D * D_D;
+
+  // Savonius: real R_S = T.savRs * SAV_SCALE
+  // H_S = 0.8 * H_D (fixed ratio from paper)
+  // A_S = H_S * D_S
+  const R_S = T.savRs * SAV_SCALE;
+  const D_S = 2 * R_S;
+  const H_S = 0.8 * H_D;
+  const A_S = H_S * D_S;
+
+  return { A_D, A_S, R_D, H_D };
 }
-function getRPM(w){return w<1.5?0:Math.round((4.0*w/2.85)*60/(2*Math.PI)*10)/10;}
+
+function getPowerComponents(w){
+  if(w < 1.5) return { pSav:0, pDar:0, pTotal:0, pNet:0 };
+  const { A_D, A_S } = getSweptAreas();
+
+  // Aerodynamic power (before losses)
+  const pSav_aero = 0.5 * rho * A_S * Math.pow(w, 3) * 0.20;
+  const cpDar = w < 3.0 ? 0 : Math.min(0.38, 0.038 * Math.pow(w - 3.0, 2));
+  const pDar_aero = 0.5 * rho * A_D * Math.pow(w, 3) * cpDar;
+  const pTotal_aero = pSav_aero + pDar_aero;
+
+  // Apply full loss chain to get power actually delivered to battery
+  const pNet = pTotal_aero * ETA_TOTAL;
+
+  return {
+    pSav:  Math.round(pSav_aero * ETA_TOTAL),
+    pDar:  Math.round(pDar_aero * ETA_TOTAL),
+    pTotal:Math.round(pTotal_aero * ETA_TOTAL),
+    pNet:  Math.round(pNet)
+  };
+}
+function getRPM(w){ return w < 1.5 ? 0 : Math.round((4.0 * w / 2.85) * 60 / (2 * Math.PI) * 10) / 10; }
 
 /* ── BATTERY TIMER ── */
 function formatTime(seconds){
@@ -591,9 +694,9 @@ function updateBatteryTimer(net){
     timerNote.textContent='no net surplus — charging paused';
     timerNote.style.color='#fc8181';return;
   }
-  const capacityWh=4800;
+  // battery capacity uses BAT_WH (12V × 400Ah = 4800 Wh)
   const remainingPct=100-battery;
-  const remainingWh=capacityWh*(remainingPct/100);
+  const remainingWh=BAT_WH*(remainingPct/100);
   const realSecondsToFull=remainingWh/(net/3600);
   const wallSecondsToFull=realSecondsToFull/simSpeed;
   timerVal.textContent=formatTime(wallSecondsToFull);
@@ -612,11 +715,9 @@ function updateDischargeTimer(net){
     disNote.textContent='no net deficit — battery not draining';
     disNote.style.color='#48bb78';return;
   }
-  // pct available before hitting 20% cutoff
-  const capacityWh=4800;
   const drainablePct=Math.max(0,battery-20);
-  const drainableWh=capacityWh*(drainablePct/100);
-  const deficit=Math.abs(net); // watts being drained
+  const drainableWh=BAT_WH*(drainablePct/100);
+  const deficit=Math.abs(net);
   const realSecsToCutoff=drainableWh/(deficit/3600);
   const wallSecsToCutoff=realSecsToCutoff/simSpeed;
   if(drainablePct<=0){
@@ -745,9 +846,10 @@ function drawWindChart(){
   const cutInY=pad.t+ih*(1-2.0/maxV);ctx.beginPath();ctx.moveTo(pad.l,cutInY);ctx.lineTo(pad.l+iw,cutInY);ctx.strokeStyle='rgba(246,173,85,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#f6ad55';ctx.font='9px Space Mono,monospace';ctx.textAlign='left';ctx.fillText('Cut-in: 2.0 m/s',pad.l+4,cutInY-4);
 }
 
-/* ── POWER TABLE ── */
-function buildPowerTable(){
+/* ── POWER TABLE (rebuilds when editor changes) ── */
+function rebuildPowerTable(){
   const tbody=document.getElementById('powerTableBody');
+  tbody.innerHTML=''; // clear before rebuild
   const motorDraw=Math.round(MOTOR_RATED*0.75);
   [0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,4.75,5.0,5.5].forEach(w=>{
     const{pSav,pDar,pTotal}=getPowerComponents(w);
@@ -761,47 +863,37 @@ function buildPowerTable(){
     tbody.appendChild(tr);
   });
 }
-buildPowerTable();
+rebuildPowerTable();
 
 /* ── CONTROLS ── */
-// Keeps slider and number input in sync when typing in the number box
-function toggleMotor(){motorOn=!motorOn;document.getElementById('motorToggle').classList.toggle('on',motorOn);}
-
+function syncFromNum(sliderId, numId, min, max){
+  const num = document.getElementById(numId);
+  const v = parseFloat(num.value);
+  if(isNaN(v) || num.value === '') return;
+  const clamped = Math.max(min, Math.min(max, v));
+  document.getElementById(sliderId).value = clamped;
+}
+function syncToNum(sliderId, numId){
+  document.getElementById(numId).value = document.getElementById(sliderId).value;
+}
+document.getElementById('windSlider').addEventListener('input', function(){
+  const v = parseFloat(this.value);
+  if(!isNaN(v)) wind = v;
+});
+function toggleMotor(){ motorOn=!motorOn; document.getElementById('motorToggle').classList.toggle('on',motorOn); }
 function updateSimSpeed(v){
-  const parsed=parseInt(v);
-  if(isNaN(parsed)) return;
-  simSpeed=Math.max(1,Math.min(500,parsed));
-  document.getElementById('simSpeedDisplay').textContent=simSpeed+'×';
-  document.getElementById('simSpeedNum').value=simSpeed;
-  document.getElementById('simSpeedSlider').value=simSpeed;
+  const parsed = parseInt(v);
+  if(isNaN(parsed) || v==='' || v===null) return;
+  simSpeed = Math.max(1, Math.min(500, parsed));
+  document.getElementById('simSpeedDisplay').textContent = simSpeed+'×';
 }
 function updateLoad(v){
-  const parsed=parseInt(v);
-  if(isNaN(parsed)) return;
-  loadPct=Math.max(20,Math.min(100,parsed));
-  document.getElementById('loadDisplay').textContent=loadPct+'%';
-  document.getElementById('drawDisplay').textContent=Math.round(MOTOR_RATED*loadPct/100)+' W';
-  document.getElementById('loadNum').value=loadPct;
-  document.getElementById('loadSlider').value=loadPct;
+  const parsed = parseInt(v);
+  if(isNaN(parsed) || v==='' || v===null) return;
+  loadPct = Math.max(20, Math.min(100, parsed));
+  document.getElementById('loadDisplay').textContent = loadPct+'%';
+  document.getElementById('drawDisplay').textContent = Math.round(MOTOR_RATED*loadPct/100)+' W';
 }
-function setWind(v){
-  const parsed=parseFloat(v);
-  if(isNaN(parsed)) return;
-  wind=Math.max(0,Math.min(5.5,parsed));
-  document.getElementById('windSlider').value=wind;
-  document.getElementById('windNum').value=wind;
-  document.getElementById('windDisplay').textContent=wind.toFixed(1)+' m/s';
-}
-
-// Sliders → update state + sync number box
-document.getElementById('windSlider').addEventListener('input',function(){ setWind(this.value); });
-document.getElementById('loadSlider').addEventListener('input',function(){ updateLoad(this.value); });
-document.getElementById('simSpeedSlider').addEventListener('input',function(){ updateSimSpeed(this.value); });
-
-// Number boxes → update state + sync slider (fires on Enter or blur, not mid-typing)
-document.getElementById('windNum').addEventListener('change',function(){ setWind(this.value); });
-document.getElementById('loadNum').addEventListener('change',function(){ updateLoad(this.value); });
-document.getElementById('simSpeedNum').addEventListener('change',function(){ updateSimSpeed(this.value); });
 
 /* ── CANVAS REFS ── */
 const tc=document.getElementById('turbineCanvas').getContext('2d');
@@ -814,14 +906,21 @@ const pcCtx=pcEl.getContext('2d');
 
 let tick=0;
 function loop(){
-  // wind is managed by setWind() — read from state, not DOM, to avoid NaN
+  wind=parseFloat(document.getElementById('windSlider').value);
+  document.getElementById('windDisplay').textContent=wind.toFixed(1)+' m/s';
   const{pSav,pDar,pTotal:gen}=getPowerComponents(wind);
   const rpm=getRPM(wind);
   const loadDraw=motorOn&&battery>20?MOTOR_RATED*(loadPct/100):0;
   const net=gen-loadDraw;
-  const baseRate=9.645e-8;
-  const newBat=battery+net*baseRate*simSpeed;
-  battery=(!isNaN(newBat)&&isFinite(newBat))?Math.max(0,Math.min(100,newBat)):battery;
+  const baseRate = 100 / (BAT_WH * 3600 * 60); // % per Watt per frame (real physics)
+  const newBat = battery + net * baseRate * simSpeed;
+  battery = isNaN(newBat) ? battery : Math.max(0, Math.min(100, newBat));
+
+  // Ah and Wh readout
+  const currentAh = Math.round(BAT_AH * battery / 100);
+  const currentWh = Math.round(BAT_WH * battery / 100);
+  document.getElementById('mAh').textContent = currentAh;
+  document.getElementById('mWh').textContent = '(' + currentWh + ' Wh)';
 
   document.getElementById('mRPM').textContent=rpm;
   document.getElementById('mGen').textContent=Math.round(gen);
@@ -830,8 +929,7 @@ function loop(){
   const netEl=document.getElementById('mNet');
   netEl.textContent=(net>=0?'+':'')+Math.round(net);netEl.style.color=net>=0?'#48bb78':'#fc8181';
   document.getElementById('mLoad').innerHTML=Math.round(loadDraw)+' <span style="font-size:11px;color:var(--muted);">W</span>';
-  const batDisplay=isNaN(battery)?20:Math.round(battery);
-  document.getElementById('mBat').textContent=batDisplay;
+  document.getElementById('mBat').textContent=Math.round(battery);
   const bar=document.getElementById('batBar');bar.style.width=battery+'%';bar.style.background=battery>60?'#48bb78':battery>30?'#f6ad55':'#fc8181';
   const batSt=document.getElementById('batStatus');
   if(battery<=20&&loadDraw>gen){batSt.textContent='LOW — CUTOFF RISK';batSt.style.color='#fc8181';}
@@ -839,7 +937,7 @@ function loop(){
   else if(net<0){batSt.textContent='DISCHARGING';batSt.style.color='#f6ad55';}
   else{batSt.textContent='BALANCED';batSt.style.color='#63b3ed';}
 
-  // battery timers
+  // both battery timers
   updateBatteryTimer(net);
   updateDischargeTimer(net);
 
