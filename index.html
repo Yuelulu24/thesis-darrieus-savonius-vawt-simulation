@@ -189,12 +189,17 @@
         <div class="metric"><div class="metric-lbl">DAR. POWER</div><div class="metric-val" id="mDar" style="color:var(--accent);font-size:1rem;">0</div><div class="metric-unit">W</div></div>
       </div>
 
-      <!-- Wind slider -->
+      <!-- Wind number input -->
       <div class="ctrl-group" style="width:100%;">
         <div class="ctrl-label"><span>WIND INPUT</span><span class="ctrl-val" id="windDisplay">0.0 m/s</span></div>
-        <input type="range" id="windSlider" min="0" max="5.5" step="0.1" value="0">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="number" id="windSlider" min="0" max="5.5" step="0.1" value="0"
+            style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:14px;font-weight:700;padding:6px 10px;border-radius:6px;outline:none;-moz-appearance:textfield;"
+            oninput="updateWindInput(this.value)">
+          <span style="font-size:11px;color:var(--muted);font-family:var(--mono);white-space:nowrap;">m/s</span>
+        </div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
-          <span>0</span><span>2.75</span><span>5.5 m/s</span>
+          <span>min: 0</span><span>max: 5.5 m/s</span>
         </div>
       </div>
     </div>
@@ -286,8 +291,13 @@
           </div>
           <div class="ctrl-group">
             <div class="ctrl-label"><span>LOAD</span><span class="ctrl-val" id="loadDisplay">75%</span></div>
-            <input type="range" id="loadSlider" min="20" max="100" step="5" value="75" oninput="updateLoad(this.value)">
-            <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">Draw: <span id="drawDisplay" style="color:var(--accent4);">560 W</span></div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="number" id="loadSlider" min="20" max="100" step="5" value="75"
+                style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:14px;font-weight:700;padding:6px 10px;border-radius:6px;outline:none;-moz-appearance:textfield;"
+                oninput="updateLoad(this.value)">
+              <span style="font-size:11px;color:var(--muted);font-family:var(--mono);">%</span>
+            </div>
+            <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">Draw: <span id="drawDisplay" style="color:var(--accent4);">560 W</span> &nbsp;·&nbsp; range: 20–100%</div>
           </div>
           <div class="ctrl-group">
             <div class="metric-lbl" style="margin-bottom:4px;">LOAD DRAW</div>
@@ -295,9 +305,14 @@
           </div>
           <div class="ctrl-group">
             <div class="ctrl-label"><span>SIM SPEED</span><span class="ctrl-val" id="simSpeedDisplay">100×</span></div>
-            <input type="range" id="simSpeedSlider" min="1" max="500" step="1" value="100" oninput="updateSimSpeed(this.value)">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="number" id="simSpeedSlider" min="1" max="500" step="1" value="100"
+                style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:14px;font-weight:700;padding:6px 10px;border-radius:6px;outline:none;-moz-appearance:textfield;"
+                oninput="updateSimSpeed(this.value)">
+              <span style="font-size:11px;color:var(--muted);font-family:var(--mono);">×</span>
+            </div>
             <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
-              <span>1×</span><span style="color:var(--accent3);">100×</span><span>500×</span>
+              <span>min: 1×</span><span style="color:var(--accent3);">default: 100×</span><span>max: 500×</span>
             </div>
           </div>
         </div>
@@ -490,13 +505,13 @@
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
     <div class="card"><div class="card-title">Darrieus Rotor</div>
       <table class="spec-table"><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
-      <tr><td>Radius (R_D)</td><td>2.85 m</td><td>From P_rated, Cp=0.38</td></tr>
-      <tr><td>Diameter (D_D)</td><td>5.70 m</td><td>D = 2R</td></tr>
-      <tr><td>Blade height (H_D)</td><td>7.65 m</td><td>H/D = 1.35</td></tr>
-      <tr><td>Swept area (A_D)</td><td>43.6 m²</td><td>A = H × D</td></tr>
-      <tr><td>No. of blades</td><td>3</td><td>Standard H-blade</td></tr>
-      <tr><td>Chord (c_D)</td><td>0.24 m</td><td>σ = 0.253</td></tr>
-      <tr><td>Solidity (σ_D)</td><td>0.253</td><td>Optimal 0.20–0.30</td></tr>
+      <tr><td>Radius (R_D)</td><td id="spec_RD">2.85 m</td><td>From P_rated, Cp=0.38</td></tr>
+      <tr><td>Diameter (D_D)</td><td id="spec_DD">5.70 m</td><td>D = 2R</td></tr>
+      <tr><td>Blade height (H_D)</td><td id="spec_HD">7.65 m</td><td>H/D = 1.35</td></tr>
+      <tr><td>Swept area (A_D)</td><td id="spec_AD">43.6 m²</td><td>A = H × D</td></tr>
+      <tr><td>No. of blades</td><td id="spec_darBlades">3</td><td>Standard H-blade</td></tr>
+      <tr><td>Chord (c_D)</td><td id="spec_darChord">0.24 m</td><td>σ = 0.253</td></tr>
+      <tr><td>Solidity (σ_D)</td><td id="spec_darSolidity">0.253</td><td>Optimal 0.20–0.30</td></tr>
       <tr><td>Design TSR</td><td>4.0</td><td>NACA 0018 @ Re≈80k</td></tr>
       <tr><td>Cp_D</td><td>0.38</td><td>Realistic at this Re</td></tr>
       <tr><td>Airfoil</td><td>NACA 0018</td><td>Better Cl at low Re</td></tr>
@@ -504,12 +519,12 @@
     </div>
     <div class="card"><div class="card-title">Savonius Rotor</div>
       <table class="spec-table"><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
-      <tr><td>Radius (R_S)</td><td>1.00 m</td><td>Fits inside Darrieus</td></tr>
-      <tr><td>Diameter (D_S)</td><td>2.00 m</td><td>Bucket diameter</td></tr>
-      <tr><td>Height (H_S)</td><td>6.00 m</td><td>0.8 × H_D</td></tr>
-      <tr><td>No. of buckets</td><td>3</td><td>3-bucket helical</td></tr>
+      <tr><td>Radius (R_S)</td><td id="spec_RS">1.00 m</td><td>Fits inside Darrieus</td></tr>
+      <tr><td>Diameter (D_S)</td><td id="spec_DS">2.00 m</td><td>Bucket diameter</td></tr>
+      <tr><td>Height (H_S)</td><td id="spec_HS">6.00 m</td><td>0.8 × H_D</td></tr>
+      <tr><td>No. of buckets</td><td id="spec_savBuckets">3</td><td>3-bucket helical</td></tr>
       <tr><td>Overlap ratio</td><td>0.17</td><td>Optimal 0.15–0.20</td></tr>
-      <tr><td>Opt. TSR (λ_S)</td><td>0.85</td><td>Optimal drag rotor</td></tr>
+      <tr><td>Opt. TSR (λ_S)</td><td id="spec_savArc">0.85</td><td>Optimal drag rotor</td></tr>
       <tr><td>Cp_S</td><td>0.20</td><td>At optimal TSR</td></tr>
       <tr><td>Helical twist</td><td>180°</td><td>Full half-turn over H_S</td></tr>
       </table>
@@ -601,6 +616,30 @@ function updateEditor() {
   document.getElementById('editorRD').textContent  = R_D.toFixed(2);
   document.getElementById('editorHD').textContent  = H_D.toFixed(2);
   document.getElementById('editorPow').textContent = pTotal;
+
+  // ── SYNC ENGINEERING TAB (Design Specs section) ──
+  const R_S = T.savRs * SAV_SCALE;
+  const D_D = 2 * R_D;
+  const D_S = 2 * R_S;
+  const H_S = 0.8 * H_D;
+  const solidity = (T.darBlades * (T.darChord * DAR_SCALE * 0.178)) / (Math.PI * R_D); // approx chord real = darChord*cw, use relative
+  // Real chord in meters: T.darChord is a canvas fraction; chord_real = T.darChord * DAR_SCALE (approx based on scale)
+  const chord_real = T.darChord * DAR_SCALE;
+  const sigma = (T.darBlades * chord_real) / (Math.PI * R_D);
+
+  document.getElementById('spec_RD').textContent       = R_D.toFixed(2) + ' m';
+  document.getElementById('spec_DD').textContent       = D_D.toFixed(2) + ' m';
+  document.getElementById('spec_HD').textContent       = H_D.toFixed(2) + ' m';
+  document.getElementById('spec_AD').textContent       = A_D.toFixed(1) + ' m²';
+  document.getElementById('spec_darBlades').textContent= T.darBlades;
+  document.getElementById('spec_darChord').textContent = chord_real.toFixed(2) + ' m';
+  document.getElementById('spec_darSolidity').textContent = sigma.toFixed(3);
+  document.getElementById('spec_RS').textContent       = R_S.toFixed(2) + ' m';
+  document.getElementById('spec_DS').textContent       = D_S.toFixed(2) + ' m';
+  document.getElementById('spec_HS').textContent       = H_S.toFixed(2) + ' m';
+  document.getElementById('spec_savBuckets').textContent = T.savBuckets;
+  document.getElementById('spec_savArc').textContent   = T.savArc.toFixed(2);
+
   // rebuild power table to reflect new geometry
   rebuildPowerTable();
 }
@@ -866,20 +905,11 @@ function rebuildPowerTable(){
 rebuildPowerTable();
 
 /* ── CONTROLS ── */
-function syncFromNum(sliderId, numId, min, max){
-  const num = document.getElementById(numId);
-  const v = parseFloat(num.value);
-  if(isNaN(v) || num.value === '') return;
-  const clamped = Math.max(min, Math.min(max, v));
-  document.getElementById(sliderId).value = clamped;
+function updateWindInput(v){
+  const parsed = parseFloat(v);
+  if(isNaN(parsed) || v === '' || v === null) return;
+  wind = Math.max(0, Math.min(5.5, parsed));
 }
-function syncToNum(sliderId, numId){
-  document.getElementById(numId).value = document.getElementById(sliderId).value;
-}
-document.getElementById('windSlider').addEventListener('input', function(){
-  const v = parseFloat(this.value);
-  if(!isNaN(v)) wind = v;
-});
 function toggleMotor(){ motorOn=!motorOn; document.getElementById('motorToggle').classList.toggle('on',motorOn); }
 function updateSimSpeed(v){
   const parsed = parseInt(v);
@@ -906,12 +936,15 @@ const pcCtx=pcEl.getContext('2d');
 
 let tick=0;
 function loop(){
-  wind=parseFloat(document.getElementById('windSlider').value);
+  // Read wind from number input, update the wind variable safely
+  const windInput = document.getElementById('windSlider');
+  const parsedWind = parseFloat(windInput.value);
+  if(!isNaN(parsedWind)) wind = Math.max(0, Math.min(5.5, parsedWind));
   document.getElementById('windDisplay').textContent=wind.toFixed(1)+' m/s';
   const{pSav,pDar,pTotal:gen}=getPowerComponents(wind);
   const rpm=getRPM(wind);
   const loadDraw=motorOn&&battery>20?MOTOR_RATED*(loadPct/100):0;
-  const net=gen-loadDraw;
+  const net=isNaN(gen)||isNaN(loadDraw)?0:(gen-loadDraw);
   const baseRate = 100 / (BAT_WH * 3600 * 60); // % per Watt per frame (real physics)
   const newBat = battery + net * baseRate * simSpeed;
   battery = isNaN(newBat) ? battery : Math.max(0, Math.min(100, newBat));
