@@ -173,7 +173,6 @@
 
   <div class="sim-outer">
 
-    <!-- LEFT: Turbine panel -->
     <div class="turbine-panel">
       <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;">VAWT ROTOR — TOP VIEW</div>
       <canvas id="turbineCanvas" width="280" height="280"></canvas>
@@ -189,7 +188,6 @@
         <div class="metric"><div class="metric-lbl">DAR. POWER</div><div class="metric-val" id="mDar" style="color:var(--accent);font-size:1rem;">0</div><div class="metric-unit">W</div></div>
       </div>
 
-      <!-- Wind number input -->
       <div class="ctrl-group" style="width:100%;">
         <div class="ctrl-label"><span>WIND INPUT</span><span class="ctrl-val" id="windDisplay">0.0 m/s</span></div>
         <div style="display:flex;align-items:center;gap:8px;">
@@ -204,10 +202,8 @@
       </div>
     </div>
 
-    <!-- RIGHT panel -->
     <div class="right-panel">
 
-      <!-- Battery -->
       <div class="bat-wrap">
         <div class="bat-header">
           <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;">BATTERY STATE OF CHARGE</span>
@@ -220,7 +216,6 @@
         <div class="bat-track"><div class="bat-fill" id="batBar" style="width:20%;background:#48bb78;"></div></div>
         <div class="bat-labels"><span>0%</span><span>CUTOFF 20%</span><span>100%</span></div>
 
-        <!-- Ah readout -->
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:6px 10px;background:var(--bg);border-radius:6px;border:1px solid var(--border);">
           <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">CURRENT CAPACITY</span>
           <div style="display:flex;align-items:baseline;gap:4px;">
@@ -231,7 +226,6 @@
           </div>
         </div>
 
-        <!-- BATTERY CHARGE TIMER -->
         <div class="bat-timer" id="batTimerBox" style="margin-top:6px;">
           <div>
             <div class="bat-timer-lbl">TIME TO 100% CHARGE</div>
@@ -243,7 +237,6 @@
           </div>
         </div>
 
-        <!-- BATTERY DISCHARGE TIMER -->
         <div class="bat-timer" id="batDischargeBox" style="background:rgba(252,129,129,0.06);border-color:rgba(252,129,129,0.2);margin-top:6px;">
           <div>
             <div class="bat-timer-lbl" style="color:var(--accent4);">TIME TO 20% CUTOFF</div>
@@ -256,7 +249,6 @@
         </div>
       </div>
 
-      <!-- Real-time chart -->
       <div class="chart-wrap">
         <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;margin-bottom:8px;">REAL-TIME POWER BALANCE</div>
         <canvas id="chartCanvas" width="480" height="90" style="width:100%;"></canvas>
@@ -267,7 +259,6 @@
         </div>
       </div>
 
-      <!-- Power curve -->
       <div class="power-curve-wrap">
         <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;margin-bottom:8px;">TURBINE POWER CURVE — OUTPUT (W) vs WIND SPEED (m/s)</div>
         <canvas id="pcCanvas" width="480" height="160" style="width:100%;"></canvas>
@@ -278,7 +269,6 @@
         </div>
       </div>
 
-      <!-- Motor + controls -->
       <div class="motor-controls-row">
         <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
           <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;">1-HP LOAD MOTOR</div>
@@ -320,7 +310,6 @@
     </div>
   </div>
 
-  <!-- Info strip -->
   <div style="margin-top:16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center;">
     <div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">CUT-IN SPEED</div><div style="font-family:var(--mono);font-size:1rem;color:var(--accent2);font-weight:700;">~1.5 m/s</div><div style="font-size:11px;color:var(--muted);">Savonius starts</div></div>
     <div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">DARRIEUS ENGAGES</div><div style="font-family:var(--mono);font-size:1rem;color:var(--accent);font-weight:700;">~3.0 m/s</div><div style="font-size:11px;color:var(--muted);">Hybrid operation</div></div>
@@ -329,7 +318,6 @@
     <div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">RATED POWER</div><div style="font-family:var(--mono);font-size:1rem;color:var(--accent2);font-weight:700;">1000 W</div><div style="font-size:11px;color:var(--muted);">P_elec design target</div></div>
   </div>
 
-  <!-- Power table -->
   <div class="power-table-wrap" style="margin-top:20px;">
     <div style="font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
       <span style="display:block;width:16px;height:1px;background:var(--accent);"></span>Power Output Table — 0 to 5.5 m/s
@@ -345,7 +333,6 @@
   </div>
 </section>
 
-<!-- TURBINE EDITOR -->
 <section id="editor">
   <div class="section-label">Customize</div>
   <h2>Turbine Visual Editor</h2>
@@ -355,7 +342,6 @@
     <div class="card-title">Rotor Geometry</div>
     <div class="editor-grid">
 
-      <!-- Darrieus settings -->
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;">
         <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:10px;">DARRIEUS ROTOR</div>
         <div class="editor-row">
@@ -366,10 +352,10 @@
           </div>
         </div>
         <div class="editor-row">
-          <span class="editor-lbl">Rotor radius</span>
+          <span class="editor-lbl">Rotor diameter (m)</span>
           <div style="display:flex;align-items:center;gap:8px;">
-            <input type="range" id="darRadius" min="0.28" max="0.48" step="0.01" value="0.41" style="width:80px;" oninput="updateEditor()">
-            <span class="editor-val" id="darRadiusVal">0.41</span>
+            <input type="range" id="darDiameter" min="2.0" max="8.0" step="0.1" value="5.7" style="width:80px;" oninput="updateEditor()">
+            <span class="editor-val" id="darDiameterVal">5.70</span>
           </div>
         </div>
         <div class="editor-row">
@@ -386,6 +372,14 @@
             <span class="editor-val" id="darThickVal">0.032</span>
           </div>
         </div>
+        <div class="editor-row">
+          <span class="editor-lbl">Blade height (m)</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="darHeight" min="2.0" max="12.0" step="0.1" value="7.65" style="width:80px;" oninput="updateEditor()">
+            <span class="editor-val" id="darHeightVal">7.65</span>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;line-height:1.5;">Size updates live in physics panel →</div>
         <div style="margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:6px;">BLADE COLORS</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
@@ -399,7 +393,6 @@
         </div>
       </div>
 
-      <!-- Savonius settings -->
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;">
         <div style="font-family:var(--mono);font-size:10px;color:var(--accent3);letter-spacing:.1em;margin-bottom:10px;">SAVONIUS ROTOR</div>
         <div class="editor-row">
@@ -447,17 +440,19 @@
         </div>
       </div>
 
-      <!-- Reset + Live Physics Readout -->
       <div style="display:flex;flex-direction:column;gap:8px;">
         <button onclick="resetEditor()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 16px;border-radius:8px;cursor:pointer;">↺ Reset to Default</button>
 
-        <!-- Live physics panel -->
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.9rem;">
           <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:8px;">LIVE PHYSICS OUTPUT</div>
           <div style="display:flex;flex-direction:column;gap:5px;">
             <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
               <span style="color:var(--muted);">R_D (real)</span>
               <span style="color:var(--accent);"><span id="editorRD">2.85</span> m</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">D_D (real)</span>
+              <span style="color:var(--accent);"><span id="editorDD">5.70</span> m</span>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
               <span style="color:var(--muted);">H_D (real)</span>
@@ -479,7 +474,6 @@
           </div>
         </div>
 
-        <!-- Loss breakdown -->
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.9rem;">
           <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:8px;">LOSS CHAIN APPLIED</div>
           <div style="display:flex;flex-direction:column;gap:4px;font-size:10px;font-family:var(--mono);">
@@ -498,7 +492,6 @@
   </div>
 </section>
 
-<!-- DESIGN SPECS -->
 <section id="specs">
   <div class="section-label">Engineering</div>
   <h2>Turbine Design Parameters</h2>
@@ -507,7 +500,7 @@
       <table class="spec-table"><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
       <tr><td>Radius (R_D)</td><td id="spec_RD">2.85 m</td><td>From P_rated, Cp=0.38</td></tr>
       <tr><td>Diameter (D_D)</td><td id="spec_DD">5.70 m</td><td>D = 2R</td></tr>
-      <tr><td>Blade height (H_D)</td><td id="spec_HD">7.65 m</td><td>H/D = 1.35</td></tr>
+      <tr><td>Blade height (H_D)</td><td id="spec_HD">7.65 m</td><td>H/D = <span id="spec_darHRatio">1.35</span></td></tr>
       <tr><td>Swept area (A_D)</td><td id="spec_AD">43.6 m²</td><td>A = H × D</td></tr>
       <tr><td>No. of blades</td><td id="spec_darBlades">3</td><td>Standard H-blade</td></tr>
       <tr><td>Chord (c_D)</td><td id="spec_darChord">0.24 m</td><td>σ = 0.253</td></tr>
@@ -532,7 +525,6 @@
   </div>
 </section>
 
-<!-- WIND DATA -->
 <section id="winddata">
   <div class="section-label">Site Assessment</div>
   <h2>Wind Resource — Norzagaray, Bulacan</h2>
@@ -547,7 +539,6 @@
   </div>
 </section>
 
-<!-- REFERENCES -->
 <section id="references">
   <div class="section-label">Bibliography</div>
   <h2>References</h2>
@@ -579,57 +570,61 @@ const rho=1.225;
 
 /* ── TURBINE EDITOR STATE ── */
 let T = {
-  darBlades:3, darR:0.41, darChord:0.135, darThick:0.032,
+  darBlades:3, darDiameter:5.7, darR:0.41, darChord:0.135, darThick:0.032, darHeight:7.65,
   darC1:'#5078c8', darC2:'#beb932',
   savBuckets:3, savRs:0.16, savArc:0.85, savStroke:0.038,
   savC1:'#b4a03c', savC2:'#648cc8', savC3:'#a0b450'
 };
 
 function updateEditor() {
-  T.darBlades  = parseInt(document.getElementById('darBladeCount').value);
-  T.darR       = parseFloat(document.getElementById('darRadius').value);
-  T.darChord   = parseFloat(document.getElementById('darChord').value);
-  T.darThick   = parseFloat(document.getElementById('darThick').value);
-  T.darC1      = document.getElementById('darColor1').value;
-  T.darC2      = document.getElementById('darColor2').value;
-  T.savBuckets = parseInt(document.getElementById('savBucketCount').value);
-  T.savRs      = parseFloat(document.getElementById('savRadius').value);
-  T.savArc     = parseFloat(document.getElementById('savArc').value);
-  T.savStroke  = parseFloat(document.getElementById('savStroke').value);
-  T.savC1      = document.getElementById('savColor1').value;
-  T.savC2      = document.getElementById('savColor2').value;
-  T.savC3      = document.getElementById('savColor3').value;
+  T.darBlades   = parseInt(document.getElementById('darBladeCount').value);
+  T.darDiameter = parseFloat(document.getElementById('darDiameter').value);
+  T.darChord    = parseFloat(document.getElementById('darChord').value);
+  T.darThick    = parseFloat(document.getElementById('darThick').value);
+  T.darHeight   = parseFloat(document.getElementById('darHeight').value);
+  T.darC1       = document.getElementById('darColor1').value;
+  T.darC2       = document.getElementById('darColor2').value;
+  T.savBuckets  = parseInt(document.getElementById('savBucketCount').value);
+  T.savRs       = parseFloat(document.getElementById('savRadius').value);
+  T.savArc      = parseFloat(document.getElementById('savArc').value);
+  T.savStroke   = parseFloat(document.getElementById('savStroke').value);
+  T.savC1       = document.getElementById('savColor1').value;
+  T.savC2       = document.getElementById('savColor2').value;
+  T.savC3       = document.getElementById('savColor3').value;
+
+  // Sync visual canvas scale
+  T.darR = (T.darDiameter / 2) / DAR_SCALE;
+
   document.getElementById('darBladeCountVal').textContent = T.darBlades;
-  document.getElementById('darRadiusVal').textContent     = T.darR.toFixed(2);
+  document.getElementById('darDiameterVal').textContent   = T.darDiameter.toFixed(2);
   document.getElementById('darChordVal').textContent      = T.darChord.toFixed(2);
   document.getElementById('darThickVal').textContent      = T.darThick.toFixed(3);
+  document.getElementById('darHeightVal').textContent     = T.darHeight.toFixed(2);
   document.getElementById('savBucketCountVal').textContent= T.savBuckets;
   document.getElementById('savRadiusVal').textContent     = T.savRs.toFixed(2);
   document.getElementById('savArcVal').textContent        = T.savArc.toFixed(2);
   document.getElementById('savStrokeVal').textContent     = T.savStroke.toFixed(3);
 
-  // Update live physics readout so adviser can see swept area + power changes
-  const { A_D, A_S, R_D, H_D } = getSweptAreas();
+  // Update live physics readout
+  const { A_D, A_S, R_D, H_D, D_D, H_S } = getSweptAreas();
   const { pTotal } = getPowerComponents(wind > 0 ? wind : 4.75);
   document.getElementById('editorAD').textContent  = A_D.toFixed(2);
   document.getElementById('editorAS').textContent  = A_S.toFixed(2);
   document.getElementById('editorRD').textContent  = R_D.toFixed(2);
+  document.getElementById('editorDD').textContent  = D_D.toFixed(2);
   document.getElementById('editorHD').textContent  = H_D.toFixed(2);
   document.getElementById('editorPow').textContent = pTotal;
 
   // ── SYNC ENGINEERING TAB (Design Specs section) ──
   const R_S = T.savRs * SAV_SCALE;
-  const D_D = 2 * R_D;
   const D_S = 2 * R_S;
-  const H_S = 0.8 * H_D;
-  const solidity = (T.darBlades * (T.darChord * DAR_SCALE * 0.178)) / (Math.PI * R_D); // approx chord real = darChord*cw, use relative
-  // Real chord in meters: T.darChord is a canvas fraction; chord_real = T.darChord * DAR_SCALE (approx based on scale)
   const chord_real = T.darChord * DAR_SCALE;
   const sigma = (T.darBlades * chord_real) / (Math.PI * R_D);
 
   document.getElementById('spec_RD').textContent       = R_D.toFixed(2) + ' m';
   document.getElementById('spec_DD').textContent       = D_D.toFixed(2) + ' m';
   document.getElementById('spec_HD').textContent       = H_D.toFixed(2) + ' m';
+  document.getElementById('spec_darHRatio').textContent = (H_D / D_D).toFixed(2);
   document.getElementById('spec_AD').textContent       = A_D.toFixed(1) + ' m²';
   document.getElementById('spec_darBlades').textContent= T.darBlades;
   document.getElementById('spec_darChord').textContent = chord_real.toFixed(2) + ' m';
@@ -645,9 +640,10 @@ function updateEditor() {
 }
 
 function resetEditor() {
-  T={darBlades:3,darR:0.41,darChord:0.135,darThick:0.032,darC1:'#5078c8',darC2:'#beb932',savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038,savC1:'#b4a03c',savC2:'#648cc8',savC3:'#a0b450'};
-  document.getElementById('darBladeCount').value=3; document.getElementById('darRadius').value=0.41;
+  T={darBlades:3,darDiameter:5.7,darChord:0.135,darThick:0.032,darHeight:7.65,darC1:'#5078c8',darC2:'#beb932',savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038,savC1:'#b4a03c',savC2:'#648cc8',savC3:'#a0b450'};
+  document.getElementById('darBladeCount').value=3; document.getElementById('darDiameter').value=5.7;
   document.getElementById('darChord').value=0.135;  document.getElementById('darThick').value=0.032;
+  document.getElementById('darHeight').value=7.65;
   document.getElementById('darColor1').value='#5078c8'; document.getElementById('darColor2').value='#beb932';
   document.getElementById('savBucketCount').value=3; document.getElementById('savRadius').value=0.16;
   document.getElementById('savArc').value=0.85;      document.getElementById('savStroke').value=0.038;
@@ -669,30 +665,21 @@ const ETA_CHG  = 0.97;   // battery charging loss (400Ah): 3%
 const ETA_TOTAL = ETA_MECH * ETA_GEN * ETA_CONV * ETA_CHG; // = 0.7049
 
 /* ── PHYSICS — uses T object so editor changes affect power ── */
-// Scale factors: editor uses canvas fractions, real geometry uses meters
-// Darrieus: default T.darR=0.41 → real R_D=2.85m → scale=6.951 m/unit
-// Savonius: default T.savRs=0.16 → real R_S=1.00m → scale=6.25 m/unit
-const DAR_SCALE = 2.85 / 0.41;  // 6.951 m per editor unit
-const SAV_SCALE = 1.00 / 0.16;  // 6.250 m per editor unit
+const DAR_SCALE = 2.85 / 0.41;  // 6.951 m per visual unit
+const SAV_SCALE = 1.00 / 0.16;  // 6.250 m per visual unit
 
 function getSweptAreas(){
-  // Darrieus: real R_D = T.darR * DAR_SCALE
-  // H_D/D_D ratio = 1.35 (maintained), so H_D = 1.35 * 2*R_D
-  // A_D = H_D * D_D
-  const R_D = T.darR * DAR_SCALE;
-  const D_D = 2 * R_D;
-  const H_D = 1.35 * D_D;
+  const D_D = T.darDiameter;
+  const R_D = D_D / 2;
+  const H_D = T.darHeight;
   const A_D = H_D * D_D;
 
-  // Savonius: real R_S = T.savRs * SAV_SCALE
-  // H_S = 0.8 * H_D (fixed ratio from paper)
-  // A_S = H_S * D_S
   const R_S = T.savRs * SAV_SCALE;
   const D_S = 2 * R_S;
   const H_S = 0.8 * H_D;
   const A_S = H_S * D_S;
 
-  return { A_D, A_S, R_D, H_D };
+  return { A_D, A_S, R_D, H_D, D_D, H_S };
 }
 
 function getPowerComponents(w){
