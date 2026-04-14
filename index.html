@@ -322,7 +322,7 @@
     <div style="font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
       <span style="display:block;width:16px;height:1px;background:var(--accent);"></span>Power Output Table — 0 to 5.5 m/s
     </div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">ρ = 1.225 kg/m³ · Cp_S = 0.20 · Cp_D = 0.38 (ramps from 3.0 m/s) · <span style="color:var(--accent4);">Losses applied: η_mech=(Dynamic based on Geometry) · η_gen=85% · η_conv=95% · η_chg=97%</span> · Highlighted orange row = design wind speed. Table updates when turbine geometry is edited.</p>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">ρ = 1.225 kg/m³ · Max Cp_S = <span id="ui_cp_s" style="color:var(--accent3);font-weight:bold;">0.200</span> · Max Cp_D = <span id="ui_cp_d" style="color:var(--accent);font-weight:bold;">0.380</span> (ramps from 3.0 m/s) · <span style="color:var(--accent4);">Losses applied: η_mech=(Dynamic based on Geometry) · η_gen=85% · η_conv=95% · η_chg=97%</span> · Highlighted orange row = design wind speed. Table updates when turbine geometry is edited.</p>
     <table><thead><tr>
       <th>Wind (m/s)</th><th>RPM</th>
       <th style="color:#f6ad55;">Savonius P (W)</th>
@@ -506,7 +506,7 @@
       <tr><td>Chord (c_D)</td><td id="spec_darChord">0.24 m</td><td>σ = 0.253</td></tr>
       <tr><td>Solidity (σ_D)</td><td id="spec_darSolidity">0.253</td><td>Optimal 0.20–0.30</td></tr>
       <tr><td>Design TSR</td><td>4.0</td><td>NACA 0018 @ Re≈80k</td></tr>
-      <tr><td>Cp_D</td><td>0.38</td><td>Realistic at this Re</td></tr>
+      <tr><td>Max Cp_D</td><td id="spec_cpDar" style="color:var(--accent);font-weight:bold;">0.380</td><td>Dynamic via Solidity</td></tr>
       <tr><td>Airfoil</td><td>NACA 0018</td><td>Better Cl at low Re</td></tr>
       </table>
     </div>
@@ -518,7 +518,7 @@
       <tr><td>No. of buckets</td><td id="spec_savBuckets">3</td><td>3-bucket helical</td></tr>
       <tr><td>Overlap ratio</td><td>0.17</td><td>Optimal 0.15–0.20</td></tr>
       <tr><td>Opt. TSR (λ_S)</td><td id="spec_savArc">0.85</td><td>Optimal drag rotor</td></tr>
-      <tr><td>Cp_S</td><td>0.20</td><td>At optimal TSR</td></tr>
+      <tr><td>Max Cp_S</td><td id="spec_cpSav" style="color:var(--accent3);font-weight:bold;">0.200</td><td>Dynamic via Arc size</td></tr>
       <tr><td>Helical twist</td><td>180°</td><td>Full half-turn over H_S</td></tr>
       </table>
     </div>
@@ -576,24 +576,37 @@ let T = {
   savC1:'#b4a03c', savC2:'#648cc8', savC3:'#a0b450'
 };
 
-/* ── DYNAMIC LOSS COMPUTATION ── */
+/* ── DYNAMIC LOSS & CP COMPUTATION ── */
 const ETA_GEN  = 0.85;   // generator/generation loss: 15%
 const ETA_CONV = 0.95;   // conversion/transmission loss: 5%
 const ETA_CHG  = 0.97;   // battery charging loss (400Ah): 3%
+const DAR_SCALE = 2.85 / 0.41;  // 6.951 m per visual unit
+const SAV_SCALE = 1.00 / 0.16;  // 6.250 m per visual unit
 
-function getDynamicLosses() {
+function getDynamicCp() {
   const D_D = T.darDiameter;
   const R_D = D_D / 2;
-  const chord_real = T.darChord * (2.85 / 0.41); // DAR_SCALE
+  const chord_real = T.darChord * DAR_SCALE;
   const sigma = (T.darBlades * chord_real) / (Math.PI * R_D);
 
-  // Optimal solidity is ~0.253. Deviation lowers the efficiency.
+  // Darrieus: Optimal solidity is ~0.253. Deviation penalizes Max Cp.
+  const darDev = Math.abs(sigma - 0.253);
+  let cpDarMax = 0.38 - (darDev * 0.7); 
+  cpDarMax = Math.max(0.15, Math.min(0.42, cpDarMax)); // Clamp between 0.15 and 0.42
+
+  // Savonius: Optimal bucket arc is ~0.85. Deviation penalizes Max Cp.
+  const savDev = Math.abs(T.savArc - 0.85);
+  let cpSavMax = 0.20 - (savDev * 0.2);
+  cpSavMax = Math.max(0.08, Math.min(0.25, cpSavMax)); // Clamp between 0.08 and 0.25
+
+  return { cpDarMax, cpSavMax, sigma };
+}
+
+function getDynamicLosses(sigma) {
   const deviation = Math.abs(sigma - 0.253);
-  
   // Base efficiency is 90%. Penalty is applied based on deviation.
   let eta_mech = 0.90 - (deviation * 0.8);
   eta_mech = Math.max(0.40, Math.min(0.95, eta_mech)); // Limits between 40% to 95%
-
   const eta_total = eta_mech * ETA_GEN * ETA_CONV * ETA_CHG;
   return { eta_mech, eta_total };
 }
@@ -627,10 +640,19 @@ function updateEditor() {
   document.getElementById('savArcVal').textContent        = T.savArc.toFixed(2);
   document.getElementById('savStrokeVal').textContent     = T.savStroke.toFixed(3);
 
+  // Fetch dynamic Cp and Losses
+  const { cpDarMax, cpSavMax, sigma } = getDynamicCp();
+  const { eta_mech, eta_total } = getDynamicLosses(sigma);
+
   // Update dynamic efficiency in the UI panel
-  const { eta_mech, eta_total } = getDynamicLosses();
   document.getElementById('ui_eta_mech').textContent = '−' + ((1 - eta_mech) * 100).toFixed(1) + '%';
   document.getElementById('ui_eta_overall').textContent = (eta_total * 100).toFixed(2) + '%';
+  
+  // Update Cp text and tables
+  document.getElementById('ui_cp_s').textContent = cpSavMax.toFixed(3);
+  document.getElementById('ui_cp_d').textContent = cpDarMax.toFixed(3);
+  document.getElementById('spec_cpSav').textContent = cpSavMax.toFixed(3);
+  document.getElementById('spec_cpDar').textContent = cpDarMax.toFixed(3);
 
   // Update live physics readout
   const { A_D, A_S, R_D, H_D, D_D, H_S } = getSweptAreas();
@@ -646,7 +668,6 @@ function updateEditor() {
   const R_S = T.savRs * SAV_SCALE;
   const D_S = 2 * R_S;
   const chord_real = T.darChord * DAR_SCALE;
-  const sigma = (T.darBlades * chord_real) / (Math.PI * R_D);
 
   document.getElementById('spec_RD').textContent       = R_D.toFixed(2) + ' m';
   document.getElementById('spec_DD').textContent       = D_D.toFixed(2) + ' m';
@@ -684,9 +705,6 @@ const windMonthData=[{m:'JAN',v:3.57},{m:'FEB',v:3.46},{m:'MAR',v:3.08},{m:'APR'
 const wmEl=document.getElementById('windMonths');
 windMonthData.forEach(d=>{const col=d.v>=3.5?'#48bb78':d.v>=2.5?'#63b3ed':'#718096';wmEl.innerHTML+=`<div class="wind-month"><span class="wind-month-name">${d.m}</span><span class="wind-month-val" style="color:${col}">${d.v}</span></div>`;});
 
-/* ── PHYSICS — uses T object so editor changes affect power ── */
-const DAR_SCALE = 2.85 / 0.41;  // 6.951 m per visual unit
-const SAV_SCALE = 1.00 / 0.16;  // 6.250 m per visual unit
 
 function getSweptAreas(){
   const D_D = T.darDiameter;
@@ -705,12 +723,16 @@ function getSweptAreas(){
 function getPowerComponents(w){
   if(w < 1.5) return { pSav:0, pDar:0, pTotal:0, pNet:0 };
   const { A_D, A_S } = getSweptAreas();
-  const { eta_total } = getDynamicLosses(); // Use dynamic losses here!
+  const { cpDarMax, cpSavMax, sigma } = getDynamicCp();
+  const { eta_total } = getDynamicLosses(sigma); 
 
   // Aerodynamic power (before losses)
-  const pSav_aero = 0.5 * rho * A_S * Math.pow(w, 3) * 0.20;
-  const cpDar = w < 3.0 ? 0 : Math.min(0.38, 0.038 * Math.pow(w - 3.0, 2));
+  const pSav_aero = 0.5 * rho * A_S * Math.pow(w, 3) * cpSavMax;
+  
+  // Darrieus Cp ramps up slowly from 3.0 m/s up to cpDarMax
+  const cpDar = w < 3.0 ? 0 : Math.min(cpDarMax, (cpDarMax / 10) * Math.pow(w - 3.0, 2));
   const pDar_aero = 0.5 * rho * A_D * Math.pow(w, 3) * cpDar;
+  
   const pTotal_aero = pSav_aero + pDar_aero;
 
   // Apply full loss chain to get power actually delivered to battery
