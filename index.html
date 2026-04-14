@@ -322,7 +322,7 @@
     <div style="font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
       <span style="display:block;width:16px;height:1px;background:var(--accent);"></span>Power Output Table — 0 to 5.5 m/s
     </div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">ρ = 1.225 kg/m³ · Cp_S = 0.20 · Cp_D = 0.38 (ramps from 3.0 m/s) · <span style="color:var(--accent4);">Losses applied: η_mech=90% · η_gen=85% · η_conv=95% · η_chg=97% → overall η=70.49%</span> · Highlighted orange row = design wind speed. Table updates when turbine geometry is edited.</p>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">ρ = 1.225 kg/m³ · Cp_S = 0.20 · Cp_D = 0.38 (ramps from 3.0 m/s) · <span style="color:var(--accent4);">Losses applied: η_mech=(Dynamic based on Geometry) · η_gen=85% · η_conv=95% · η_chg=97%</span> · Highlighted orange row = design wind speed. Table updates when turbine geometry is edited.</p>
     <table><thead><tr>
       <th>Wind (m/s)</th><th>RPM</th>
       <th style="color:#f6ad55;">Savonius P (W)</th>
@@ -477,12 +477,12 @@
         <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.9rem;">
           <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:8px;">LOSS CHAIN APPLIED</div>
           <div style="display:flex;flex-direction:column;gap:4px;font-size:10px;font-family:var(--mono);">
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Mechanical</span><span style="color:var(--accent4);">−10%</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Mechanical</span><span id="ui_eta_mech" style="color:var(--accent4);">−10.0%</span></div>
             <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Generation</span><span style="color:var(--accent4);">−15%</span></div>
             <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Conv./Trans.</span><span style="color:var(--accent4);">−5%</span></div>
             <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Charging (400Ah)</span><span style="color:var(--accent4);">−3%</span></div>
             <div style="border-top:1px solid var(--border);margin:3px 0;"></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--text);font-weight:700;">Overall η</span><span style="color:var(--accent2);font-weight:700;">70.49%</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--text);font-weight:700;">Overall η</span><span id="ui_eta_overall" style="color:var(--accent2);font-weight:700;">70.49%</span></div>
           </div>
         </div>
 
@@ -576,6 +576,28 @@ let T = {
   savC1:'#b4a03c', savC2:'#648cc8', savC3:'#a0b450'
 };
 
+/* ── DYNAMIC LOSS COMPUTATION ── */
+const ETA_GEN  = 0.85;   // generator/generation loss: 15%
+const ETA_CONV = 0.95;   // conversion/transmission loss: 5%
+const ETA_CHG  = 0.97;   // battery charging loss (400Ah): 3%
+
+function getDynamicLosses() {
+  const D_D = T.darDiameter;
+  const R_D = D_D / 2;
+  const chord_real = T.darChord * (2.85 / 0.41); // DAR_SCALE
+  const sigma = (T.darBlades * chord_real) / (Math.PI * R_D);
+
+  // Optimal solidity is ~0.253. Deviation lowers the efficiency.
+  const deviation = Math.abs(sigma - 0.253);
+  
+  // Base efficiency is 90%. Penalty is applied based on deviation.
+  let eta_mech = 0.90 - (deviation * 0.8);
+  eta_mech = Math.max(0.40, Math.min(0.95, eta_mech)); // Limits between 40% to 95%
+
+  const eta_total = eta_mech * ETA_GEN * ETA_CONV * ETA_CHG;
+  return { eta_mech, eta_total };
+}
+
 function updateEditor() {
   T.darBlades   = parseInt(document.getElementById('darBladeCount').value);
   T.darDiameter = parseFloat(document.getElementById('darDiameter').value);
@@ -604,6 +626,11 @@ function updateEditor() {
   document.getElementById('savRadiusVal').textContent     = T.savRs.toFixed(2);
   document.getElementById('savArcVal').textContent        = T.savArc.toFixed(2);
   document.getElementById('savStrokeVal').textContent     = T.savStroke.toFixed(3);
+
+  // Update dynamic efficiency in the UI panel
+  const { eta_mech, eta_total } = getDynamicLosses();
+  document.getElementById('ui_eta_mech').textContent = '−' + ((1 - eta_mech) * 100).toFixed(1) + '%';
+  document.getElementById('ui_eta_overall').textContent = (eta_total * 100).toFixed(2) + '%';
 
   // Update live physics readout
   const { A_D, A_S, R_D, H_D, D_D, H_S } = getSweptAreas();
@@ -657,13 +684,6 @@ const windMonthData=[{m:'JAN',v:3.57},{m:'FEB',v:3.46},{m:'MAR',v:3.08},{m:'APR'
 const wmEl=document.getElementById('windMonths');
 windMonthData.forEach(d=>{const col=d.v>=3.5?'#48bb78':d.v>=2.5?'#63b3ed':'#718096';wmEl.innerHTML+=`<div class="wind-month"><span class="wind-month-name">${d.m}</span><span class="wind-month-val" style="color:${col}">${d.v}</span></div>`;});
 
-/* ── LOSS CONSTANTS (from verified study) ── */
-const ETA_MECH = 0.90;   // mechanical loss: 10%
-const ETA_GEN  = 0.85;   // generator/generation loss: 15%
-const ETA_CONV = 0.95;   // conversion/transmission loss: 5%
-const ETA_CHG  = 0.97;   // battery charging loss (400Ah): 3%
-const ETA_TOTAL = ETA_MECH * ETA_GEN * ETA_CONV * ETA_CHG; // = 0.7049
-
 /* ── PHYSICS — uses T object so editor changes affect power ── */
 const DAR_SCALE = 2.85 / 0.41;  // 6.951 m per visual unit
 const SAV_SCALE = 1.00 / 0.16;  // 6.250 m per visual unit
@@ -685,6 +705,7 @@ function getSweptAreas(){
 function getPowerComponents(w){
   if(w < 1.5) return { pSav:0, pDar:0, pTotal:0, pNet:0 };
   const { A_D, A_S } = getSweptAreas();
+  const { eta_total } = getDynamicLosses(); // Use dynamic losses here!
 
   // Aerodynamic power (before losses)
   const pSav_aero = 0.5 * rho * A_S * Math.pow(w, 3) * 0.20;
@@ -693,12 +714,12 @@ function getPowerComponents(w){
   const pTotal_aero = pSav_aero + pDar_aero;
 
   // Apply full loss chain to get power actually delivered to battery
-  const pNet = pTotal_aero * ETA_TOTAL;
+  const pNet = pTotal_aero * eta_total;
 
   return {
-    pSav:  Math.round(pSav_aero * ETA_TOTAL),
-    pDar:  Math.round(pDar_aero * ETA_TOTAL),
-    pTotal:Math.round(pTotal_aero * ETA_TOTAL),
+    pSav:  Math.round(pSav_aero * eta_total),
+    pDar:  Math.round(pDar_aero * eta_total),
+    pTotal:Math.round(pTotal_aero * eta_total),
     pNet:  Math.round(pNet)
   };
 }
