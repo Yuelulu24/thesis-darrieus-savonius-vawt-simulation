@@ -870,13 +870,18 @@ function drawTurbine(ctx,cw,ch,ang){
   const R=cw*T.darR, Rs=cw*T.savRs;
   const strutInner=Rs*1.1;
   // swept area ring
-  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(99,179,237,0.07)';ctx.lineWidth=1;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
+  ctx.strokeStyle=isDayMode?'rgba(0,0,0,0.1)':'rgba(99,179,237,0.07)';
+  ctx.lineWidth=1;ctx.stroke();
+  
   // radial struts
   for(let i=0;i<T.darBlades;i++){
     const a=ang+i*(Math.PI*2/T.darBlades);
     ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*strutInner,cy+Math.sin(a)*strutInner);ctx.lineTo(cx+Math.cos(a)*R*0.72,cy+Math.sin(a)*R*0.72);
-    ctx.strokeStyle='rgba(160,160,180,0.45)';ctx.lineWidth=1.5;ctx.lineCap='round';ctx.stroke();
+    ctx.strokeStyle=isDayMode?'rgba(50,60,80,0.5)':'rgba(160,160,180,0.45)';
+    ctx.lineWidth=1.5;ctx.lineCap='round';ctx.stroke();
   }
+  
   // blade struts
   for(let i=0;i<T.darBlades;i++){
     const a=ang+i*(Math.PI*2/T.darBlades);
@@ -884,9 +889,12 @@ function drawTurbine(ctx,cw,ch,ang){
     [-1,1].forEach(side=>{
       const sx=bx+Math.cos(perp)*ss*side,sy=by+Math.sin(perp)*ss*side;
       const mx=cx+Math.cos(a)*R*0.70+Math.cos(perp)*ss*side*0.4,my=cy+Math.sin(a)*R*0.70+Math.sin(perp)*ss*side*0.4;
-      ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(sx,sy);ctx.strokeStyle='rgba(140,160,200,0.5)';ctx.lineWidth=1.2;ctx.stroke();
+      ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(sx,sy);
+      ctx.strokeStyle=isDayMode?'rgba(50,60,80,0.6)':'rgba(140,160,200,0.5)';
+      ctx.lineWidth=1.2;ctx.stroke();
     });
   }
+  
   // Savonius buckets
   const savColors=[T.savC1,T.savC2,T.savC3,T.savC1];
   for(let i=0;i<T.savBuckets;i++){
@@ -910,8 +918,16 @@ function drawTurbine(ctx,cw,ch,ang){
     ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=cw*0.012;ctx.stroke();
     ctx.restore();
   }
-  ctx.beginPath();ctx.arc(cx,cy,Rs*0.42,0,Math.PI*2);ctx.strokeStyle='rgba(160,160,200,0.5)';ctx.lineWidth=1.5;ctx.stroke();
-  ctx.beginPath();ctx.arc(cx,cy,Rs*1.05,0,Math.PI*2);ctx.strokeStyle='rgba(120,130,160,0.2)';ctx.lineWidth=1;ctx.stroke();
+  
+  // inner rings
+  ctx.beginPath();ctx.arc(cx,cy,Rs*0.42,0,Math.PI*2);
+  ctx.strokeStyle=isDayMode?'rgba(50,60,80,0.5)':'rgba(160,160,200,0.5)';
+  ctx.lineWidth=1.5;ctx.stroke();
+  
+  ctx.beginPath();ctx.arc(cx,cy,Rs*1.05,0,Math.PI*2);
+  ctx.strokeStyle=isDayMode?'rgba(0,0,0,0.15)':'rgba(120,130,160,0.2)';
+  ctx.lineWidth=1;ctx.stroke();
+  
   // Darrieus NACA blades
   const bladeColors=[T.darC1+'d0',T.darC2+'d0',T.darC1+'d0',T.darC2+'d0',T.darC1+'d0',T.darC2+'d0'];
   const strokeColors=[T.darC1,T.darC2,T.darC1,T.darC2,T.darC1,T.darC2];
@@ -932,8 +948,12 @@ function drawTurbine(ctx,cw,ch,ang){
     ctx.restore();
   }
   // shaft
-  ctx.beginPath();ctx.arc(cx,cy,cw*0.04,0,Math.PI*2);ctx.fillStyle='#2d3748';ctx.fill();ctx.strokeStyle='#AFA9EC';ctx.lineWidth=1.5;ctx.stroke();
-  ctx.strokeStyle='rgba(175,169,236,0.6)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(cx,cy,cw*0.04,0,Math.PI*2);
+  ctx.fillStyle=isDayMode?'#cbd5e0':'#2d3748';ctx.fill();
+  ctx.strokeStyle=isDayMode?'#4a5568':'#AFA9EC';ctx.lineWidth=1.5;ctx.stroke();
+  
+  ctx.strokeStyle=isDayMode?'rgba(74,85,104,0.6)':'rgba(175,169,236,0.6)';
+  ctx.lineWidth=1;
   ctx.beginPath();ctx.moveTo(cx-cw*0.04,cy);ctx.lineTo(cx+cw*0.04,cy);ctx.stroke();
   ctx.beginPath();ctx.moveTo(cx,cy-cw*0.04);ctx.lineTo(cx,cy+cw*0.04);ctx.stroke();
 }
@@ -945,7 +965,13 @@ function drawMotor(ctx,w,h,on,rpm){
   
   ctx.beginPath();ctx.roundRect(cx-42,cy-32,84,64,8);ctx.fillStyle=bg;ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=on?1.5:0.8;ctx.stroke();
   ctx.beginPath();ctx.moveTo(cx+42,cy);ctx.lineTo(cx+58,cy);ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke();
-  [cy-12,cy,cy+12].forEach(y=>{ctx.beginPath();ctx.moveTo(cx-58,y);ctx.lineTo(cx-42,y);ctx.strokeStyle='rgba(175,169,236,0.6)';ctx.lineWidth=1.5;ctx.stroke();});
+  
+  [cy-12,cy,cy+12].forEach(y=>{
+    ctx.beginPath();ctx.moveTo(cx-58,y);ctx.lineTo(cx-42,y);
+    ctx.strokeStyle=isDayMode?'rgba(61,90,120,0.6)':'rgba(175,169,236,0.6)'; // crosshairs fix
+    ctx.lineWidth=1.5;ctx.stroke();
+  });
+  
   ctx.beginPath();ctx.arc(cx,cy,20,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.stroke();
   if(on){const t=Date.now()/1000;for(let i=0;i<6;i++){const a=t*(rpm/60)*Math.PI*2+i*(Math.PI/3);ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*18,cy+Math.sin(a)*18);ctx.strokeStyle=isDayMode?'rgba(26,145,82,0.5)':'rgba(72,187,120,0.5)';ctx.lineWidth=1.5;ctx.stroke();}}
   
