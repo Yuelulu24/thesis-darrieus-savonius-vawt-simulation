@@ -6,69 +6,86 @@
 <title>Hybrid Darrieus-Savonius VAWT</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
+  /* ── NIGHT MODE (default) ── */
   :root {
-    --bg:#0a0e14;--surface:#111720;--surface2:#1a2233;
-    --border:rgba(99,179,237,0.15);--accent:#63b3ed;--accent2:#48bb78;
-    --accent3:#f6ad55;--accent4:#fc8181;--text:#e2e8f0;--muted:#718096;
+    --bg:#080c12;--surface:#0f1520;--surface2:#16202e;
+    --border:rgba(100,180,255,0.22);
+    --accent:#60c4ff;--accent2:#4de8a0;
+    --accent3:#ffca6e;--accent4:#ff7878;
+    --text:#e8f0fa;--muted:#7a9ab8;
     --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
+    --card-shadow:0 2px 12px rgba(0,0,0,0.5);
+  }
+  /* ── DAY MODE ── */
+  :root.day {
+    --bg:#edf2f8;--surface:#ffffff;--surface2:#dce6f2;
+    --border:rgba(40,100,200,0.22);
+    --accent:#1a6bc4;--accent2:#1a9152;
+    --accent3:#b86b00;--accent4:#c43030;
+    --text:#0f1d30;--muted:#3d5a78;
+    --card-shadow:0 2px 10px rgba(40,80,140,0.14);
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   html{scroll-behavior:smooth;}
-  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.6;overflow-x:hidden;}
-  header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:56px;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:17px;line-height:1.75;overflow-x:hidden;transition:background .3s,color .3s;}
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:60px;box-shadow:var(--card-shadow);transition:background .3s,border-color .3s;}
   .header-left{display:flex;align-items:center;gap:12px;}
   .logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 2s ease-in-out infinite;}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(0.85)}}
-  .logo-text{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:0.05em;}
-  nav{display:flex;}
-  nav a{font-size:12px;color:var(--muted);text-decoration:none;padding:0 14px;height:56px;display:flex;align-items:center;font-family:var(--mono);letter-spacing:0.04em;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+  .logo-text{font-family:var(--mono);font-size:15px;color:var(--accent);letter-spacing:0.05em;transition:color .3s;}
+  nav{display:flex;align-items:center;gap:4px;}
+  nav a{font-size:14px;color:var(--muted);text-decoration:none;padding:0 14px;height:60px;display:flex;align-items:center;font-family:var(--mono);letter-spacing:0.04em;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
   nav a:hover{color:var(--text);border-bottom-color:var(--accent);}
+  /* ── THEME TOGGLE ── */
+  .theme-btn{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 13px;cursor:pointer;font-family:var(--mono);font-size:13px;color:var(--muted);transition:all .2s;margin-left:8px;white-space:nowrap;}
+  .theme-btn:hover{color:var(--text);border-color:var(--accent);}
+  .theme-btn .theme-icon{font-size:15px;line-height:1;}
   .hero{padding:4rem 2rem 2rem;max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;}
-  .hero-label{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+  .hero-label{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
   .hero-label::before{content:'';display:block;width:24px;height:1px;background:var(--accent);}
-  h1{font-size:2rem;font-weight:600;line-height:1.25;color:var(--text);margin-bottom:1rem;}
+  h1{font-size:2.3rem;font-weight:600;line-height:1.25;color:var(--text);margin-bottom:1rem;}
   h1 span{color:var(--accent);}
-  .hero-meta{display:flex;flex-direction:column;gap:4px;margin-top:1.5rem;}
-  .hero-meta p{font-size:12px;color:var(--muted);font-family:var(--mono);}
+  .hero-meta{display:flex;flex-direction:column;gap:6px;margin-top:1.5rem;}
+  .hero-meta p{font-size:14px;color:var(--muted);font-family:var(--mono);}
   .hero-meta strong{color:var(--text);}
-  .wind-banner{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1rem 2rem;}
+  .wind-banner{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1rem 2rem;transition:background .3s;}
   .wind-banner-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;}
-  .wind-banner-label{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.08em;white-space:nowrap;}
+  .wind-banner-label{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:0.08em;white-space:nowrap;}
   .wind-months{display:flex;gap:8px;flex-wrap:wrap;}
-  .wind-month{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;min-width:54px;}
-  .wind-month-name{font-size:10px;color:var(--muted);font-family:var(--mono);}
-  .wind-month-val{font-size:13px;font-weight:600;font-family:var(--mono);}
+  .wind-month{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;min-width:56px;transition:background .3s;}
+  .wind-month-name{font-size:11px;color:var(--muted);font-family:var(--mono);}
+  .wind-month-val{font-size:14px;font-weight:600;font-family:var(--mono);}
   section{padding:3rem 2rem;max-width:1000px;margin:0 auto;}
-  .section-label{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;}
+  .section-label{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;}
   .section-label::before{content:'';display:block;width:16px;height:1px;background:var(--accent);}
-  h2{font-size:1.4rem;font-weight:600;margin-bottom:1.5rem;}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;}
-  .card-title{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:0.08em;margin-bottom:0.75rem;text-transform:uppercase;}
+  h2{font-size:1.7rem;font-weight:600;margin-bottom:1.5rem;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;box-shadow:var(--card-shadow);transition:background .3s,border-color .3s;}
+  .card-title{font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:0.08em;margin-bottom:0.75rem;text-transform:uppercase;}
 
   /* ── SIMULATION ── */
   .sim-outer{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start;}
   .turbine-panel{display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;}
   .metrics-3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;}
-  .metric{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.65rem .5rem;text-align:center;}
-  .metric-lbl{font-size:10px;color:var(--muted);font-family:var(--mono);letter-spacing:.05em;margin-bottom:3px;}
-  .metric-val{font-size:1.1rem;font-weight:700;font-family:var(--mono);}
-  .metric-unit{font-size:10px;color:var(--muted);}
+  .metric{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.75rem .5rem;text-align:center;transition:background .3s;}
+  .metric-lbl{font-size:12px;color:var(--muted);font-family:var(--mono);letter-spacing:.05em;margin-bottom:3px;}
+  .metric-val{font-size:1.2rem;font-weight:700;font-family:var(--mono);}
+  .metric-unit{font-size:12px;color:var(--muted);}
   .right-panel{display:flex;flex-direction:column;gap:12px;}
   .motor-controls-row{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:start;}
   canvas{display:block;}
   .controls{display:flex;flex-direction:column;gap:10px;}
-  .ctrl-group{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.9rem;}
-  .ctrl-label{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:7px;display:flex;justify-content:space-between;}
+  .ctrl-group{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.9rem;transition:background .3s;}
+  .ctrl-label{font-size:13px;color:var(--muted);font-family:var(--mono);margin-bottom:7px;display:flex;justify-content:space-between;}
   .ctrl-val{color:var(--accent);font-weight:700;}
   input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:var(--border);border-radius:2px;outline:none;}
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;}
   .toggle-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-  .toggle-label{font-size:12px;color:var(--text);}
+  .toggle-label{font-size:14px;color:var(--text);}
   .toggle{position:relative;width:36px;height:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:background .2s,border-color .2s;flex-shrink:0;}
   .toggle.on{background:var(--accent2);border-color:var(--accent2);}
   .toggle-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s;}
   .toggle.on .toggle-thumb{transform:translateX(16px);}
-  .badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-family:var(--mono);padding:3px 10px;border-radius:20px;border:1px solid;letter-spacing:0.05em;}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-family:var(--mono);padding:4px 11px;border-radius:20px;border:1px solid;letter-spacing:0.05em;}
   .badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;}
   .badge-idle{color:var(--muted);border-color:var(--muted);opacity:.6;}
   .badge-sav{color:var(--accent2);border-color:var(--accent2);}
@@ -76,54 +93,54 @@
   .badge-motor-off{color:var(--muted);border-color:var(--muted);opacity:.6;}
   .badge-motor-on{color:var(--accent2);border-color:var(--accent2);}
   .badge-motor-cut{color:var(--accent4);border-color:var(--accent4);}
-  .bat-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;}
+  .bat-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;transition:background .3s;}
   .bat-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
-  .bat-track{background:var(--bg);border-radius:4px;height:10px;overflow:hidden;border:1px solid var(--border);}
+  .bat-track{background:var(--bg);border-radius:4px;height:11px;overflow:hidden;border:1px solid var(--border);}
   .bat-fill{height:100%;border-radius:4px;transition:width .4s,background .4s;}
-  .bat-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;}
-  .chart-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;}
-  .power-curve-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;}
+  .bat-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:4px;}
+  .chart-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;transition:background .3s;}
+  .power-curve-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;transition:background .3s;}
   .chart-legend{display:flex;gap:14px;margin-top:6px;flex-wrap:wrap;}
-  .chart-legend span{font-size:11px;font-family:var(--mono);color:var(--muted);display:flex;align-items:center;gap:5px;}
+  .chart-legend span{font-size:12px;font-family:var(--mono);color:var(--muted);display:flex;align-items:center;gap:5px;}
   .chart-legend span::before{content:'';display:block;width:18px;height:2px;border-radius:1px;}
-  .leg-gen::before{background:#48bb78;}.leg-load::before{background:#fc8181;}.leg-net::before{background:#63b3ed;}
+  .leg-gen::before{background:var(--accent2);}.leg-load::before{background:var(--accent4);}.leg-net::before{background:var(--accent);}
 
   /* ── TURBINE EDITOR ── */
-  .editor-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-top:16px;}
+  .editor-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-top:16px;transition:background .3s;}
   .editor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px;}
-  .editor-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(99,179,237,0.07);}
+  .editor-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(120,180,255,0.07);}
   .editor-row:last-child{border-bottom:none;}
-  .editor-lbl{font-size:12px;color:var(--muted);font-family:var(--mono);}
-  .editor-val{font-size:12px;color:var(--accent);font-family:var(--mono);font-weight:700;min-width:32px;text-align:right;}
+  .editor-lbl{font-size:13px;color:var(--muted);font-family:var(--mono);}
+  .editor-val{font-size:13px;color:var(--accent);font-family:var(--mono);font-weight:700;min-width:32px;text-align:right;}
   .color-swatch{width:22px;height:22px;border-radius:4px;border:1px solid var(--border);cursor:pointer;flex-shrink:0;}
-  select.editor-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:11px;padding:3px 6px;border-radius:4px;cursor:pointer;}
+  select.editor-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;cursor:pointer;}
 
   /* ── BATTERY TIMER ── */
-  .bat-timer{background:rgba(99,179,237,0.06);border:1px solid rgba(99,179,237,0.2);border-radius:6px;padding:.65rem 1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:6px;}
-  .bat-timer-lbl{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.08em;}
-  .bat-timer-val{font-family:var(--mono);font-size:13px;font-weight:700;color:var(--accent2);}
-  .bat-timer-sub{font-size:10px;color:var(--muted);font-family:var(--mono);}
+  .bat-timer{background:rgba(120,180,255,0.06);border:1px solid rgba(120,180,255,0.2);border-radius:6px;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:6px;}
+  .bat-timer-lbl{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.08em;}
+  .bat-timer-val{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent2);}
+  .bat-timer-sub{font-size:11px;color:var(--muted);font-family:var(--mono);}
 
   /* ── POWER TABLE ── */
-  .power-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-top:4px;}
-  .power-table-wrap table{width:100%;border-collapse:collapse;font-size:12px;}
-  .power-table-wrap th{text-align:center;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.07em;padding:7px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
-  .power-table-wrap td{padding:6px 10px;border-bottom:1px solid rgba(99,179,237,0.06);text-align:center;font-family:var(--mono);font-size:11px;}
+  .power-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-top:4px;transition:background .3s;}
+  .power-table-wrap table{width:100%;border-collapse:collapse;font-size:14px;}
+  .power-table-wrap th{text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.07em;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  .power-table-wrap td{padding:7px 10px;border-bottom:1px solid rgba(120,180,255,0.07);text-align:center;font-family:var(--mono);font-size:13px;}
   .power-table-wrap tr:last-child td{border-bottom:none;}
   .power-table-wrap tr.highlight-row td{background:rgba(72,187,120,0.07);}
   .power-table-wrap tr.design-row td{background:rgba(246,173,85,0.1);color:var(--accent3);font-weight:700;}
 
-  table.spec-table{width:100%;border-collapse:collapse;font-size:13px;}
-  table.spec-table th{text-align:left;font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:0.08em;padding:8px 12px;border-bottom:1px solid var(--border);}
-  table.spec-table td{padding:10px 12px;border-bottom:1px solid rgba(99,179,237,0.07);}
+  table.spec-table{width:100%;border-collapse:collapse;font-size:15px;}
+  table.spec-table th{text-align:left;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:0.08em;padding:9px 12px;border-bottom:1px solid var(--border);}
+  table.spec-table td{padding:10px 12px;border-bottom:1px solid rgba(120,180,255,0.07);}
   table.spec-table tr:last-child td{border-bottom:none;}
-  table.spec-table td:first-child{font-family:var(--mono);font-size:12px;color:var(--muted);}
+  table.spec-table td:first-child{font-family:var(--mono);font-size:14px;color:var(--muted);}
   table.spec-table td:nth-child(2){font-weight:500;color:var(--accent);font-family:var(--mono);}
-  table.spec-table td:nth-child(3){color:var(--muted);font-size:12px;}
+  table.spec-table td:nth-child(3){color:var(--muted);font-size:14px;}
   .ref-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
-  .ref-list li{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;font-size:13px;color:var(--muted);line-height:1.6;border-left:3px solid var(--accent);}
+  .ref-list li{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;font-size:14px;color:var(--muted);line-height:1.6;border-left:3px solid var(--accent);transition:background .3s;}
   .ref-list li strong{color:var(--text);font-weight:500;display:block;margin-bottom:2px;}
-  footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8;}
+  footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.8;transition:border-color .3s;}
   @media(max-width:700px){.hero{grid-template-columns:1fr;}.sim-outer{grid-template-columns:1fr;}.motor-controls-row{grid-template-columns:1fr;}nav{display:none;}}
 </style>
 </head>
@@ -137,6 +154,10 @@
     <a href="#specs">Design Specs</a>
     <a href="#winddata">Wind Data</a>
     <a href="#references">References</a>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle theme">
+      <span class="theme-icon" id="themeIcon">🌙</span>
+      <span id="themeLabel">Night Mode</span>
+    </button>
   </nav>
 </header>
 
@@ -205,6 +226,17 @@
     <div class="right-panel">
 
       <div class="bat-wrap">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--accent3);letter-spacing:.1em;margin-bottom:10px;">⚡ BATTERY CONFIGURATION</div>
+        <div class="ctrl-group" style="margin-bottom:10px;">
+          <div class="ctrl-label"><span>BATTERY CAPACITY</span><span class="ctrl-val" id="batCapDisplay">400 Ah</span></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="batCapSlider" min="100" max="500" step="50" value="400"
+              style="width:100%;" oninput="updateBatCap(this.value)">
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
+            <span>100 Ah</span><span style="color:var(--accent3);">current: <span id="batCapAhLabel">400 Ah</span> · <span id="batCapWhLabel">4800 Wh</span></span><span>500 Ah</span>
+          </div>
+        </div>
         <div class="bat-header">
           <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;">BATTERY STATE OF CHARGE</span>
           <div style="display:flex;align-items:center;gap:8px;">
@@ -221,7 +253,7 @@
           <div style="display:flex;align-items:baseline;gap:4px;">
             <span style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent2);" id="mAh">80</span>
             <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">Ah</span>
-            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">/ 400 Ah</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">/ <span id="batTotalAh">400</span> Ah</span>
             <span style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:6px;" id="mWh">(960 Wh)</span>
           </div>
         </div>
@@ -380,17 +412,6 @@
           </div>
         </div>
         <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;line-height:1.5;">Size updates live in physics panel →</div>
-        <div style="margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:6px;">BLADE COLORS</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <input type="color" id="darColor1" value="#5078c8" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
-            <span style="font-size:10px;color:var(--muted);font-family:var(--mono);">A / C</span>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <input type="color" id="darColor2" value="#beb932" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
-            <span style="font-size:10px;color:var(--muted);font-family:var(--mono);">B</span>
-          </div>
-        </div>
       </div>
 
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;">
@@ -423,21 +444,7 @@
             <span class="editor-val" id="savStrokeVal">0.038</span>
           </div>
         </div>
-        <div style="margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:6px;">BUCKET COLORS</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <input type="color" id="savColor1" value="#b4a03c" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
-            <span style="font-size:10px;color:var(--muted);font-family:var(--mono);">1</span>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <input type="color" id="savColor2" value="#648cc8" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
-            <span style="font-size:10px;color:var(--muted);font-family:var(--mono);">2</span>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <input type="color" id="savColor3" value="#a0b450" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
-            <span style="font-size:10px;color:var(--muted);font-family:var(--mono);">3</span>
-          </div>
-        </div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;line-height:1.5;">Arc and stroke update bucket geometry →</div>
       </div>
 
       <div style="display:flex;flex-direction:column;gap:8px;">
@@ -480,7 +487,7 @@
             <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Mechanical</span><span id="ui_eta_mech" style="color:var(--accent4);">−10.0%</span></div>
             <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Generation</span><span style="color:var(--accent4);">−15%</span></div>
             <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Conv./Trans.</span><span style="color:var(--accent4);">−5%</span></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Charging (400Ah)</span><span style="color:var(--accent4);">−3%</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Charging (<span id="ui_bat_ah_label">400</span>Ah)</span><span style="color:var(--accent4);">−3%</span></div>
             <div style="border-top:1px solid var(--border);margin:3px 0;"></div>
             <div style="display:flex;justify-content:space-between;"><span style="color:var(--text);font-weight:700;">Overall η</span><span id="ui_eta_overall" style="color:var(--accent2);font-weight:700;">70.49%</span></div>
           </div>
@@ -560,15 +567,41 @@
 <script>
 document.getElementById('footerYear').textContent = new Date().getFullYear();
 
+/* ── THEME TOGGLE ── */
+let isDayMode = false;
+function toggleTheme(){
+  isDayMode = !isDayMode;
+  document.documentElement.classList.toggle('day', isDayMode);
+  document.getElementById('themeIcon').textContent = isDayMode ? '☀️' : '🌙';
+  document.getElementById('themeLabel').textContent = isDayMode ? 'Day Mode' : 'Night Mode';
+}
+
 /* ── STATE ── */
 let wind=0, battery=20, angle=0, motorOn=false, loadPct=75, simSpeed=100;
 const MOTOR_RATED=746, CHART_LEN=100;
-const BAT_VOLTAGE=12, BAT_AH=400;
-const BAT_WH = BAT_VOLTAGE * BAT_AH; // 4800 Wh
+const BAT_VOLTAGE=12;
+let BAT_AH=400;
+let BAT_WH = BAT_VOLTAGE * BAT_AH; // 4800 Wh
 const chartData={gen:[],load:[],net:[]};
 const rho=1.225;
 
-/* ── TURBINE EDITOR STATE ── */
+/* ── BATTERY CAPACITY CONTROL ── */
+function updateBatCap(v){
+  const parsed = parseInt(v);
+  if(isNaN(parsed)) return;
+  BAT_AH = Math.max(100, Math.min(500, parsed));
+  BAT_WH = BAT_VOLTAGE * BAT_AH;
+  document.getElementById('batCapDisplay').textContent = BAT_AH + ' Ah';
+  document.getElementById('batCapAhLabel').textContent = BAT_AH + ' Ah';
+  document.getElementById('batCapWhLabel').textContent = BAT_WH.toLocaleString() + ' Wh';
+  document.getElementById('batTotalAh').textContent = BAT_AH;
+  const lbl = document.getElementById('ui_bat_ah_label');
+  if(lbl) lbl.textContent = BAT_AH;
+  // reset battery state to 20% on capacity change
+  battery = 20;
+}
+
+
 let T = {
   darBlades:3, darDiameter:5.7, darR:0.41, darChord:0.135, darThick:0.032, darHeight:7.65,
   darC1:'#5078c8', darC2:'#beb932',
@@ -617,15 +650,10 @@ function updateEditor() {
   T.darChord    = parseFloat(document.getElementById('darChord').value);
   T.darThick    = parseFloat(document.getElementById('darThick').value);
   T.darHeight   = parseFloat(document.getElementById('darHeight').value);
-  T.darC1       = document.getElementById('darColor1').value;
-  T.darC2       = document.getElementById('darColor2').value;
   T.savBuckets  = parseInt(document.getElementById('savBucketCount').value);
   T.savRs       = parseFloat(document.getElementById('savRadius').value);
   T.savArc      = parseFloat(document.getElementById('savArc').value);
   T.savStroke   = parseFloat(document.getElementById('savStroke').value);
-  T.savC1       = document.getElementById('savColor1').value;
-  T.savC2       = document.getElementById('savColor2').value;
-  T.savC3       = document.getElementById('savColor3').value;
 
   // Sync visual canvas scale
   T.darR = (T.darDiameter / 2) / DAR_SCALE;
