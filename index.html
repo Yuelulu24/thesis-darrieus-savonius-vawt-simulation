@@ -114,9 +114,28 @@
   .editor-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(120,180,255,0.07);}
   .editor-row:last-child{border-bottom:none;}
   .editor-lbl{font-size:13px;color:var(--muted);font-family:var(--mono);}
-  .editor-val{font-size:13px;color:var(--accent);font-family:var(--mono);font-weight:700;min-width:32px;text-align:right;}
+  
+  /* NEW: Editor Number Typebox Styles */
+  input[type=number].editor-number {
+    width: 75px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 6px;
+    border-radius: 6px;
+    outline: none;
+    text-align: right;
+    transition: background .3s, border-color .3s, color .3s;
+  }
+  input[type=number].editor-number:focus {
+    border-color: var(--accent);
+    background: var(--surface);
+  }
+
   .color-swatch{width:22px;height:22px;border-radius:4px;border:1px solid var(--border);cursor:pointer;flex-shrink:0;}
-  select.editor-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;cursor:pointer;}
 
   /* ── BATTERY TIMER ── */
   .bat-timer{background:rgba(120,180,255,0.06);border:1px solid rgba(120,180,255,0.2);border-radius:6px;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:6px;}
@@ -385,38 +404,23 @@
         <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:10px;">DARRIEUS ROTOR</div>
         <div class="editor-row">
           <span class="editor-lbl">Blade count</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="range" id="darBladeCount" min="2" max="6" step="1" value="3" style="width:80px;" oninput="updateEditor()">
-            <span class="editor-val" id="darBladeCountVal">3</span>
-          </div>
+          <input type="number" id="darBladeCount" min="2" max="6" step="1" value="3" class="editor-number" oninput="updateEditor()">
         </div>
         <div class="editor-row">
           <span class="editor-lbl">Rotor diameter (m)</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="range" id="darDiameter" min="2.0" max="8.0" step="0.1" value="5.7" style="width:80px;" oninput="updateEditor()">
-            <span class="editor-val" id="darDiameterVal">5.70</span>
-          </div>
+          <input type="number" id="darDiameter" min="2.0" max="8.0" step="0.1" value="5.7" class="editor-number" oninput="updateEditor()">
         </div>
         <div class="editor-row">
-          <span class="editor-lbl">Chord length</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="range" id="darChord" min="0.07" max="0.22" step="0.01" value="0.135" style="width:80px;" oninput="updateEditor()">
-            <span class="editor-val" id="darChordVal">0.14</span>
-          </div>
+          <span class="editor-lbl">Chord length (m)</span>
+          <input type="number" id="darChord" min="0.07" max="0.22" step="0.01" value="0.135" class="editor-number" oninput="updateEditor()">
         </div>
         <div class="editor-row">
-          <span class="editor-lbl">Blade thickness</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="range" id="darThick" min="0.015" max="0.06" step="0.005" value="0.032" style="width:80px;" oninput="updateEditor()">
-            <span class="editor-val" id="darThickVal">0.032</span>
-          </div>
+          <span class="editor-lbl">Blade thickness (m)</span>
+          <input type="number" id="darThick" min="0.015" max="0.06" step="0.005" value="0.032" class="editor-number" oninput="updateEditor()">
         </div>
         <div class="editor-row">
           <span class="editor-lbl">Blade height (m)</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="range" id="darHeight" min="2.0" max="12.0" step="0.1" value="7.65" style="width:80px;" oninput="updateEditor()">
-            <span class="editor-val" id="darHeightVal">7.65</span>
-          </div>
+          <input type="number" id="darHeight" min="2.0" max="12.0" step="0.1" value="7.65" class="editor-number" oninput="updateEditor()">
         </div>
         <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;line-height:1.5;">Size updates live in physics panel →</div>
         <div style="margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:6px;">BLADE COLORS</div>
@@ -436,31 +440,19 @@
         <div style="font-family:var(--mono);font-size:10px;color:var(--accent3);letter-spacing:.1em;margin-bottom:10px;">SAVONIUS ROTOR</div>
         <div class="editor-row">
           <span class="editor-lbl">Bucket count</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="range" id="savBucketCount" min="2" max="4" step="1" value="3" style="width:80px;" oninput="updateEditor()">
-            <span class="editor-val" id="savBucketCountVal">3</span>
-          </div>
+          <input type="number" id="savBucketCount" min="2" max="4" step="1" value="3" class="editor-number" oninput="updateEditor()">
         </div>
         <div class="editor-row">
-          <span class="editor-lbl">Inner radius</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="range" id="savRadius" min="0.08" max="0.25" step="0.01" value="0.16" style="width:80px;" oninput="updateEditor()">
-            <span class="editor-val" id="savRadiusVal">0.16</span>
-          </div>
+          <span class="editor-lbl">Inner radius (m)</span>
+          <input type="number" id="savRadius" min="0.08" max="0.25" step="0.01" value="0.16" class="editor-number" oninput="updateEditor()">
         </div>
         <div class="editor-row">
           <span class="editor-lbl">Bucket arc size</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="range" id="savArc" min="0.6" max="1.1" step="0.05" value="0.85" style="width:80px;" oninput="updateEditor()">
-            <span class="editor-val" id="savArcVal">0.85</span>
-          </div>
+          <input type="number" id="savArc" min="0.6" max="1.1" step="0.05" value="0.85" class="editor-number" oninput="updateEditor()">
         </div>
         <div class="editor-row">
           <span class="editor-lbl">Stroke width</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <input type="range" id="savStroke" min="0.02" max="0.07" step="0.005" value="0.038" style="width:80px;" oninput="updateEditor()">
-            <span class="editor-val" id="savStrokeVal">0.038</span>
-          </div>
+          <input type="number" id="savStroke" min="0.02" max="0.07" step="0.005" value="0.038" class="editor-number" oninput="updateEditor()">
         </div>
         <div style="margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:6px;">BUCKET COLORS</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -674,33 +666,27 @@ function getDynamicLosses(sigma) {
 }
 
 function updateEditor() {
-  T.darBlades   = parseInt(document.getElementById('darBladeCount').value);
-  T.darDiameter = parseFloat(document.getElementById('darDiameter').value);
-  T.darChord    = parseFloat(document.getElementById('darChord').value);
-  T.darThick    = parseFloat(document.getElementById('darThick').value);
-  T.darHeight   = parseFloat(document.getElementById('darHeight').value);
-  T.darC1       = document.getElementById('darColor1').value;
-  T.darC2       = document.getElementById('darColor2').value;
-  T.savBuckets  = parseInt(document.getElementById('savBucketCount').value);
-  T.savRs       = parseFloat(document.getElementById('savRadius').value);
-  T.savArc      = parseFloat(document.getElementById('savArc').value);
-  T.savStroke   = parseFloat(document.getElementById('savStroke').value);
-  T.savC1       = document.getElementById('savColor1').value;
-  T.savC2       = document.getElementById('savColor2').value;
-  T.savC3       = document.getElementById('savColor3').value;
+  // Read from Typeboxes directly (fallback gracefully if left empty temporarily)
+  const db = parseInt(document.getElementById('darBladeCount').value); if(!isNaN(db)) T.darBlades = db;
+  const dd = parseFloat(document.getElementById('darDiameter').value); if(!isNaN(dd)) T.darDiameter = dd;
+  const dc = parseFloat(document.getElementById('darChord').value); if(!isNaN(dc)) T.darChord = dc;
+  const dt = parseFloat(document.getElementById('darThick').value); if(!isNaN(dt)) T.darThick = dt;
+  const dh = parseFloat(document.getElementById('darHeight').value); if(!isNaN(dh)) T.darHeight = dh;
+  
+  T.darC1 = document.getElementById('darColor1').value;
+  T.darC2 = document.getElementById('darColor2').value;
+  
+  const sb = parseInt(document.getElementById('savBucketCount').value); if(!isNaN(sb)) T.savBuckets = sb;
+  const sr = parseFloat(document.getElementById('savRadius').value); if(!isNaN(sr)) T.savRs = sr;
+  const sa = parseFloat(document.getElementById('savArc').value); if(!isNaN(sa)) T.savArc = sa;
+  const ss = parseFloat(document.getElementById('savStroke').value); if(!isNaN(ss)) T.savStroke = ss;
+  
+  T.savC1 = document.getElementById('savColor1').value;
+  T.savC2 = document.getElementById('savColor2').value;
+  T.savC3 = document.getElementById('savColor3').value;
 
   // Sync visual canvas scale
   T.darR = (T.darDiameter / 2) / DAR_SCALE;
-
-  document.getElementById('darBladeCountVal').textContent = T.darBlades;
-  document.getElementById('darDiameterVal').textContent   = T.darDiameter.toFixed(2);
-  document.getElementById('darChordVal').textContent      = T.darChord.toFixed(2);
-  document.getElementById('darThickVal').textContent      = T.darThick.toFixed(3);
-  document.getElementById('darHeightVal').textContent     = T.darHeight.toFixed(2);
-  document.getElementById('savBucketCountVal').textContent= T.savBuckets;
-  document.getElementById('savRadiusVal').textContent     = T.savRs.toFixed(2);
-  document.getElementById('savArcVal').textContent        = T.savArc.toFixed(2);
-  document.getElementById('savStrokeVal').textContent     = T.savStroke.toFixed(3);
 
   // Fetch dynamic Cp and Losses
   const { cpDarMax, cpSavMax, sigma } = getDynamicCp();
