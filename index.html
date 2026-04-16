@@ -140,9 +140,13 @@
   table.spec-table td:first-child{font-family:var(--mono);font-size:14px;color:var(--muted);}
   table.spec-table td:nth-child(2){font-weight:500;color:var(--accent);font-family:var(--mono);}
   table.spec-table td:nth-child(3){color:var(--muted);font-size:14px;}
+  
   .ref-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
   .ref-list li{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;font-size:14px;color:var(--muted);line-height:1.6;border-left:3px solid var(--accent);transition:background .3s;}
   .ref-list li strong{color:var(--text);font-weight:500;display:block;margin-bottom:2px;}
+  .ref-list a{color:var(--accent);text-decoration:none;word-break:break-all;}
+  .ref-list a:hover{text-decoration:underline;}
+
   footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.8;transition:border-color .3s;}
   @media(max-width:700px){.hero{grid-template-columns:1fr;}.sim-outer{grid-template-columns:1fr;}.motor-controls-row{grid-template-columns:1fr;}nav{display:none;}}
 </style>
@@ -578,11 +582,8 @@
   <div class="section-label">Bibliography</div>
   <h2>References</h2>
   <ul class="ref-list">
-    <li><strong>[1] Placeholder — Primary Design Reference</strong>Add your main cited study (author, year, title, journal/conference, DOI).</li>
-    <li><strong>[2] Placeholder — Savonius Rotor Study</strong>Overlap ratio and bucket geometry optimization reference.</li>
-    <li><strong>[3] Placeholder — Darrieus / NACA Blade Reference</strong>Darrieus airfoil selection (NACA 0018 or chosen profile).</li>
-    <li><strong>[4] NASA POWER Project</strong>Stackhouse, P.W., Jr., et al. NASA POWER Data Access Viewer. https://power.larc.nasa.gov</li>
-    <li><strong>[5] Placeholder — Hybrid VAWT Study</strong>Hybrid Darrieus-Savonius vs. standalone performance comparison.</li>
+    <li><strong>[1] Jain, P., & Abhishek, A. (2016)</strong>Performance prediction and fundamental understanding of small scale vertical axis wind turbine with variable amplitude blade pitching. Renewable Energy, 97, 97–113. <a href="https://doi.org/10.1016/j.renene.2016.05.056" target="_blank">https://doi.org/10.1016/j.renene.2016.05.056</a></li>
+    <li><strong>[2] NASA POWER Project</strong>Stackhouse, P.W., Jr., et al. NASA POWER Data Access Viewer. <a href="https://power.larc.nasa.gov" target="_blank">https://power.larc.nasa.gov</a></li>
   </ul>
 </section>
 
