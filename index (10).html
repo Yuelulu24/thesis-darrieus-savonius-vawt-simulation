@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hybrid Darrieus-Savonius VAWT</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  /* ── NIGHT MODE (default) ── */
+  :root {
+    --bg:#080c12;--surface:#0f1520;--surface2:#16202e;
+    --border:rgba(100,180,255,0.22);
+    --accent:#60c4ff;--accent2:#4de8a0;
+    --accent3:#ffca6e;--accent4:#ff7878;
+    --text:#e8f0fa;--muted:#7a9ab8;
+    --mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;
+    --card-shadow:0 2px 12px rgba(0,0,0,0.5);
+  }
+  /* ── DAY MODE ── */
+  :root.day {
+    --bg:#edf2f8;--surface:#ffffff;--surface2:#dce6f2;
+    --border:rgba(40,100,200,0.22);
+    --accent:#1a6bc4;--accent2:#1a9152;
+    --accent3:#b86b00;--accent4:#c43030;
+    --text:#0f1d30;--muted:#3d5a78;
+    --card-shadow:0 2px 10px rgba(40,80,140,0.14);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:17px;line-height:1.75;overflow-x:hidden;transition:background .3s,color .3s;}
+  header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;height:60px;box-shadow:var(--card-shadow);transition:background .3s,border-color .3s;}
+  .header-left{display:flex;align-items:center;gap:12px;}
+  .logo-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 2s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(0.85)}}
+  .logo-text{font-family:var(--mono);font-size:15px;color:var(--accent);letter-spacing:0.05em;transition:color .3s;}
+  nav{display:flex;align-items:center;gap:4px;}
+  nav a{font-size:14px;color:var(--muted);text-decoration:none;padding:0 14px;height:60px;display:flex;align-items:center;font-family:var(--mono);letter-spacing:0.04em;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;}
+  nav a:hover{color:var(--text);border-bottom-color:var(--accent);}
+  /* ── THEME TOGGLE ── */
+  .theme-btn{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 13px;cursor:pointer;font-family:var(--mono);font-size:13px;color:var(--muted);transition:all .2s;margin-left:8px;white-space:nowrap;}
+  .theme-btn:hover{color:var(--text);border-color:var(--accent);}
+  .theme-btn .theme-icon{font-size:15px;line-height:1;}
+  .hero{padding:4rem 2rem 2rem;max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;}
+  .hero-label{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+  .hero-label::before{content:'';display:block;width:24px;height:1px;background:var(--accent);}
+  h1{font-size:2.3rem;font-weight:600;line-height:1.25;color:var(--text);margin-bottom:1rem;}
+  h1 span{color:var(--accent);}
+  .hero-meta{display:flex;flex-direction:column;gap:6px;margin-top:1.5rem;}
+  .hero-meta p{font-size:14px;color:var(--muted);font-family:var(--mono);}
+  .hero-meta strong{color:var(--text);}
+  .wind-banner{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1rem 2rem;transition:background .3s;}
+  .wind-banner-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;}
+  .wind-banner-label{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:0.08em;white-space:nowrap;}
+  .wind-months{display:flex;gap:8px;flex-wrap:wrap;}
+  .wind-month{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;min-width:56px;transition:background .3s;}
+  .wind-month-name{font-size:11px;color:var(--muted);font-family:var(--mono);}
+  .wind-month-val{font-size:14px;font-weight:600;font-family:var(--mono);}
+  section{padding:3rem 2rem;max-width:1000px;margin:0 auto;}
+  .section-label{font-family:var(--mono);font-size:13px;color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;display:flex;align-items:center;gap:8px;margin-bottom:0.5rem;}
+  .section-label::before{content:'';display:block;width:16px;height:1px;background:var(--accent);}
+  h2{font-size:1.7rem;font-weight:600;margin-bottom:1.5rem;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;box-shadow:var(--card-shadow);transition:background .3s,border-color .3s;}
+  .card-title{font-family:var(--mono);font-size:13px;color:var(--muted);letter-spacing:0.08em;margin-bottom:0.75rem;text-transform:uppercase;}
+
+  /* ── SIMULATION ── */
+  .sim-outer{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start;}
+  .turbine-panel{display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;}
+  .metrics-3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;}
+  .metric{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.75rem .5rem;text-align:center;transition:background .3s;}
+  .metric-lbl{font-size:12px;color:var(--muted);font-family:var(--mono);letter-spacing:.05em;margin-bottom:3px;}
+  .metric-val{font-size:1.2rem;font-weight:700;font-family:var(--mono);}
+  .metric-unit{font-size:12px;color:var(--muted);}
+  .right-panel{display:flex;flex-direction:column;gap:12px;}
+  .motor-controls-row{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:start;}
+  canvas{display:block;}
+  .controls{display:flex;flex-direction:column;gap:10px;}
+  .ctrl-group{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.9rem;transition:background .3s;}
+  .ctrl-label{font-size:13px;color:var(--muted);font-family:var(--mono);margin-bottom:7px;display:flex;justify-content:space-between;}
+  .ctrl-val{color:var(--accent);font-weight:700;}
+  input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:var(--border);border-radius:2px;outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;}
+  .toggle-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .toggle-label{font-size:14px;color:var(--text);}
+  .toggle{position:relative;width:36px;height:20px;background:var(--surface);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:background .2s,border-color .2s;flex-shrink:0;}
+  .toggle.on{background:var(--accent2);border-color:var(--accent2);}
+  .toggle-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s;}
+  .toggle.on .toggle-thumb{transform:translateX(16px);}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-family:var(--mono);padding:4px 11px;border-radius:20px;border:1px solid;letter-spacing:0.05em;}
+  .badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .badge-idle{color:var(--muted);border-color:var(--muted);opacity:.6;}
+  .badge-sav{color:var(--accent2);border-color:var(--accent2);}
+  .badge-full{color:var(--accent);border-color:var(--accent);}
+  .badge-motor-off{color:var(--muted);border-color:var(--muted);opacity:.6;}
+  .badge-motor-on{color:var(--accent2);border-color:var(--accent2);}
+  .badge-motor-cut{color:var(--accent4);border-color:var(--accent4);}
+  .bat-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;transition:background .3s;}
+  .bat-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;}
+  .bat-track{background:var(--bg);border-radius:4px;height:11px;overflow:hidden;border:1px solid var(--border);}
+  .bat-fill{height:100%;border-radius:4px;transition:width .4s,background .4s;}
+  .bat-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:4px;}
+  .chart-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;transition:background .3s;}
+  .power-curve-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;transition:background .3s;}
+  .chart-legend{display:flex;gap:14px;margin-top:6px;flex-wrap:wrap;}
+  .chart-legend span{font-size:12px;font-family:var(--mono);color:var(--muted);display:flex;align-items:center;gap:5px;}
+  .chart-legend span::before{content:'';display:block;width:18px;height:2px;border-radius:1px;}
+  .leg-gen::before{background:var(--accent2);}.leg-load::before{background:var(--accent4);}.leg-net::before{background:var(--accent);}
+
+  /* ── TURBINE EDITOR ── */
+  .editor-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-top:16px;transition:background .3s;}
+  .editor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:12px;}
+  .editor-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(120,180,255,0.07);}
+  .editor-row:last-child{border-bottom:none;}
+  .editor-lbl{font-size:13px;color:var(--muted);font-family:var(--mono);}
+  .editor-val{font-size:13px;color:var(--accent);font-family:var(--mono);font-weight:700;min-width:32px;text-align:right;}
+  .color-swatch{width:22px;height:22px;border-radius:4px;border:1px solid var(--border);cursor:pointer;flex-shrink:0;}
+  select.editor-select{background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:3px 6px;border-radius:4px;cursor:pointer;}
+
+  /* ── BATTERY TIMER ── */
+  .bat-timer{background:rgba(120,180,255,0.06);border:1px solid rgba(120,180,255,0.2);border-radius:6px;padding:.75rem 1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:6px;}
+  .bat-timer-lbl{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.08em;}
+  .bat-timer-val{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent2);}
+  .bat-timer-sub{font-size:11px;color:var(--muted);font-family:var(--mono);}
+
+  /* ── POWER TABLE ── */
+  .power-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;margin-top:4px;transition:background .3s;}
+  .power-table-wrap table{width:100%;border-collapse:collapse;font-size:14px;}
+  .power-table-wrap th{text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.07em;padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap;}
+  .power-table-wrap td{padding:7px 10px;border-bottom:1px solid rgba(120,180,255,0.07);text-align:center;font-family:var(--mono);font-size:13px;}
+  .power-table-wrap tr:last-child td{border-bottom:none;}
+  .power-table-wrap tr.highlight-row td{background:rgba(72,187,120,0.07);}
+  .power-table-wrap tr.design-row td{background:rgba(246,173,85,0.1);color:var(--accent3);font-weight:700;}
+
+  table.spec-table{width:100%;border-collapse:collapse;font-size:15px;}
+  table.spec-table th{text-align:left;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:0.08em;padding:9px 12px;border-bottom:1px solid var(--border);}
+  table.spec-table td{padding:10px 12px;border-bottom:1px solid rgba(120,180,255,0.07);}
+  table.spec-table tr:last-child td{border-bottom:none;}
+  table.spec-table td:first-child{font-family:var(--mono);font-size:14px;color:var(--muted);}
+  table.spec-table td:nth-child(2){font-weight:500;color:var(--accent);font-family:var(--mono);}
+  table.spec-table td:nth-child(3){color:var(--muted);font-size:14px;}
+  .ref-list{list-style:none;display:flex;flex-direction:column;gap:10px;}
+  .ref-list li{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;font-size:14px;color:var(--muted);line-height:1.6;border-left:3px solid var(--accent);transition:background .3s;}
+  .ref-list li strong{color:var(--text);font-weight:500;display:block;margin-bottom:2px;}
+  footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.8;transition:border-color .3s;}
+  @media(max-width:700px){.hero{grid-template-columns:1fr;}.sim-outer{grid-template-columns:1fr;}.motor-controls-row{grid-template-columns:1fr;}nav{display:none;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left"><div class="logo-dot"></div><span class="logo-text">SierraWind</span></div>
+  <nav>
+    <a href="#simulation">Simulation</a>
+    <a href="#editor">Turbine Editor</a>
+    <a href="#specs">Design Specs</a>
+    <a href="#winddata">Wind Data</a>
+    <a href="#references">References</a>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle theme">
+      <span class="theme-icon" id="themeIcon">🌙</span>
+      <span id="themeLabel">Night Mode</span>
+    </button>
+  </nav>
+</header>
+
+<div class="hero">
+  <div>
+    <div class="hero-label">Thesis Simulation</div>
+    <h1>Hybrid <span>Darrieus-Savonius</span> Vertical Axis Wind Turbine</h1>
+    <p style="color:var(--muted);font-size:14px;">Interactive feasibility simulation for prototype wind energy harnessing in Norzagaray, Bulacan, Philippines.</p>
+    <div class="hero-meta">
+      <p><strong>Study Site:</strong> Norzagaray, Bulacan, Philippines</p>
+      <p><strong>Course:</strong> BS Electrical Engineering</p>
+      <p><strong>Institution:</strong> Bulacan State University</p>
+      <p><strong>Working Title:</strong> Design and Simulation of a Prototype Wind Turbine for Harnessing Wind Energy in the Municipality of Norzagaray, Bulacan</p>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:center;align-items:center;">
+    <canvas id="heroCanvas" width="220" height="220"></canvas>
+  </div>
+</div>
+
+<div class="wind-banner">
+  <div class="wind-banner-inner">
+    <div>
+      <div class="wind-banner-label">NASA POWER MERRA-2 — WS10M Monthly Avg (m/s) · 2015–2025</div>
+      <div class="wind-note" style="font-size:11px;color:var(--muted);margin-top:.25rem;">Coords: 14.9059°N, 121.0477°E · Elev: 260.5m · Annual mean: 2.75 m/s</div>
+    </div>
+    <div class="wind-months" id="windMonths"></div>
+  </div>
+</div>
+
+<section id="simulation">
+  <div class="section-label">Interactive</div>
+  <h2>System Simulation</h2>
+
+  <div class="sim-outer">
+
+    <div class="turbine-panel">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;">VAWT ROTOR — TOP VIEW</div>
+      <canvas id="turbineCanvas" width="280" height="280"></canvas>
+      <div id="rotBadge" class="badge badge-idle">IDLE</div>
+
+      <div class="metrics-3">
+        <div class="metric"><div class="metric-lbl">RPM</div><div class="metric-val" id="mRPM" style="color:var(--accent);">0</div></div>
+        <div class="metric"><div class="metric-lbl">GENERATED</div><div class="metric-val" id="mGen" style="color:var(--accent2);">0</div><div class="metric-unit">W</div></div>
+        <div class="metric"><div class="metric-lbl">NET POWER</div><div class="metric-val" id="mNet" style="color:var(--accent);">0</div><div class="metric-unit">W</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;">
+        <div class="metric"><div class="metric-lbl">SAV. POWER</div><div class="metric-val" id="mSav" style="color:var(--accent3);font-size:1rem;">0</div><div class="metric-unit">W</div></div>
+        <div class="metric"><div class="metric-lbl">DAR. POWER</div><div class="metric-val" id="mDar" style="color:var(--accent);font-size:1rem;">0</div><div class="metric-unit">W</div></div>
+      </div>
+
+      <div class="ctrl-group" style="width:100%;">
+        <div class="ctrl-label"><span>WIND INPUT</span><span class="ctrl-val" id="windDisplay">0.0 m/s</span></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="number" id="windSlider" min="0" max="5.5" step="0.1" value="0"
+            style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:14px;font-weight:700;padding:6px 10px;border-radius:6px;outline:none;-moz-appearance:textfield;"
+            oninput="updateWindInput(this.value)">
+          <span style="font-size:11px;color:var(--muted);font-family:var(--mono);white-space:nowrap;">m/s</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
+          <span>min: 0</span><span>max: 5.5 m/s</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+
+      <div class="bat-wrap">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--accent3);letter-spacing:.1em;margin-bottom:10px;">⚡ BATTERY CONFIGURATION</div>
+        <div class="ctrl-group" style="margin-bottom:10px;">
+          <div class="ctrl-label"><span>BATTERY CAPACITY</span><span class="ctrl-val" id="batCapDisplay">400 Ah</span></div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="batCapSlider" min="100" max="500" step="50" value="400"
+              style="width:100%;" oninput="updateBatCap(this.value)">
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
+            <span>100 Ah</span><span style="color:var(--accent3);">current: <span id="batCapAhLabel">400 Ah</span> · <span id="batCapWhLabel">4800 Wh</span></span><span>500 Ah</span>
+          </div>
+        </div>
+        <div class="bat-header">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;">BATTERY STATE OF CHARGE</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span id="batStatus" style="font-size:11px;color:var(--accent2);font-family:var(--mono);">IDLE</span>
+            <span style="font-family:var(--mono);font-size:13px;font-weight:700;" id="mBat">20</span>
+            <span style="font-size:11px;color:var(--muted);">%</span>
+          </div>
+        </div>
+        <div class="bat-track"><div class="bat-fill" id="batBar" style="width:20%;background:#48bb78;"></div></div>
+        <div class="bat-labels"><span>0%</span><span>CUTOFF 20%</span><span>100%</span></div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:6px 10px;background:var(--bg);border-radius:6px;border:1px solid var(--border);">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">CURRENT CAPACITY</span>
+          <div style="display:flex;align-items:baseline;gap:4px;">
+            <span style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--accent2);" id="mAh">80</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">Ah</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">/ <span id="batTotalAh">400</span> Ah</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:6px;" id="mWh">(960 Wh)</span>
+          </div>
+        </div>
+
+        <div class="bat-timer" id="batTimerBox" style="margin-top:6px;">
+          <div>
+            <div class="bat-timer-lbl">TIME TO 100% CHARGE</div>
+            <div class="bat-timer-sub" id="batTimerSub">at current sim speed &amp; wind</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="bat-timer-val" id="batTimerVal">—</div>
+            <div class="bat-timer-sub" id="batTimerNote">net surplus needed</div>
+          </div>
+        </div>
+
+        <div class="bat-timer" id="batDischargeBox" style="background:rgba(252,129,129,0.06);border-color:rgba(252,129,129,0.2);margin-top:6px;">
+          <div>
+            <div class="bat-timer-lbl" style="color:var(--accent4);">TIME TO 20% CUTOFF</div>
+            <div class="bat-timer-sub" id="batDischargeSub">at current sim speed &amp; load</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="bat-timer-val" id="batDischargeVal">—</div>
+            <div class="bat-timer-sub" id="batDischargeNote">net deficit needed</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;margin-bottom:8px;">REAL-TIME POWER BALANCE</div>
+        <canvas id="chartCanvas" width="480" height="90" style="width:100%;"></canvas>
+        <div class="chart-legend">
+          <span class="leg-gen">Generated</span>
+          <span class="leg-load">Load draw</span>
+          <span class="leg-net">Net power</span>
+        </div>
+      </div>
+
+      <div class="power-curve-wrap">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;margin-bottom:8px;">TURBINE POWER CURVE — OUTPUT (W) vs WIND SPEED (m/s)</div>
+        <canvas id="pcCanvas" width="480" height="160" style="width:100%;"></canvas>
+        <div class="chart-legend" style="margin-top:8px;">
+          <span style="font-size:11px;font-family:var(--mono);color:var(--muted);display:flex;align-items:center;gap:5px;"><span style="display:block;width:18px;height:2px;background:#f6ad55;border-radius:1px;"></span>Savonius P (W)</span>
+          <span style="font-size:11px;font-family:var(--mono);color:var(--muted);display:flex;align-items:center;gap:5px;"><span style="display:block;width:18px;height:2px;background:#63b3ed;border-radius:1px;"></span>Darrieus P (W)</span>
+          <span style="font-size:11px;font-family:var(--mono);color:var(--muted);display:flex;align-items:center;gap:5px;"><span style="display:block;width:18px;height:2.5px;background:#48bb78;border-radius:1px;"></span>Combined P (W)</span>
+        </div>
+      </div>
+
+      <div class="motor-controls-row">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;">1-HP LOAD MOTOR</div>
+          <canvas id="motorCanvas" width="150" height="150"></canvas>
+          <div id="motorBadge" class="badge badge-motor-off">OFF</div>
+        </div>
+        <div class="controls">
+          <div class="ctrl-group">
+            <div class="toggle-row"><span class="toggle-label">Motor power</span><div class="toggle" id="motorToggle" onclick="toggleMotor()"><div class="toggle-thumb"></div></div></div>
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label"><span>LOAD</span><span class="ctrl-val" id="loadDisplay">75%</span></div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="number" id="loadSlider" min="20" max="100" step="5" value="75"
+                style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:14px;font-weight:700;padding:6px 10px;border-radius:6px;outline:none;-moz-appearance:textfield;"
+                oninput="updateLoad(this.value)">
+              <span style="font-size:11px;color:var(--muted);font-family:var(--mono);">%</span>
+            </div>
+            <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">Draw: <span id="drawDisplay" style="color:var(--accent4);">560 W</span> &nbsp;·&nbsp; range: 20–100%</div>
+          </div>
+          <div class="ctrl-group">
+            <div class="metric-lbl" style="margin-bottom:4px;">LOAD DRAW</div>
+            <div style="font-family:var(--mono);font-size:1.1rem;font-weight:700;color:var(--accent4);" id="mLoad">0 <span style="font-size:11px;color:var(--muted);">W</span></div>
+          </div>
+          <div class="ctrl-group">
+            <div class="ctrl-label"><span>SIM SPEED</span><span class="ctrl-val" id="simSpeedDisplay">100×</span></div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <input type="number" id="simSpeedSlider" min="1" max="500" step="1" value="100"
+                style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:14px;font-weight:700;padding:6px 10px;border-radius:6px;outline:none;-moz-appearance:textfield;"
+                oninput="updateSimSpeed(this.value)">
+              <span style="font-size:11px;color:var(--muted);font-family:var(--mono);">×</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">
+              <span>min: 1×</span><span style="color:var(--accent3);">default: 100×</span><span>max: 500×</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center;">
+    <div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">CUT-IN SPEED</div><div style="font-family:var(--mono);font-size:1rem;color:var(--accent2);font-weight:700;">~1.5 m/s</div><div style="font-size:11px;color:var(--muted);">Savonius starts</div></div>
+    <div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">DARRIEUS ENGAGES</div><div style="font-family:var(--mono);font-size:1rem;color:var(--accent);font-weight:700;">~3.0 m/s</div><div style="font-size:11px;color:var(--muted);">Hybrid operation</div></div>
+    <div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">DESIGN WIND SPEED</div><div style="font-family:var(--mono);font-size:1rem;color:var(--accent3);font-weight:700;">4.75 m/s</div><div style="font-size:11px;color:var(--muted);">Rated output</div></div>
+    <div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">RATED RPM</div><div style="font-family:var(--mono);font-size:1rem;color:var(--accent);font-weight:700;">63.7 RPM</div><div style="font-size:11px;color:var(--muted);">TSR 4.0 @ design V</div></div>
+    <div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">RATED POWER</div><div style="font-family:var(--mono);font-size:1rem;color:var(--accent2);font-weight:700;">1000 W</div><div style="font-size:11px;color:var(--muted);">P_elec design target</div></div>
+  </div>
+
+  <div class="power-table-wrap" style="margin-top:20px;">
+    <div style="font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+      <span style="display:block;width:16px;height:1px;background:var(--accent);"></span>Power Output Table — 0 to 5.5 m/s
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">ρ = 1.225 kg/m³ · Max Cp_S = <span id="ui_cp_s" style="color:var(--accent3);font-weight:bold;">0.200</span> · Max Cp_D = <span id="ui_cp_d" style="color:var(--accent);font-weight:bold;">0.380</span> (ramps from 3.0 m/s) · <span style="color:var(--accent4);">Losses applied: η_mech=(Dynamic based on Geometry) · η_gen=85% · η_conv=95% · η_chg=97%</span> · Highlighted orange row = design wind speed. Table updates when turbine geometry is edited.</p>
+    <table><thead><tr>
+      <th>Wind (m/s)</th><th>RPM</th>
+      <th style="color:#f6ad55;">Savonius P (W)</th>
+      <th style="color:#63b3ed;">Darrieus P (W)</th>
+      <th style="color:#48bb78;">Combined P (W)</th>
+      <th>Mode</th><th>Net @ 75% Load (W)</th>
+    </tr></thead><tbody id="powerTableBody"></tbody></table>
+  </div>
+</section>
+
+<section id="editor">
+  <div class="section-label">Customize</div>
+  <h2>Turbine Visual Editor</h2>
+  <p style="color:var(--muted);font-size:13px;margin-bottom:1rem;">Adjust the turbine model appearance in real time. Changes reflect instantly in the simulation above.</p>
+
+  <div class="editor-panel">
+    <div class="card-title">Rotor Geometry</div>
+    <div class="editor-grid">
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:10px;">DARRIEUS ROTOR</div>
+        <div class="editor-row">
+          <span class="editor-lbl">Blade count</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="darBladeCount" min="2" max="6" step="1" value="3" style="width:80px;" oninput="updateEditor()">
+            <span class="editor-val" id="darBladeCountVal">3</span>
+          </div>
+        </div>
+        <div class="editor-row">
+          <span class="editor-lbl">Rotor diameter (m)</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="darDiameter" min="2.0" max="8.0" step="0.1" value="5.7" style="width:80px;" oninput="updateEditor()">
+            <span class="editor-val" id="darDiameterVal">5.70</span>
+          </div>
+        </div>
+        <div class="editor-row">
+          <span class="editor-lbl">Chord length</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="darChord" min="0.07" max="0.22" step="0.01" value="0.135" style="width:80px;" oninput="updateEditor()">
+            <span class="editor-val" id="darChordVal">0.14</span>
+          </div>
+        </div>
+        <div class="editor-row">
+          <span class="editor-lbl">Blade thickness</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="darThick" min="0.015" max="0.06" step="0.005" value="0.032" style="width:80px;" oninput="updateEditor()">
+            <span class="editor-val" id="darThickVal">0.032</span>
+          </div>
+        </div>
+        <div class="editor-row">
+          <span class="editor-lbl">Blade height (m)</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="darHeight" min="2.0" max="12.0" step="0.1" value="7.65" style="width:80px;" oninput="updateEditor()">
+            <span class="editor-val" id="darHeightVal">7.65</span>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;line-height:1.5;">Size updates live in physics panel →</div>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--accent3);letter-spacing:.1em;margin-bottom:10px;">SAVONIUS ROTOR</div>
+        <div class="editor-row">
+          <span class="editor-lbl">Bucket count</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="savBucketCount" min="2" max="4" step="1" value="3" style="width:80px;" oninput="updateEditor()">
+            <span class="editor-val" id="savBucketCountVal">3</span>
+          </div>
+        </div>
+        <div class="editor-row">
+          <span class="editor-lbl">Inner radius</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="savRadius" min="0.08" max="0.25" step="0.01" value="0.16" style="width:80px;" oninput="updateEditor()">
+            <span class="editor-val" id="savRadiusVal">0.16</span>
+          </div>
+        </div>
+        <div class="editor-row">
+          <span class="editor-lbl">Bucket arc size</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="savArc" min="0.6" max="1.1" step="0.05" value="0.85" style="width:80px;" oninput="updateEditor()">
+            <span class="editor-val" id="savArcVal">0.85</span>
+          </div>
+        </div>
+        <div class="editor-row">
+          <span class="editor-lbl">Stroke width</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="range" id="savStroke" min="0.02" max="0.07" step="0.005" value="0.038" style="width:80px;" oninput="updateEditor()">
+            <span class="editor-val" id="savStrokeVal">0.038</span>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;line-height:1.5;">Arc and stroke update bucket geometry →</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button onclick="resetEditor()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 16px;border-radius:8px;cursor:pointer;">↺ Reset to Default</button>
+
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.9rem;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:8px;">LIVE PHYSICS OUTPUT</div>
+          <div style="display:flex;flex-direction:column;gap:5px;">
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">R_D (real)</span>
+              <span style="color:var(--accent);"><span id="editorRD">2.85</span> m</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">D_D (real)</span>
+              <span style="color:var(--accent);"><span id="editorDD">5.70</span> m</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">H_D (real)</span>
+              <span style="color:var(--accent);"><span id="editorHD">7.65</span> m</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">A_D swept</span>
+              <span style="color:var(--accent);"><span id="editorAD">43.61</span> m²</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">A_S swept</span>
+              <span style="color:var(--accent3);"><span id="editorAS">12.00</span> m²</span>
+            </div>
+            <div style="border-top:1px solid var(--border);margin:4px 0;"></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;font-family:var(--mono);">
+              <span style="color:var(--muted);">P @ current wind</span>
+              <span style="color:var(--accent2);font-weight:700;"><span id="editorPow">0</span> W</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.9rem;">
+          <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:8px;">LOSS CHAIN APPLIED</div>
+          <div style="display:flex;flex-direction:column;gap:4px;font-size:10px;font-family:var(--mono);">
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Mechanical</span><span id="ui_eta_mech" style="color:var(--accent4);">−10.0%</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Generation</span><span style="color:var(--accent4);">−15%</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Conv./Trans.</span><span style="color:var(--accent4);">−5%</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--muted);">Charging (<span id="ui_bat_ah_label">400</span>Ah)</span><span style="color:var(--accent4);">−3%</span></div>
+            <div style="border-top:1px solid var(--border);margin:3px 0;"></div>
+            <div style="display:flex;justify-content:space-between;"><span style="color:var(--text);font-weight:700;">Overall η</span><span id="ui_eta_overall" style="color:var(--accent2);font-weight:700;">70.49%</span></div>
+          </div>
+        </div>
+
+        <div style="font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.6;">Geometry changes update swept areas, power output, and the power table in real time.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="specs">
+  <div class="section-label">Engineering</div>
+  <h2>Turbine Design Parameters</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="card"><div class="card-title">Darrieus Rotor</div>
+      <table class="spec-table"><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
+      <tr><td>Radius (R_D)</td><td id="spec_RD">2.85 m</td><td>From P_rated, Cp=0.38</td></tr>
+      <tr><td>Diameter (D_D)</td><td id="spec_DD">5.70 m</td><td>D = 2R</td></tr>
+      <tr><td>Blade height (H_D)</td><td id="spec_HD">7.65 m</td><td>H/D = <span id="spec_darHRatio">1.35</span></td></tr>
+      <tr><td>Swept area (A_D)</td><td id="spec_AD">43.6 m²</td><td>A = H × D</td></tr>
+      <tr><td>No. of blades</td><td id="spec_darBlades">3</td><td>Standard H-blade</td></tr>
+      <tr><td>Chord (c_D)</td><td id="spec_darChord">0.24 m</td><td>σ = 0.253</td></tr>
+      <tr><td>Solidity (σ_D)</td><td id="spec_darSolidity">0.253</td><td>Optimal 0.20–0.30</td></tr>
+      <tr><td>Design TSR</td><td>4.0</td><td>NACA 0018 @ Re≈80k</td></tr>
+      <tr><td>Max Cp_D</td><td id="spec_cpDar" style="color:var(--accent3);font-weight:bold;">0.380</td><td>Dynamic via Solidity</td></tr>
+      <tr><td>Airfoil</td><td>NACA 0018</td><td>Better Cl at low Re</td></tr>
+      </table>
+    </div>
+    <div class="card"><div class="card-title">Savonius Rotor</div>
+      <table class="spec-table"><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
+      <tr><td>Radius (R_S)</td><td id="spec_RS">1.00 m</td><td>Fits inside Darrieus</td></tr>
+      <tr><td>Diameter (D_S)</td><td id="spec_DS">2.00 m</td><td>Bucket diameter</td></tr>
+      <tr><td>Height (H_S)</td><td id="spec_HS">6.00 m</td><td>0.8 × H_D</td></tr>
+      <tr><td>No. of buckets</td><td id="spec_savBuckets">3</td><td>3-bucket helical</td></tr>
+      <tr><td>Overlap ratio</td><td>0.17</td><td>Optimal 0.15–0.20</td></tr>
+      <tr><td>Opt. TSR (λ_S)</td><td id="spec_savArc">0.85</td><td>Optimal drag rotor</td></tr>
+      <tr><td>Max Cp_S</td><td id="spec_cpSav" style="color:var(--accent3);font-weight:bold;">0.200</td><td>Dynamic via Arc size</td></tr>
+      <tr><td>Helical twist</td><td>180°</td><td>Full half-turn over H_S</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="winddata">
+  <div class="section-label">Site Assessment</div>
+  <h2>Wind Resource — Norzagaray, Bulacan</h2>
+  <div class="card">
+    <canvas id="windChartCanvas" width="800" height="200" style="width:100%;"></canvas>
+    <div style="margin-top:12px;display:flex;gap:24px;flex-wrap:wrap;">
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">ANNUAL AVG — WS10M</span><br><span style="font-family:var(--mono);font-size:1.2rem;color:var(--accent);font-weight:700;">2.75 m/s</span></div>
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">ANNUAL AVG — WS50M</span><br><span style="font-family:var(--mono);font-size:1.2rem;color:var(--accent2);font-weight:700;">4.60 m/s</span></div>
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">PEAK MONTH</span><br><span style="font-family:var(--mono);font-size:1.2rem;color:var(--accent2);font-weight:700;">January</span><span style="font-size:11px;color:var(--muted);"> (Amihan)</span></div>
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">DATA SOURCE</span><br><span style="font-family:var(--mono);font-size:1rem;color:var(--text);">NASA POWER MERRA-2</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="references">
+  <div class="section-label">Bibliography</div>
+  <h2>References</h2>
+  <ul class="ref-list">
+    <li><strong>[1] Placeholder — Primary Design Reference</strong>Add your main cited study (author, year, title, journal/conference, DOI).</li>
+    <li><strong>[2] Placeholder — Savonius Rotor Study</strong>Overlap ratio and bucket geometry optimization reference.</li>
+    <li><strong>[3] Placeholder — Darrieus / NACA Blade Reference</strong>Darrieus airfoil selection (NACA 0018 or chosen profile).</li>
+    <li><strong>[4] NASA POWER Project</strong>Stackhouse, P.W., Jr., et al. NASA POWER Data Access Viewer. https://power.larc.nasa.gov</li>
+    <li><strong>[5] Placeholder — Hybrid VAWT Study</strong>Hybrid Darrieus-Savonius vs. standalone performance comparison.</li>
+  </ul>
+</section>
+
+<footer>
+  <div>Design and Simulation of a Prototype Wind Turbine for Harnessing Wind Energy in the Municipality of Norzagaray, Bulacan</div>
+  <div>BS Electrical Engineering · Bulacan State University · <span id="footerYear"></span></div>
+  <div style="margin-top:.5rem;color:#4a5568;font-size:10px;">Simulation values are for academic feasibility demonstration.</div>
+</footer>
+
+<script>
+document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+/* ── THEME TOGGLE ── */
+let isDayMode = false;
+function toggleTheme(){
+  isDayMode = !isDayMode;
+  document.documentElement.classList.toggle('day', isDayMode);
+  document.getElementById('themeIcon').textContent = isDayMode ? '☀️' : '🌙';
+  document.getElementById('themeLabel').textContent = isDayMode ? 'Day Mode' : 'Night Mode';
+}
+
+/* ── STATE ── */
+let wind=0, battery=20, angle=0, motorOn=false, loadPct=75, simSpeed=100;
+const MOTOR_RATED=746, CHART_LEN=100;
+const BAT_VOLTAGE=12;
+let BAT_AH=400;
+let BAT_WH = BAT_VOLTAGE * BAT_AH; // 4800 Wh
+const chartData={gen:[],load:[],net:[]};
+const rho=1.225;
+
+/* ── BATTERY CAPACITY CONTROL ── */
+function updateBatCap(v){
+  const parsed = parseInt(v);
+  if(isNaN(parsed)) return;
+  BAT_AH = Math.max(100, Math.min(500, parsed));
+  BAT_WH = BAT_VOLTAGE * BAT_AH;
+  document.getElementById('batCapDisplay').textContent = BAT_AH + ' Ah';
+  document.getElementById('batCapAhLabel').textContent = BAT_AH + ' Ah';
+  document.getElementById('batCapWhLabel').textContent = BAT_WH.toLocaleString() + ' Wh';
+  document.getElementById('batTotalAh').textContent = BAT_AH;
+  const lbl = document.getElementById('ui_bat_ah_label');
+  if(lbl) lbl.textContent = BAT_AH;
+  // reset battery state to 20% on capacity change
+  battery = 20;
+}
+
+
+let T = {
+  darBlades:3, darDiameter:5.7, darR:0.41, darChord:0.135, darThick:0.032, darHeight:7.65,
+  darC1:'#5078c8', darC2:'#beb932',
+  savBuckets:3, savRs:0.16, savArc:0.85, savStroke:0.038,
+  savC1:'#b4a03c', savC2:'#648cc8', savC3:'#a0b450'
+};
+
+/* ── DYNAMIC LOSS & CP COMPUTATION ── */
+const ETA_GEN  = 0.85;   // generator/generation loss: 15%
+const ETA_CONV = 0.95;   // conversion/transmission loss: 5%
+const ETA_CHG  = 0.97;   // battery charging loss (400Ah): 3%
+const DAR_SCALE = 2.85 / 0.41;  // 6.951 m per visual unit
+const SAV_SCALE = 1.00 / 0.16;  // 6.250 m per visual unit
+
+function getDynamicCp() {
+  const D_D = T.darDiameter;
+  const R_D = D_D / 2;
+  const chord_real = T.darChord * DAR_SCALE;
+  const sigma = (T.darBlades * chord_real) / (Math.PI * R_D);
+
+  // Darrieus: Optimal solidity is ~0.253. Deviation penalizes Max Cp.
+  const darDev = Math.abs(sigma - 0.253);
+  let cpDarMax = 0.38 - (darDev * 0.7); 
+  cpDarMax = Math.max(0.15, Math.min(0.42, cpDarMax)); // Clamp between 0.15 and 0.42
+
+  // Savonius: Optimal bucket arc is ~0.85. Deviation penalizes Max Cp.
+  const savDev = Math.abs(T.savArc - 0.85);
+  let cpSavMax = 0.20 - (savDev * 0.2);
+  cpSavMax = Math.max(0.08, Math.min(0.25, cpSavMax)); // Clamp between 0.08 and 0.25
+
+  return { cpDarMax, cpSavMax, sigma };
+}
+
+function getDynamicLosses(sigma) {
+  const deviation = Math.abs(sigma - 0.253);
+  // Base efficiency is 90%. Penalty is applied based on deviation.
+  let eta_mech = 0.90 - (deviation * 0.8);
+  eta_mech = Math.max(0.40, Math.min(0.95, eta_mech)); // Limits between 40% to 95%
+  const eta_total = eta_mech * ETA_GEN * ETA_CONV * ETA_CHG;
+  return { eta_mech, eta_total };
+}
+
+function updateEditor() {
+  T.darBlades   = parseInt(document.getElementById('darBladeCount').value);
+  T.darDiameter = parseFloat(document.getElementById('darDiameter').value);
+  T.darChord    = parseFloat(document.getElementById('darChord').value);
+  T.darThick    = parseFloat(document.getElementById('darThick').value);
+  T.darHeight   = parseFloat(document.getElementById('darHeight').value);
+  T.savBuckets  = parseInt(document.getElementById('savBucketCount').value);
+  T.savRs       = parseFloat(document.getElementById('savRadius').value);
+  T.savArc      = parseFloat(document.getElementById('savArc').value);
+  T.savStroke   = parseFloat(document.getElementById('savStroke').value);
+
+  // Sync visual canvas scale
+  T.darR = (T.darDiameter / 2) / DAR_SCALE;
+
+  document.getElementById('darBladeCountVal').textContent = T.darBlades;
+  document.getElementById('darDiameterVal').textContent   = T.darDiameter.toFixed(2);
+  document.getElementById('darChordVal').textContent      = T.darChord.toFixed(2);
+  document.getElementById('darThickVal').textContent      = T.darThick.toFixed(3);
+  document.getElementById('darHeightVal').textContent     = T.darHeight.toFixed(2);
+  document.getElementById('savBucketCountVal').textContent= T.savBuckets;
+  document.getElementById('savRadiusVal').textContent     = T.savRs.toFixed(2);
+  document.getElementById('savArcVal').textContent        = T.savArc.toFixed(2);
+  document.getElementById('savStrokeVal').textContent     = T.savStroke.toFixed(3);
+
+  // Fetch dynamic Cp and Losses
+  const { cpDarMax, cpSavMax, sigma } = getDynamicCp();
+  const { eta_mech, eta_total } = getDynamicLosses(sigma);
+
+  // Update dynamic efficiency in the UI panel
+  document.getElementById('ui_eta_mech').textContent = '−' + ((1 - eta_mech) * 100).toFixed(1) + '%';
+  document.getElementById('ui_eta_overall').textContent = (eta_total * 100).toFixed(2) + '%';
+  
+  // Update Cp text and tables
+  document.getElementById('ui_cp_s').textContent = cpSavMax.toFixed(3);
+  document.getElementById('ui_cp_d').textContent = cpDarMax.toFixed(3);
+  document.getElementById('spec_cpSav').textContent = cpSavMax.toFixed(3);
+  document.getElementById('spec_cpDar').textContent = cpDarMax.toFixed(3);
+
+  // Update live physics readout
+  const { A_D, A_S, R_D, H_D, D_D, H_S } = getSweptAreas();
+  const { pTotal } = getPowerComponents(wind > 0 ? wind : 4.75);
+  document.getElementById('editorAD').textContent  = A_D.toFixed(2);
+  document.getElementById('editorAS').textContent  = A_S.toFixed(2);
+  document.getElementById('editorRD').textContent  = R_D.toFixed(2);
+  document.getElementById('editorDD').textContent  = D_D.toFixed(2);
+  document.getElementById('editorHD').textContent  = H_D.toFixed(2);
+  document.getElementById('editorPow').textContent = pTotal;
+
+  // ── SYNC ENGINEERING TAB (Design Specs section) ──
+  const R_S = T.savRs * SAV_SCALE;
+  const D_S = 2 * R_S;
+  const chord_real = T.darChord * DAR_SCALE;
+
+  document.getElementById('spec_RD').textContent       = R_D.toFixed(2) + ' m';
+  document.getElementById('spec_DD').textContent       = D_D.toFixed(2) + ' m';
+  document.getElementById('spec_HD').textContent       = H_D.toFixed(2) + ' m';
+  document.getElementById('spec_darHRatio').textContent = (H_D / D_D).toFixed(2);
+  document.getElementById('spec_AD').textContent       = A_D.toFixed(1) + ' m²';
+  document.getElementById('spec_darBlades').textContent= T.darBlades;
+  document.getElementById('spec_darChord').textContent = chord_real.toFixed(2) + ' m';
+  document.getElementById('spec_darSolidity').textContent = sigma.toFixed(3);
+  document.getElementById('spec_RS').textContent       = R_S.toFixed(2) + ' m';
+  document.getElementById('spec_DS').textContent       = D_S.toFixed(2) + ' m';
+  document.getElementById('spec_HS').textContent       = H_S.toFixed(2) + ' m';
+  document.getElementById('spec_savBuckets').textContent = T.savBuckets;
+  document.getElementById('spec_savArc').textContent   = T.savArc.toFixed(2);
+
+  // rebuild power table to reflect new geometry
+  rebuildPowerTable();
+}
+
+function resetEditor() {
+  T={darBlades:3,darDiameter:5.7,darChord:0.135,darThick:0.032,darHeight:7.65,darC1:'#5078c8',darC2:'#beb932',savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038,savC1:'#b4a03c',savC2:'#648cc8',savC3:'#a0b450'};
+  document.getElementById('darBladeCount').value=3; document.getElementById('darDiameter').value=5.7;
+  document.getElementById('darChord').value=0.135;  document.getElementById('darThick').value=0.032;
+  document.getElementById('darHeight').value=7.65;
+  document.getElementById('darColor1').value='#5078c8'; document.getElementById('darColor2').value='#beb932';
+  document.getElementById('savBucketCount').value=3; document.getElementById('savRadius').value=0.16;
+  document.getElementById('savArc').value=0.85;      document.getElementById('savStroke').value=0.038;
+  document.getElementById('savColor1').value='#b4a03c'; document.getElementById('savColor2').value='#648cc8';
+  document.getElementById('savColor3').value='#a0b450';
+  updateEditor();
+}
+
+/* ── WIND MONTHS ── */
+const windMonthData=[{m:'JAN',v:3.57},{m:'FEB',v:3.46},{m:'MAR',v:3.08},{m:'APR',v:2.73},{m:'MAY',v:2.18},{m:'JUN',v:1.95},{m:'JUL',v:2.40},{m:'AUG',v:2.40},{m:'SEP',v:2.08},{m:'OCT',v:2.52},{m:'NOV',v:3.08},{m:'DEC',v:3.51}];
+const wmEl=document.getElementById('windMonths');
+windMonthData.forEach(d=>{const col=d.v>=3.5?'#48bb78':d.v>=2.5?'#63b3ed':'#718096';wmEl.innerHTML+=`<div class="wind-month"><span class="wind-month-name">${d.m}</span><span class="wind-month-val" style="color:${col}">${d.v}</span></div>`;});
+
+
+function getSweptAreas(){
+  const D_D = T.darDiameter;
+  const R_D = D_D / 2;
+  const H_D = T.darHeight;
+  const A_D = H_D * D_D;
+
+  const R_S = T.savRs * SAV_SCALE;
+  const D_S = 2 * R_S;
+  const H_S = 0.8 * H_D;
+  const A_S = H_S * D_S;
+
+  return { A_D, A_S, R_D, H_D, D_D, H_S };
+}
+
+function getPowerComponents(w){
+  if(w < 1.5) return { pSav:0, pDar:0, pTotal:0, pNet:0 };
+  const { A_D, A_S } = getSweptAreas();
+  const { cpDarMax, cpSavMax, sigma } = getDynamicCp();
+  const { eta_total } = getDynamicLosses(sigma); 
+
+  // Aerodynamic power (before losses)
+  const pSav_aero = 0.5 * rho * A_S * Math.pow(w, 3) * cpSavMax;
+  
+  // Darrieus Cp ramps up slowly from 3.0 m/s up to cpDarMax
+  const cpDar = w < 3.0 ? 0 : Math.min(cpDarMax, (cpDarMax / 10) * Math.pow(w - 3.0, 2));
+  const pDar_aero = 0.5 * rho * A_D * Math.pow(w, 3) * cpDar;
+  
+  const pTotal_aero = pSav_aero + pDar_aero;
+
+  // Apply full loss chain to get power actually delivered to battery
+  const pNet = pTotal_aero * eta_total;
+
+  return {
+    pSav:  Math.round(pSav_aero * eta_total),
+    pDar:  Math.round(pDar_aero * eta_total),
+    pTotal:Math.round(pTotal_aero * eta_total),
+    pNet:  Math.round(pNet)
+  };
+}
+function getRPM(w){ return w < 1.5 ? 0 : Math.round((4.0 * w / 2.85) * 60 / (2 * Math.PI) * 10) / 10; }
+
+/* ── BATTERY TIMER ── */
+function formatTime(seconds){
+  if(!isFinite(seconds)||seconds<=0)return'—';
+  if(seconds<60)return Math.round(seconds)+'s';
+  if(seconds<3600){const m=Math.floor(seconds/60),s=Math.round(seconds%60);return m+'m '+(s<10?'0':'')+s+'s';}
+  const h=Math.floor(seconds/3600),m=Math.round((seconds%3600)/60);return h+'h '+(m<10?'0':'')+m+'m';
+}
+function updateBatteryTimer(net){
+  const timerVal=document.getElementById('batTimerVal');
+  const timerNote=document.getElementById('batTimerNote');
+  const timerSub=document.getElementById('batTimerSub');
+  if(net<=0){
+    timerVal.textContent='—';timerVal.style.color='#718096';
+    timerNote.textContent='no net surplus — charging paused';
+    timerNote.style.color='#fc8181';return;
+  }
+  // battery capacity uses BAT_WH (12V × 400Ah = 4800 Wh)
+  const remainingPct=100-battery;
+  const remainingWh=BAT_WH*(remainingPct/100);
+  const realSecondsToFull=remainingWh/(net/3600);
+  const wallSecondsToFull=realSecondsToFull/simSpeed;
+  timerVal.textContent=formatTime(wallSecondsToFull);
+  timerVal.style.color='#48bb78';
+  timerNote.textContent='wall-clock time at '+simSpeed+'× speed';
+  timerNote.style.color='#718096';
+  timerSub.textContent='surplus: +'+Math.round(net)+'W · '+Math.round(remainingPct)+'% remaining';
+}
+
+function updateDischargeTimer(net){
+  const disVal=document.getElementById('batDischargeVal');
+  const disNote=document.getElementById('batDischargeNote');
+  const disSub=document.getElementById('batDischargeSub');
+  if(net>=0){
+    disVal.textContent='—';disVal.style.color='#718096';
+    disNote.textContent='no net deficit — battery not draining';
+    disNote.style.color='#48bb78';return;
+  }
+  const drainablePct=Math.max(0,battery-20);
+  const drainableWh=BAT_WH*(drainablePct/100);
+  const deficit=Math.abs(net);
+  const realSecsToCutoff=drainableWh/(deficit/3600);
+  const wallSecsToCutoff=realSecsToCutoff/simSpeed;
+  if(drainablePct<=0){
+    disVal.textContent='CUTOFF';disVal.style.color='#fc8181';
+    disNote.textContent='battery at minimum — motor cut off';
+    disNote.style.color='#fc8181';
+    disSub.textContent='recharge to resume';return;
+  }
+  disVal.textContent=formatTime(wallSecsToCutoff);
+  disVal.style.color='#fc8181';
+  disNote.textContent='wall-clock time at '+simSpeed+'× speed';
+  disNote.style.color='#718096';
+  disSub.textContent='deficit: '+Math.round(net)+'W · '+Math.round(drainablePct)+'% drainable';
+}
+
+/* ── DRAW TURBINE (uses T object) ── */
+function drawTurbine(ctx,cw,ch,ang){
+  ctx.clearRect(0,0,cw,ch);
+  const cx=cw/2,cy=ch/2;
+  const R=cw*T.darR, Rs=cw*T.savRs;
+  const strutInner=Rs*1.1;
+  // swept area ring
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(99,179,237,0.07)';ctx.lineWidth=1;ctx.stroke();
+  // radial struts
+  for(let i=0;i<T.darBlades;i++){
+    const a=ang+i*(Math.PI*2/T.darBlades);
+    ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*strutInner,cy+Math.sin(a)*strutInner);ctx.lineTo(cx+Math.cos(a)*R*0.72,cy+Math.sin(a)*R*0.72);
+    ctx.strokeStyle='rgba(160,160,180,0.45)';ctx.lineWidth=1.5;ctx.lineCap='round';ctx.stroke();
+  }
+  // blade struts
+  for(let i=0;i<T.darBlades;i++){
+    const a=ang+i*(Math.PI*2/T.darBlades);
+    const bx=cx+Math.cos(a)*R,by=cy+Math.sin(a)*R,perp=a+Math.PI/2,ss=cw*0.055;
+    [-1,1].forEach(side=>{
+      const sx=bx+Math.cos(perp)*ss*side,sy=by+Math.sin(perp)*ss*side;
+      const mx=cx+Math.cos(a)*R*0.70+Math.cos(perp)*ss*side*0.4,my=cy+Math.sin(a)*R*0.70+Math.sin(perp)*ss*side*0.4;
+      ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(sx,sy);ctx.strokeStyle='rgba(140,160,200,0.5)';ctx.lineWidth=1.2;ctx.stroke();
+    });
+  }
+  // Savonius buckets
+  const savColors=[T.savC1,T.savC2,T.savC3,T.savC1];
+  for(let i=0;i<T.savBuckets;i++){
+    const a=ang+i*(Math.PI*2/T.savBuckets);
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(a);
+    const bucketR=Rs*T.savArc,offsetX=Rs*0.28;
+    ctx.beginPath();ctx.arc(offsetX,0,bucketR,Math.PI*0.55,Math.PI*1.45);
+    // hex color → rgba with opacity
+    const bc=savColors[i%savColors.length];
+    ctx.strokeStyle=bc+'dd';
+    ctx.lineWidth=cw*T.savStroke;ctx.lineCap='round';ctx.stroke();
+    ctx.beginPath();ctx.arc(offsetX*0.5,0,bucketR*0.55,Math.PI*0.7,Math.PI*1.3);
+    ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=cw*0.012;ctx.stroke();
+    ctx.restore();
+  }
+  ctx.beginPath();ctx.arc(cx,cy,Rs*0.42,0,Math.PI*2);ctx.strokeStyle='rgba(160,160,200,0.5)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.beginPath();ctx.arc(cx,cy,Rs*1.05,0,Math.PI*2);ctx.strokeStyle='rgba(120,130,160,0.2)';ctx.lineWidth=1;ctx.stroke();
+  // Darrieus NACA blades
+  const bladeColors=[T.darC1+'d0',T.darC2+'d0',T.darC1+'d0',T.darC2+'d0',T.darC1+'d0',T.darC2+'d0'];
+  const strokeColors=[T.darC1,T.darC2,T.darC1,T.darC2,T.darC1,T.darC2];
+  for(let i=0;i<T.darBlades;i++){
+    const a=ang+i*(Math.PI*2/T.darBlades);
+    const bx=cx+Math.cos(a)*R,by=cy+Math.sin(a)*R;
+    ctx.save();ctx.translate(bx,by);ctx.rotate(a+Math.PI/2);
+    const chord=cw*T.darChord,thick=cw*T.darThick;
+    ctx.beginPath();
+    ctx.moveTo(0,-chord*0.5);
+    ctx.bezierCurveTo(thick*1.2,-chord*0.3,thick*1.1,chord*0.1,0,chord*0.5);
+    ctx.bezierCurveTo(-thick*0.4,chord*0.1,-thick*0.4,-chord*0.3,0,-chord*0.5);
+    ctx.closePath();
+    ctx.fillStyle=bladeColors[i%bladeColors.length];ctx.fill();
+    ctx.strokeStyle=strokeColors[i%strokeColors.length];ctx.lineWidth=0.8;ctx.stroke();
+    ctx.beginPath();ctx.arc(0,-chord*0.38,thick*0.55,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fill();
+    ctx.restore();
+  }
+  // shaft
+  ctx.beginPath();ctx.arc(cx,cy,cw*0.04,0,Math.PI*2);ctx.fillStyle='#2d3748';ctx.fill();ctx.strokeStyle='#AFA9EC';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.strokeStyle='rgba(175,169,236,0.6)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(cx-cw*0.04,cy);ctx.lineTo(cx+cw*0.04,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-cw*0.04);ctx.lineTo(cx,cy+cw*0.04);ctx.stroke();
+}
+
+function drawMotor(ctx,w,h,on,rpm){
+  ctx.clearRect(0,0,w,h);const cx=w/2,cy=h/2,col=on?'#48bb78':'#4a5568';
+  ctx.beginPath();ctx.roundRect(cx-42,cy-32,84,64,8);ctx.fillStyle=on?'rgba(72,187,120,0.08)':'rgba(26,34,51,0.8)';ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=on?1.5:0.8;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx+42,cy);ctx.lineTo(cx+58,cy);ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineCap='round';ctx.stroke();
+  [cy-12,cy,cy+12].forEach(y=>{ctx.beginPath();ctx.moveTo(cx-58,y);ctx.lineTo(cx-42,y);ctx.strokeStyle='rgba(175,169,236,0.6)';ctx.lineWidth=1.5;ctx.stroke();});
+  ctx.beginPath();ctx.arc(cx,cy,20,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.stroke();
+  if(on){const t=Date.now()/1000;for(let i=0;i<6;i++){const a=t*(rpm/60)*Math.PI*2+i*(Math.PI/3);ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*18,cy+Math.sin(a)*18);ctx.strokeStyle='rgba(72,187,120,0.5)';ctx.lineWidth=1.5;ctx.stroke();}}
+  ctx.font='10px Space Mono,monospace';ctx.textAlign='center';ctx.fillStyle='#718096';ctx.fillText('1-HP MOTOR',cx,cy+40);ctx.fillStyle=col;ctx.fillText(on?Math.round(MOTOR_RATED*loadPct/100)+'W':'STANDBY',cx,cy+52);
+}
+
+function drawPowerCurve(ctx,W,H){
+  ctx.clearRect(0,0,W,H);
+  const pad={l:52,r:14,t:14,b:28},iw=W-pad.l-pad.r,ih=H-pad.t-pad.b,maxW=5.5;
+  const{pTotal:pMax}=getPowerComponents(5.5);
+  const yMax=Math.ceil(Math.max(pMax,200)/200)*200;
+  function toX(w){return pad.l+(w/maxW)*iw;}
+  function toY(v){return pad.t+ih*(1-Math.min(v,yMax)/yMax);}
+  for(let i=0;i<=5;i++){const v=(yMax/5)*i,y=toY(v);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iw,y);ctx.strokeStyle='rgba(99,179,237,0.1)';ctx.lineWidth=0.5;ctx.stroke();ctx.fillStyle='#718096';ctx.font='11px Space Mono,monospace';ctx.textAlign='right';ctx.fillText(Math.round(v)+'W',pad.l-4,y+4);}
+  [[getPowerComponents,'pSav','#f6ad55'],[getPowerComponents,'pDar','#63b3ed'],[getPowerComponents,'pTotal','#48bb78']].forEach(([fn,key,col],ci)=>{
+    ctx.beginPath();ctx.strokeStyle=col;ctx.lineWidth=ci===2?2.5:2;let first=true;
+    for(let w=0;w<=5.5;w+=0.05){const v=fn(w)[key];first?ctx.moveTo(toX(w),toY(v)):ctx.lineTo(toX(w),toY(v));first=false;}ctx.stroke();
+  });
+  const dX=toX(4.75);ctx.beginPath();ctx.setLineDash([4,4]);ctx.moveTo(dX,pad.t);ctx.lineTo(dX,pad.t+ih);ctx.strokeStyle='rgba(246,173,85,0.4)';ctx.lineWidth=1;ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='rgba(246,173,85,0.6)';ctx.font='10px Space Mono,monospace';ctx.textAlign='center';ctx.fillText('4.75',dX,pad.t+ih+22);
+  const curX=toX(Math.min(wind,5.5));ctx.beginPath();ctx.setLineDash([3,3]);ctx.moveTo(curX,pad.t);ctx.lineTo(curX,pad.t+ih);ctx.strokeStyle='rgba(99,179,237,0.7)';ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);
+  const{pTotal:curP}=getPowerComponents(wind);
+  if(wind>=1.5){ctx.beginPath();ctx.arc(curX,toY(curP),5,0,Math.PI*2);ctx.fillStyle='#48bb78';ctx.fill();ctx.fillStyle='#e2e8f0';ctx.font='11px Space Mono,monospace';ctx.textAlign='left';ctx.fillText(Math.round(curP)+'W',curX+7,Math.max(pad.t+14,toY(curP)-4));}
+  ctx.fillStyle='#718096';ctx.font='11px Space Mono,monospace';ctx.textAlign='center';
+  [0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,4.75,5.0,5.5].forEach(v=>{ctx.fillStyle=v===4.75?'rgba(246,173,85,0.8)':'#718096';ctx.fillText(v%1===0?v.toFixed(0):v.toFixed(2),toX(v),pad.t+ih+16);});
+}
+
+function drawChart(ctx,W,H){
+  ctx.clearRect(0,0,W,H);const maxV=1000;
+  [0,0.25,0.5,0.75,1].forEach(t=>{const y=H*(1-t);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.strokeStyle='rgba(99,179,237,0.08)';ctx.lineWidth=0.5;ctx.stroke();ctx.fillStyle='#4a5568';ctx.font='9px Space Mono,monospace';ctx.textAlign='left';if(t>0)ctx.fillText(Math.round(t*maxV),2,y-2);});
+  function dl(data,col){if(data.length<2)return;ctx.beginPath();ctx.strokeStyle=col;ctx.lineWidth=1.5;data.forEach((v,i)=>{const x=(i/CHART_LEN)*W,y=H-(Math.max(0,Math.min(v,maxV))/maxV)*H;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();}
+  dl(chartData.gen,'#48bb78');dl(chartData.load,'#fc8181');dl(chartData.net,'#63b3ed');
+}
+
+function drawWindChart(){
+  const canvas=document.getElementById('windChartCanvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);const pad={l:40,r:20,t:20,b:40},iw=W-pad.l-pad.r,ih=H-pad.t-pad.b,maxV=5,n=windMonthData.length,bw=iw/n*0.6,gap=iw/n;
+  [0,1,2,3,4,5].forEach(v=>{const y=pad.t+ih*(1-v/maxV);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iw,y);ctx.strokeStyle='rgba(99,179,237,0.1)';ctx.lineWidth=0.5;ctx.stroke();ctx.fillStyle='#4a5568';ctx.font='10px Space Mono,monospace';ctx.textAlign='right';ctx.fillText(v,pad.l-4,y+4);});
+  windMonthData.forEach((d,i)=>{const x=pad.l+i*gap+(gap-bw)/2,barH=(d.v/maxV)*ih,y=pad.t+ih-barH,col=d.v>=3.5?'#48bb78':d.v>=2.5?'#63b3ed':'#718096';ctx.fillStyle=col+'33';ctx.fillRect(x,y,bw,barH);ctx.strokeStyle=col;ctx.lineWidth=1;ctx.strokeRect(x,y,bw,barH);ctx.fillStyle=col;ctx.font='600 11px Space Mono,monospace';ctx.textAlign='center';ctx.fillText(d.v,x+bw/2,y-4);ctx.fillStyle='#4a5568';ctx.font='10px Space Mono,monospace';ctx.fillText(d.m,x+bw/2,pad.t+ih+14);});
+  const cutInY=pad.t+ih*(1-2.0/maxV);ctx.beginPath();ctx.moveTo(pad.l,cutInY);ctx.lineTo(pad.l+iw,cutInY);ctx.strokeStyle='rgba(246,173,85,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#f6ad55';ctx.font='9px Space Mono,monospace';ctx.textAlign='left';ctx.fillText('Cut-in: 2.0 m/s',pad.l+4,cutInY-4);
+}
+
+/* ── POWER TABLE (rebuilds when editor changes) ── */
+function rebuildPowerTable(){
+  const tbody=document.getElementById('powerTableBody');
+  tbody.innerHTML=''; // clear before rebuild
+  const motorDraw=Math.round(MOTOR_RATED*0.75);
+  [0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,4.75,5.0,5.5].forEach(w=>{
+    const{pSav,pDar,pTotal}=getPowerComponents(w);
+    const rpm=getRPM(w),net=pTotal-motorDraw;
+    let mode='—';if(w>=3.0)mode='Full Hybrid';else if(w>=1.5)mode='Savonius only';
+    const isDesign=w===4.75;
+    const tr=document.createElement('tr');
+    if(isDesign)tr.classList.add('design-row');else if(pTotal>=motorDraw)tr.classList.add('highlight-row');
+    const nc=net>=0?'#48bb78':'#fc8181';
+    tr.innerHTML=`<td style="color:${isDesign?'#f6ad55':'#e2e8f0'};font-weight:${isDesign?'700':'400'};">${w.toFixed(2)}</td><td style="color:#63b3ed;">${rpm}</td><td style="color:#f6ad55;">${pSav}</td><td style="color:#63b3ed;">${pDar}</td><td style="color:#48bb78;font-weight:600;">${pTotal}</td><td style="color:${w<1.5?'#718096':w<3?'#f6ad55':'#48bb78'}">${mode}</td><td style="color:${nc};font-weight:${Math.abs(net)<50?'700':'400'};">${net>=0?'+':''}${net}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+rebuildPowerTable();
+
+/* ── CONTROLS ── */
+function updateWindInput(v){
+  const parsed = parseFloat(v);
+  if(isNaN(parsed) || v === '' || v === null) return;
+  wind = Math.max(0, Math.min(5.5, parsed));
+}
+function toggleMotor(){ motorOn=!motorOn; document.getElementById('motorToggle').classList.toggle('on',motorOn); }
+function updateSimSpeed(v){
+  const parsed = parseInt(v);
+  if(isNaN(parsed) || v==='' || v===null) return;
+  simSpeed = Math.max(1, Math.min(500, parsed));
+  document.getElementById('simSpeedDisplay').textContent = simSpeed+'×';
+}
+function updateLoad(v){
+  const parsed = parseInt(v);
+  if(isNaN(parsed) || v==='' || v===null) return;
+  loadPct = Math.max(20, Math.min(100, parsed));
+  document.getElementById('loadDisplay').textContent = loadPct+'%';
+  document.getElementById('drawDisplay').textContent = Math.round(MOTOR_RATED*loadPct/100)+' W';
+}
+
+/* ── CANVAS REFS ── */
+const tc=document.getElementById('turbineCanvas').getContext('2d');
+const mc=document.getElementById('motorCanvas').getContext('2d');
+const heroCtx=document.getElementById('heroCanvas').getContext('2d');
+const chartEl=document.getElementById('chartCanvas');
+const chartCtx=chartEl.getContext('2d');
+const pcEl=document.getElementById('pcCanvas');
+const pcCtx=pcEl.getContext('2d');
+
+let tick=0;
+function loop(){
+  // Read wind from number input, update the wind variable safely
+  const windInput = document.getElementById('windSlider');
+  const parsedWind = parseFloat(windInput.value);
+  if(!isNaN(parsedWind)) wind = Math.max(0, Math.min(5.5, parsedWind));
+  document.getElementById('windDisplay').textContent=wind.toFixed(1)+' m/s';
+  const{pSav,pDar,pTotal:gen}=getPowerComponents(wind);
+  const rpm=getRPM(wind);
+  const loadDraw=motorOn&&battery>20?MOTOR_RATED*(loadPct/100):0;
+  const net=isNaN(gen)||isNaN(loadDraw)?0:(gen-loadDraw);
+  const baseRate = 100 / (BAT_WH * 3600 * 60); // % per Watt per frame (real physics)
+  const newBat = battery + net * baseRate * simSpeed;
+  battery = isNaN(newBat) ? battery : Math.max(0, Math.min(100, newBat));
+
+  // Ah and Wh readout
+  const currentAh = Math.round(BAT_AH * battery / 100);
+  const currentWh = Math.round(BAT_WH * battery / 100);
+  document.getElementById('mAh').textContent = currentAh;
+  document.getElementById('mWh').textContent = '(' + currentWh + ' Wh)';
+
+  document.getElementById('mRPM').textContent=rpm;
+  document.getElementById('mGen').textContent=Math.round(gen);
+  document.getElementById('mSav').textContent=Math.round(pSav);
+  document.getElementById('mDar').textContent=Math.round(pDar);
+  const netEl=document.getElementById('mNet');
+  netEl.textContent=(net>=0?'+':'')+Math.round(net);netEl.style.color=net>=0?'#48bb78':'#fc8181';
+  document.getElementById('mLoad').innerHTML=Math.round(loadDraw)+' <span style="font-size:11px;color:var(--muted);">W</span>';
+  document.getElementById('mBat').textContent=Math.round(battery);
+  const bar=document.getElementById('batBar');bar.style.width=battery+'%';bar.style.background=battery>60?'#48bb78':battery>30?'#f6ad55':'#fc8181';
+  const batSt=document.getElementById('batStatus');
+  if(battery<=20&&loadDraw>gen){batSt.textContent='LOW — CUTOFF RISK';batSt.style.color='#fc8181';}
+  else if(net>0){batSt.textContent='CHARGING';batSt.style.color='#48bb78';}
+  else if(net<0){batSt.textContent='DISCHARGING';batSt.style.color='#f6ad55';}
+  else{batSt.textContent='BALANCED';batSt.style.color='#63b3ed';}
+
+  // both battery timers
+  updateBatteryTimer(net);
+  updateDischargeTimer(net);
+
+  angle+=rpm>0?(rpm/60)*2*Math.PI*(1/60):0;
+  const rb=document.getElementById('rotBadge');
+  if(rpm===0){rb.className='badge badge-idle';rb.textContent='IDLE';}
+  else if(wind<4){rb.className='badge badge-sav';rb.textContent='SAVONIUS ACTIVE';}
+  else{rb.className='badge badge-full';rb.textContent='FULL HYBRID OP';}
+  const mb=document.getElementById('motorBadge');
+  if(!motorOn){mb.className='badge badge-motor-off';mb.textContent='OFF';}
+  else if(battery<=20){mb.className='badge badge-motor-cut';mb.textContent='CUTOFF';}
+  else{mb.className='badge badge-motor-on';mb.textContent='RUNNING';}
+
+  tick++;
+  if(tick%3===0){chartData.gen.push(gen);chartData.load.push(loadDraw);chartData.net.push(net);if(chartData.gen.length>CHART_LEN){chartData.gen.shift();chartData.load.shift();chartData.net.shift();}}
+
+  drawTurbine(tc,280,280,angle);
+  drawTurbine(heroCtx,220,220,angle*0.8);
+  drawMotor(mc,150,150,motorOn&&battery>20,rpm);
+  drawChart(chartCtx,chartEl.width,chartEl.height);
+  drawPowerCurve(pcCtx,pcEl.width,pcEl.height);
+  requestAnimationFrame(loop);
+}
+
+drawWindChart();
+updateEditor();
+loop();
+</script>
+</body>
+</html>
