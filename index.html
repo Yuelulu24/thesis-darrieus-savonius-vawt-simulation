@@ -469,15 +469,15 @@
         <div style="margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:6px;">BUCKET COLORS</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <input type="color" id="savColor1" value="#eab308" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
+            <input type="color" id="savColor1" value="#2563eb" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
             <span style="font-size:10px;color:var(--muted);font-family:var(--mono);">1</span>
           </div>
           <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <input type="color" id="savColor2" value="#eab308" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
+            <input type="color" id="savColor2" value="#2563eb" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
             <span style="font-size:10px;color:var(--muted);font-family:var(--mono);">2</span>
           </div>
           <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <input type="color" id="savColor3" value="#eab308" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
+            <input type="color" id="savColor3" value="#2563eb" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
             <span style="font-size:10px;color:var(--muted);font-family:var(--mono);">3</span>
           </div>
         </div>
@@ -642,7 +642,7 @@ let T = {
   darBlades:3, darDiameter:5.7, darR:0.41, darChord:0.135, darThick:0.032, darHeight:7.65,
   darC1:'#eab308', darC2:'#eab308', // Changed to Yellow to match reference
   savBuckets:3, savRs:0.16, savArc:0.85, savStroke:0.038,
-  savC1:'#eab308', savC2:'#eab308', savC3:'#eab308' 
+  savC1:'#2563eb', savC2:'#2563eb', savC3:'#2563eb' 
 };
 
 /* ── DYNAMIC LOSS & CP COMPUTATION ── */
@@ -744,8 +744,8 @@ function resetEditor() {
   document.getElementById('darColor1').value='#eab308'; document.getElementById('darColor2').value='#eab308';
   document.getElementById('savBucketCount').value=3; document.getElementById('savRadius').value=0.16;
   document.getElementById('savArc').value=0.85;      document.getElementById('savStroke').value=0.038;
-  document.getElementById('savColor1').value='#eab308'; document.getElementById('savColor2').value='#eab308';
-  document.getElementById('savColor3').value='#eab308';
+  document.getElementById('savColor1').value='#2563eb'; document.getElementById('savColor2').value='#2563eb';
+  document.getElementById('savColor3').value='##2563eb';
   updateEditor();
 }
 
