@@ -438,11 +438,11 @@
         <div style="margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:6px;">BLADE COLORS</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <input type="color" id="darColor1" value="#2563eb" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
+            <input type="color" id="darColor1" value="#eab308" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
             <span style="font-size:10px;color:var(--muted);font-family:var(--mono);">A / C</span>
           </div>
           <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-            <input type="color" id="darColor2" value="#2563eb" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
+            <input type="color" id="darColor2" value="#eab308" style="width:36px;height:28px;padding:2px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;cursor:pointer;" oninput="updateEditor()">
             <span style="font-size:10px;color:var(--muted);font-family:var(--mono);">B</span>
           </div>
         </div>
@@ -640,9 +640,9 @@ function updateBatCap(v){
 
 let T = {
   darBlades:3, darDiameter:5.7, darR:0.41, darChord:0.135, darThick:0.032, darHeight:7.65,
-  darC1:'#2563eb', darC2:'#2563eb', // DEFAULT: Solid Blue
+  darC1:'#eab308', darC2:'#eab308', // Changed to Yellow to match reference
   savBuckets:3, savRs:0.16, savArc:0.85, savStroke:0.038,
-  savC1:'#eab308', savC2:'#eab308', savC3:'#eab308' // DEFAULT: Solid Yellow
+  savC1:'#eab308', savC2:'#eab308', savC3:'#eab308' 
 };
 
 /* ── DYNAMIC LOSS & CP COMPUTATION ── */
@@ -731,18 +731,17 @@ function updateEditor() {
 
   rebuildPowerTable();
   
-  // Rebuild the 3D model if it exists so sizes update real-time
   if(window.turbine3DGroup) {
       build3DTurbine();
   }
 }
 
 function resetEditor() {
-  T={darBlades:3,darDiameter:5.7,darChord:0.135,darThick:0.032,darHeight:7.65,darC1:'#2563eb',darC2:'#2563eb',savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038,savC1:'#eab308',savC2:'#eab308',savC3:'#eab308'};
+  T={darBlades:3,darDiameter:5.7,darChord:0.135,darThick:0.032,darHeight:7.65,darC1:'#eab308',darC2:'#eab308',savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038,savC1:'#eab308',savC2:'#eab308',savC3:'#eab308'};
   document.getElementById('darBladeCount').value=3; document.getElementById('darDiameter').value=5.7;
   document.getElementById('darChord').value=0.135;  document.getElementById('darThick').value=0.032;
   document.getElementById('darHeight').value=7.65;
-  document.getElementById('darColor1').value='#2563eb'; document.getElementById('darColor2').value='#2563eb';
+  document.getElementById('darColor1').value='#eab308'; document.getElementById('darColor2').value='#eab308';
   document.getElementById('savBucketCount').value=3; document.getElementById('savRadius').value=0.16;
   document.getElementById('savArc').value=0.85;      document.getElementById('savStroke').value=0.038;
   document.getElementById('savColor1').value='#eab308'; document.getElementById('savColor2').value='#eab308';
@@ -847,73 +846,77 @@ function drawTurbine(ctx,cw,ch,ang){
   const cx=cw/2,cy=ch/2;
   const R=cw*T.darR, Rs=cw*T.savRs;
   const strutInner=Rs*1.1;
+
+  // Guidelines
   ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);
   ctx.strokeStyle=isDayMode?'rgba(0,0,0,0.1)':'rgba(99,179,237,0.07)';
   ctx.lineWidth=1;ctx.stroke();
+
+  // Struts
   for(let i=0;i<T.darBlades;i++){
     const a=ang+i*(Math.PI*2/T.darBlades);
-    ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*strutInner,cy+Math.sin(a)*strutInner);ctx.lineTo(cx+Math.cos(a)*R*0.72,cy+Math.sin(a)*R*0.72);
+    ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*strutInner,cy+Math.sin(a)*strutInner);ctx.lineTo(cx+Math.cos(a)*R*0.95,cy+Math.sin(a)*R*0.95);
     ctx.strokeStyle=isDayMode?'rgba(50,60,80,0.5)':'rgba(160,160,180,0.45)';
     ctx.lineWidth=1.5;ctx.lineCap='round';ctx.stroke();
   }
-  for(let i=0;i<T.darBlades;i++){
-    const a=ang+i*(Math.PI*2/T.darBlades);
-    const bx=cx+Math.cos(a)*R,by=cy+Math.sin(a)*R,perp=a+Math.PI/2,ss=cw*0.055;
-    [-1,1].forEach(side=>{
-      const sx=bx+Math.cos(perp)*ss*side,sy=by+Math.sin(perp)*ss*side;
-      const mx=cx+Math.cos(a)*R*0.70+Math.cos(perp)*ss*side*0.4,my=cy+Math.sin(a)*R*0.70+Math.sin(perp)*ss*side*0.4;
-      ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(sx,sy);
-      ctx.strokeStyle=isDayMode?'rgba(50,60,80,0.6)':'rgba(140,160,200,0.5)';
-      ctx.lineWidth=1.2;ctx.stroke();
-    });
-  }
+
+  // Savonius - Thin Overlapping Arcs
   const savColors=[T.savC1,T.savC2,T.savC3,T.savC1];
   for(let i=0;i<T.savBuckets;i++){
     const a=ang+i*(Math.PI*2/T.savBuckets);
     ctx.save();ctx.translate(cx,cy);ctx.rotate(a);
-    const bucketR=Rs*T.savArc,offsetX=Rs*0.28;
-    ctx.beginPath();ctx.arc(offsetX,0,bucketR,Math.PI*0.55,Math.PI*1.45);
-    ctx.strokeStyle=isDayMode?'rgba(0,0,0,0.3)':'rgba(0,0,0,0.6)';
-    ctx.lineWidth=(cw*T.savStroke)+2.5;ctx.lineCap='round';ctx.stroke();
-    ctx.beginPath();ctx.arc(offsetX,0,bucketR,Math.PI*0.55,Math.PI*1.45);
+
+    const bucketR = Rs * 0.65;
+    const offsetX = Rs * 0.35; // overlap center
+
+    ctx.beginPath();
+    // Scoop shape using arc (from 0 to -Math.PI for CCW scoop)
+    ctx.arc(bucketR - offsetX, 0, bucketR, 0, -Math.PI, false);
+
     const bc=savColors[i%savColors.length];
-    ctx.strokeStyle=bc+'dd'; 
-    ctx.lineWidth=cw*T.savStroke;ctx.lineCap='round';ctx.stroke();
-    ctx.beginPath();ctx.arc(offsetX*0.5,0,bucketR*0.55,Math.PI*0.7,Math.PI*1.3);
-    ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=cw*0.012;ctx.stroke();
+    ctx.strokeStyle=bc;
+    ctx.lineWidth=3.0; // Thin line!
+    ctx.lineCap='round';
+    ctx.stroke();
     ctx.restore();
   }
-  ctx.beginPath();ctx.arc(cx,cy,Rs*0.42,0,Math.PI*2);
+
+  // Savonius guidelines
+  ctx.beginPath();ctx.arc(cx,cy,Rs,0,Math.PI*2);
   ctx.strokeStyle=isDayMode?'rgba(50,60,80,0.5)':'rgba(160,160,200,0.5)';
   ctx.lineWidth=1.5;ctx.stroke();
-  ctx.beginPath();ctx.arc(cx,cy,Rs*1.05,0,Math.PI*2);
-  ctx.strokeStyle=isDayMode?'rgba(0,0,0,0.15)':'rgba(120,130,160,0.2)';
-  ctx.lineWidth=1;ctx.stroke();
+
+  // Darrieus Blades
   const bladeColors=[T.darC1+'d0',T.darC2+'d0',T.darC1+'d0',T.darC2+'d0',T.darC1+'d0',T.darC2+'d0'];
   const strokeColors=[T.darC1,T.darC2,T.darC1,T.darC2,T.darC1,T.darC2];
+
   for(let i=0;i<T.darBlades;i++){
     const a=ang+i*(Math.PI*2/T.darBlades);
-    const bx=cx+Math.cos(a)*R,by=cy+Math.sin(a)*R;
-    ctx.save();ctx.translate(bx,by);ctx.rotate(a+Math.PI/2);
-    const chord=cw*T.darChord,thick=cw*T.darThick;
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(a);
+
+    const span = Math.PI / 4;
+    const bulge = cw * 0.04;
+
     ctx.beginPath();
-    ctx.moveTo(0,-chord*0.5);
-    ctx.bezierCurveTo(thick*1.2,-chord*0.3,thick*1.1,chord*0.1,0,chord*0.5);
-    ctx.bezierCurveTo(-thick*0.4,chord*0.1,-thick*0.4,-chord*0.3,0,-chord*0.5);
-    ctx.closePath();
-    ctx.fillStyle=bladeColors[i%bladeColors.length];ctx.fill();
-    ctx.strokeStyle=strokeColors[i%strokeColors.length];ctx.lineWidth=0.8;ctx.stroke();
-    ctx.beginPath();ctx.arc(0,-chord*0.38,thick*0.55,0,Math.PI*2);
-    ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fill();
+    ctx.arc(0, 0, R, -span/2, span/2);
+    ctx.quadraticCurveTo(R + bulge * 1.5, 0, R * Math.cos(-span/2), R * Math.sin(-span/2));
+
+    ctx.fillStyle = bladeColors[i%bladeColors.length];
+    ctx.fill();
+    ctx.strokeStyle = strokeColors[i%strokeColors.length];
+    ctx.lineWidth = 1;
+    ctx.stroke();
     ctx.restore();
   }
+
+  // Shaft
   ctx.beginPath();ctx.arc(cx,cy,cw*0.04,0,Math.PI*2);
   ctx.fillStyle=isDayMode?'#cbd5e0':'#2d3748';ctx.fill();
   ctx.strokeStyle=isDayMode?'#4a5568':'#AFA9EC';ctx.lineWidth=1.5;ctx.stroke();
-  ctx.strokeStyle=isDayMode?'rgba(74,85,104,0.6)':'rgba(175,169,236,0.6)';
-  ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(cx-cw*0.04,cy);ctx.lineTo(cx+cw*0.04,cy);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(cx,cy-cw*0.04);ctx.lineTo(cx,cy+cw*0.04);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx-cw*0.02,cy);ctx.lineTo(cx+cw*0.02,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,cy-cw*0.02);ctx.lineTo(cx,cy+cw*0.02);ctx.stroke();
 }
 
 function drawMotor(ctx,w,h,on,rpm){
@@ -1213,7 +1216,9 @@ function loop(){
   updateBatteryTimer(net);
   updateDischargeTimer(net);
 
+  // CCW FIX HERE! Pass -angle directly instead of +angle for 2D sync
   angle+=rpm>0?(rpm/60)*2*Math.PI*(1/60):0;
+  
   const rb=document.getElementById('rotBadge');
   if(rpm===0){rb.className='badge badge-idle';rb.textContent='IDLE';}
   else if(wind<4){rb.className='badge badge-sav';rb.textContent='SAVONIUS ACTIVE';}
@@ -1226,7 +1231,8 @@ function loop(){
   tick++;
   if(tick%3===0){chartData.gen.push(gen);chartData.load.push(loadDraw);chartData.net.push(net);if(chartData.gen.length>CHART_LEN){chartData.gen.shift();chartData.load.shift();chartData.net.shift();}}
 
-  drawTurbine(tc,280,280,angle);
+  // Pass -angle to 2D view so it matches 3D's CCW orientation
+  drawTurbine(tc,280,280,-angle); 
   drawMotor(mc,150,150,motorOn&&battery>20,rpm);
   drawChart(chartCtx,chartEl.width,chartEl.height);
   drawPowerCurve(pcCtx,pcEl.width,pcEl.height);
