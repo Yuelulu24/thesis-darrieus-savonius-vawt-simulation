@@ -423,8 +423,12 @@
           <input type="number" id="darDiameter" min="2.0" max="8.0" step="0.1" value="5.7" class="editor-number" oninput="updateEditor()">
         </div>
         <div class="editor-row">
-          <span class="editor-lbl">Chord length (m)</span>
-          <input type="number" id="darChord" min="0.07" max="0.22" step="0.01" value="0.135" class="editor-number" oninput="updateEditor()">
+          <span class="editor-lbl">Solidity (σ)</span>
+          <input type="number" id="darSolidity" min="0.10" max="0.65" step="0.001" value="0.253" class="editor-number" oninput="updateEditor()">
+        </div>
+        <div class="editor-row" style="opacity:0.7;">
+          <span class="editor-lbl" style="font-size:10px;">→ Chord c = 2πRσ/N</span>
+          <span id="chordDerived" style="font-family:var(--mono);font-size:11px;color:var(--accent2);">1.51 m</span>
         </div>
         <div class="editor-row">
           <span class="editor-lbl">Blade thickness (m)</span>
@@ -639,10 +643,10 @@ function updateBatCap(v){
 }
 
 let T = {
-  darBlades:3, darDiameter:5.7, darR:0.41, darChord:0.135, darThick:0.032, darHeight:7.65,
-  darC1:'#eab308', darC2:'#eab308', // Changed to Yellow to match reference
+  darBlades:3, darDiameter:5.7, darR:0.41, darSolidity:0.253, darThick:0.032, darHeight:7.65,
+  darHRatio:1.35, darC1:'#eab308', darC2:'#eab308',
   savBuckets:3, savRs:0.16, savArc:0.85, savStroke:0.038,
-  savC1:'#2563eb', savC2:'#2563eb', savC3:'#2563eb' 
+  savC1:'#2563eb', savC2:'#2563eb', savC3:'#2563eb'
 };
 
 /* ── DYNAMIC LOSS & CP COMPUTATION ── */
@@ -655,15 +659,17 @@ const SAV_SCALE = 1.00 / 0.16;
 function getDynamicCp() {
   const D_D = T.darDiameter;
   const R_D = D_D / 2;
-  const chord_real = T.darChord * DAR_SCALE;
-  const sigma = (T.darBlades * chord_real) / (Math.PI * R_D);
+  // Sigma is now stored directly; chord is DERIVED from sigma
+  // c = 2πRσ/N  (from paper formula)
+  const sigma = T.darSolidity;
+  const chord_real = (2 * Math.PI * R_D * sigma) / T.darBlades;
   const darDev = Math.abs(sigma - 0.253);
-  let cpDarMax = 0.38 - (darDev * 0.7); 
-  cpDarMax = Math.max(0.15, Math.min(0.42, cpDarMax)); 
+  let cpDarMax = 0.38 - (darDev * 0.7);
+  cpDarMax = Math.max(0.15, Math.min(0.42, cpDarMax));
   const savDev = Math.abs(T.savArc - 0.85);
   let cpSavMax = 0.20 - (savDev * 0.2);
-  cpSavMax = Math.max(0.08, Math.min(0.25, cpSavMax)); 
-  return { cpDarMax, cpSavMax, sigma };
+  cpSavMax = Math.max(0.08, Math.min(0.25, cpSavMax));
+  return { cpDarMax, cpSavMax, sigma, chord_real };
 }
 
 function getDynamicLosses(sigma) {
@@ -677,7 +683,7 @@ function getDynamicLosses(sigma) {
 function updateEditor() {
   const db = parseInt(document.getElementById('darBladeCount').value); if(!isNaN(db)) T.darBlades = db;
   const dd = parseFloat(document.getElementById('darDiameter').value); if(!isNaN(dd)) T.darDiameter = dd;
-  const dc = parseFloat(document.getElementById('darChord').value); if(!isNaN(dc)) T.darChord = dc;
+  const dc = parseFloat(document.getElementById('darSolidity').value); if(!isNaN(dc)) T.darSolidity = dc;
   const dt = parseFloat(document.getElementById('darThick').value); if(!isNaN(dt)) T.darThick = dt;
   const dh = parseFloat(document.getElementById('darHeight').value); if(!isNaN(dh)) T.darHeight = dh;
   T.darC1 = document.getElementById('darColor1').value;
@@ -692,7 +698,7 @@ function updateEditor() {
 
   T.darR = (T.darDiameter / 2) / DAR_SCALE;
 
-  const { cpDarMax, cpSavMax, sigma } = getDynamicCp();
+  const { cpDarMax, cpSavMax, sigma, chord_real } = getDynamicCp();
   const { eta_mech, eta_total } = getDynamicLosses(sigma);
 
   document.getElementById('ui_eta_mech').textContent = '−' + ((1 - eta_mech) * 100).toFixed(1) + '%';
@@ -713,21 +719,24 @@ function updateEditor() {
 
   const R_S = T.savRs * SAV_SCALE;
   const D_S = 2 * R_S;
-  const chord_real = T.darChord * DAR_SCALE;
+  // chord_real is now derived from sigma: c = 2πRσ/N
 
-  document.getElementById('spec_RD').textContent       = R_D.toFixed(2) + ' m';
-  document.getElementById('spec_DD').textContent       = D_D.toFixed(2) + ' m';
-  document.getElementById('spec_HD').textContent       = H_D.toFixed(2) + ' m';
+  document.getElementById('spec_RD').textContent        = R_D.toFixed(2) + ' m';
+  document.getElementById('spec_DD').textContent        = D_D.toFixed(2) + ' m';
+  document.getElementById('spec_HD').textContent        = H_D.toFixed(2) + ' m';
   document.getElementById('spec_darHRatio').textContent = (H_D / D_D).toFixed(2);
-  document.getElementById('spec_AD').textContent       = A_D.toFixed(1) + ' m²';
-  document.getElementById('spec_darBlades').textContent= T.darBlades;
-  document.getElementById('spec_darChord').textContent = chord_real.toFixed(2) + ' m';
+  document.getElementById('spec_AD').textContent        = A_D.toFixed(1) + ' m²';
+  document.getElementById('spec_darBlades').textContent = T.darBlades;
+  document.getElementById('spec_darChord').textContent  = chord_real.toFixed(2) + ' m';
   document.getElementById('spec_darSolidity').textContent = sigma.toFixed(3);
-  document.getElementById('spec_RS').textContent       = R_S.toFixed(2) + ' m';
-  document.getElementById('spec_DS').textContent       = D_S.toFixed(2) + ' m';
-  document.getElementById('spec_HS').textContent       = H_S.toFixed(2) + ' m';
-  document.getElementById('spec_savBuckets').textContent = T.savBuckets;
-  document.getElementById('spec_savArc').textContent   = T.savArc.toFixed(2);
+  // Update the derived chord display in the editor
+  const chordEl = document.getElementById('chordDerived');
+  if(chordEl) chordEl.textContent = chord_real.toFixed(2) + ' m';
+  document.getElementById('spec_RS').textContent        = R_S.toFixed(2) + ' m';
+  document.getElementById('spec_DS').textContent        = D_S.toFixed(2) + ' m';
+  document.getElementById('spec_HS').textContent        = H_S.toFixed(2) + ' m';
+  document.getElementById('spec_savBuckets').textContent= T.savBuckets;
+  document.getElementById('spec_savArc').textContent    = T.savArc.toFixed(2);
 
   rebuildPowerTable();
   
@@ -737,15 +746,19 @@ function updateEditor() {
 }
 
 function resetEditor() {
-  T={darBlades:3,darDiameter:5.7,darChord:0.135,darThick:0.032,darHeight:7.65,darC1:'#eab308',darC2:'#eab308',savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038,savC1:'#eab308',savC2:'#eab308',savC3:'#eab308'};
-  document.getElementById('darBladeCount').value=3; document.getElementById('darDiameter').value=5.7;
-  document.getElementById('darChord').value=0.135;  document.getElementById('darThick').value=0.032;
-  document.getElementById('darHeight').value=7.65;
+  T={darBlades:3,darDiameter:5.7,darSolidity:0.253,darThick:0.032,darHeight:7.65,darHRatio:1.35,
+     darC1:'#eab308',darC2:'#eab308',
+     savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038,
+     savC1:'#2563eb',savC2:'#2563eb',savC3:'#2563eb'};
+  document.getElementById('darBladeCount').value=3;   document.getElementById('darDiameter').value=5.7;
+  document.getElementById('darSolidity').value=0.253; document.getElementById('darThick').value=0.032;
+  document.getElementById('darHeight').value=7.65;    document.getElementById('darHRatio').value=1.35;
   document.getElementById('darColor1').value='#eab308'; document.getElementById('darColor2').value='#eab308';
-  document.getElementById('savBucketCount').value=3; document.getElementById('savRadius').value=0.16;
-  document.getElementById('savArc').value=0.85;      document.getElementById('savStroke').value=0.038;
-  document.getElementById('savColor1').value='#2563eb'; document.getElementById('savColor2').value='#2563eb';
-  document.getElementById('savColor3').value='##2563eb';
+  document.getElementById('savBucketCount').value=3;  document.getElementById('savRadius').value=0.16;
+  document.getElementById('savArc').value=0.85;       document.getElementById('savStroke').value=0.038;
+  document.getElementById('savColor1').value='#2563eb';
+  document.getElementById('savColor2').value='#2563eb';
+  document.getElementById('savColor3').value='#2563eb'; // fixed: was '##2563eb' (double hash typo)
   updateEditor();
 }
 
@@ -1124,10 +1137,12 @@ function build3DTurbine() {
 
     // 3. Darrieus (Properly Oriented Airfoils)
     const dRadius = T.darDiameter / 2;
-    
-    // Scale chord and thick heavily for better 3D visibility matching the top view
-    const c = T.darChord * 15.0; 
-    const t = T.darThick * 2.0; 
+
+    // Chord is derived from solidity formula: c = 2πRσ/N (from paper)
+    // Scale for 3D visibility — real chord in meters, divide by DAR_SCALE for visual fraction
+    const { chord_real: c_real } = getDynamicCp();
+    const c = Math.max(0.18, c_real * 0.28); // scale down for 3D canvas proportions
+    const t = Math.max(0.045, T.darThick * 1.8);
 
     // True NACA-like Airfoil Shape (pointing along X)
     const shape = new THREE.Shape();
