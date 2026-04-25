@@ -571,7 +571,7 @@
       <table class="spec-table"><tr><th>Parameter</th><th>Value</th><th>Notes</th></tr>
       <tr><td>Radius (R_S)</td><td id="spec_RS">1.00 m</td><td>Fits inside Darrieus</td></tr>
       <tr><td>Diameter (D_S)</td><td id="spec_DS">2.00 m</td><td>Bucket diameter</td></tr>
-      <tr><td>Height (H_S)</td><td id="spec_HS">6.00 m</td><td>0.8 × H_D</td></tr>
+      <tr><td>Height (H_S)</td><td id="spec_HS">6.00 m</td><td>Fixed ratio to H_D</td></tr>
       <tr><td>No. of buckets</td><td id="spec_savBuckets">3</td><td>3-bucket helical</td></tr>
       <tr><td>Overlap ratio</td><td>0.17</td><td>Optimal 0.15–0.20</td></tr>
       <tr><td>Opt. TSR (λ_S)</td><td id="spec_savArc">0.85</td><td>Optimal drag rotor</td></tr>
@@ -787,8 +787,12 @@ function getSweptAreas(){
   const A_D = H_D * D_D;
   const R_S = T.savRs * SAV_SCALE;
   const D_S = 2 * R_S;
-  const H_S = 0.8 * H_D;
+  
+  // FIXED SAVONIUS HEIGHT PROPORTION (No longer strict 0.8 * H_D)
+  // Ensures H_S is exactly 6.00m when H_D is 7.65m per V3 thesis design
+  const H_S = H_D * (6.00 / 7.65);
   const A_S = H_S * D_S;
+  
   return { A_D, A_S, R_D, H_D, D_D, H_S };
 }
 
