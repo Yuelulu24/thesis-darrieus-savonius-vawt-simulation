@@ -234,14 +234,12 @@
 
     <div class="turbine-panel">
 
-      <!-- 3D MODEL — on top -->
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:8px;">
         <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;align-self:flex-start;">VAWT ROTOR — 3D MODEL</div>
         <div id="hero3D" style="width:280px;height:280px;border-radius:12px;"></div>
         <div class="drag-hint" style="margin-top:2px;">⟲ DRAG TO ROTATE 3D MODEL</div>
       </div>
 
-      <!-- 2D MODEL — below 3D -->
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:8px;">
         <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;align-self:flex-start;">VAWT ROTOR — 2D TOP VIEW</div>
         <canvas id="turbineCanvas" width="280" height="280"></canvas>
@@ -444,7 +442,7 @@
         </div>
         <div class="editor-row">
           <span class="editor-lbl">Blade thickness (m)</span>
-          <input type="number" id="darThick" min="0.015" max="0.06" step="0.005" value="0.032" class="editor-number" oninput="updateEditor()">
+          <input type="number" id="darThick" min="0.015" max="0.06" step="0.005" value="0.034" class="editor-number" oninput="updateEditor()">
         </div>
         <div class="editor-row">
           <span class="editor-lbl">Blade height (m)</span>
@@ -564,9 +562,9 @@
       <tr><td>No. of blades</td><td id="spec_darBlades">3</td><td>Standard H-blade</td></tr>
       <tr><td>Chord (c_D)</td><td id="spec_darChord">0.24 m</td><td>σ = 0.253</td></tr>
       <tr><td>Solidity (σ_D)</td><td id="spec_darSolidity">0.253</td><td>Optimal 0.20–0.30</td></tr>
-      <tr><td>Design TSR</td><td>4.0</td><td>NACA 0018 @ Re≈80k</td></tr>
+      <tr><td>Design TSR</td><td>4.0</td><td>NACA 0025 @ Re≈80k</td></tr>
       <tr><td>Max Cp_D</td><td id="spec_cpDar" style="color:var(--accent3);font-weight:bold;">0.380</td><td>Dynamic via Solidity</td></tr>
-      <tr><td>Airfoil</td><td>NACA 0018</td><td>Better Cl at low Re</td></tr>
+      <tr><td>Airfoil</td><td>NACA 0025</td><td>Better Cl at low Re</td></tr>
       </table>
     </div>
     <div class="card"><div class="card-title">Savonius Rotor</div>
@@ -655,7 +653,7 @@ function updateBatCap(v){
 }
 
 let T = {
-  darBlades:3, darDiameter:5.7, darR:0.41, darSolidity:0.253, darThick:0.032, darHeight:7.65,
+  darBlades:3, darDiameter:5.7, darR:0.41, darSolidity:0.253, darThick:0.034, darHeight:7.65,
   darC1:'#eab308', darC2:'#eab308', // Changed to Yellow to match reference
   savBuckets:3, savRs:0.16, savArc:0.85, savStroke:0.038,
   savC1:'#2563eb', savC2:'#2563eb', savC3:'#2563eb' 
@@ -756,12 +754,12 @@ function updateEditor() {
 }
 
 function resetEditor() {
-  T={darBlades:3,darDiameter:5.7,darR:0.41,darSolidity:0.253,darThick:0.032,darHeight:7.65,darHRatio:1.35,
+  T={darBlades:3,darDiameter:5.7,darR:0.41,darSolidity:0.253,darThick:0.034,darHeight:7.65,darHRatio:1.35,
      darC1:'#eab308',darC2:'#eab308',
      savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038,
      savC1:'#2563eb',savC2:'#2563eb',savC3:'#2563eb'};
   document.getElementById('darBladeCount').value=3;   document.getElementById('darDiameter').value=5.7;
-  document.getElementById('darSolidity').value=0.253; document.getElementById('darThick').value=0.032;
+  document.getElementById('darSolidity').value=0.253; document.getElementById('darThick').value=0.034;
   document.getElementById('darHeight').value=7.65;    document.getElementById('darHRatio').value=1.35;
   document.getElementById('darColor1').value='#eab308'; document.getElementById('darColor2').value='#eab308';
   document.getElementById('savBucketCount').value=3;  document.getElementById('savRadius').value=0.16;
