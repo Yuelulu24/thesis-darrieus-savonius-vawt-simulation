@@ -360,14 +360,14 @@
             <div class="toggle-row"><span class="toggle-label">Motor power</span><div class="toggle" id="motorToggle" onclick="toggleMotor()"><div class="toggle-thumb"></div></div></div>
           </div>
           <div class="ctrl-group">
-            <div class="ctrl-label"><span>LOAD</span><span class="ctrl-val" id="loadDisplay">75%</span></div>
+            <div class="ctrl-label"><span>LOAD</span><span class="ctrl-val" id="loadDisplay">100%</span></div>
             <div style="display:flex;align-items:center;gap:8px;">
-              <input type="number" id="loadSlider" min="20" max="100" step="5" value="75"
+              <input type="number" id="loadSlider" min="20" max="100" step="5" value="100"
                 style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:14px;font-weight:700;padding:6px 10px;border-radius:6px;outline:none;-moz-appearance:textfield;"
                 oninput="updateLoad(this.value)">
               <span style="font-size:11px;color:var(--muted);font-family:var(--mono);">%</span>
             </div>
-            <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">Draw: <span id="drawDisplay" style="color:var(--accent4);">560 W</span> &nbsp;·&nbsp; range: 20–100%</div>
+            <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;">Draw: <span id="drawDisplay" style="color:var(--accent4);">829 W</span> &nbsp;·&nbsp; range: 20–100%</div>
           </div>
           <div class="ctrl-group">
             <div class="metric-lbl" style="margin-bottom:4px;">LOAD DRAW</div>
@@ -402,13 +402,13 @@
     <div style="font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
       <span style="display:block;width:16px;height:1px;background:var(--accent);"></span>Power Output Table — 0 to 5.5 m/s
     </div>
-    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">ρ = 1.225 kg/m³ · Max Cp_S = <span id="ui_cp_s" style="color:var(--accent3);font-weight:bold;">0.200</span> · Max Cp_D = <span id="ui_cp_d" style="color:var(--accent);font-weight:bold;">0.380</span> (ramps from 3.0 m/s) · <span style="color:var(--accent4);">Losses applied: η_mech=(Dynamic based on Geometry) · η_gen=85% · η_conv=95% · η_chg=97%</span> · Highlighted orange row = design wind speed. Table updates when turbine geometry is edited.</p>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">ρ = 1.225 kg/m³ · Max Cp_S = <span id="ui_cp_s" style="color:var(--accent3);font-weight:bold;">0.200</span> · Max Cp_D = <span id="ui_cp_d" style="color:var(--accent);font-weight:bold;">0.355</span> (ramps from 3.0 m/s) · <span style="color:var(--accent4);">Losses applied: η_mech=(Dynamic based on Geometry) · η_gen=85% · η_conv=95% · η_chg=97%</span> · Highlighted orange row = design wind speed. Table updates when turbine geometry is edited.</p>
     <table><thead><tr>
       <th>Wind (m/s)</th><th>RPM</th>
       <th style="color:#f6ad55;">Savonius P (W)</th>
       <th style="color:#63b3ed;">Darrieus P (W)</th>
       <th style="color:#48bb78;">Combined P (W)</th>
-      <th>Mode</th><th>Net @ 75% Load (W)</th>
+      <th>Mode</th><th>Net @ 100% Load (W)</th>
     </tr></thead><tbody id="powerTableBody"></tbody></table>
   </div>
 </section>
@@ -434,11 +434,11 @@
         </div>
         <div class="editor-row">
           <span class="editor-lbl">Solidity (σ)</span>
-          <input type="number" id="darSolidity" min="0.10" max="0.65" step="0.001" value="0.253" class="editor-number" oninput="updateEditor()">
+          <input type="number" id="darSolidity" min="0.10" max="0.65" step="0.001" value="0.5" class="editor-number" oninput="updateEditor()">
         </div>
         <div class="editor-row" style="opacity:0.7;">
           <span class="editor-lbl" style="font-size:10px;">→ Chord c = 2πRσ/N</span>
-          <span id="chordDerived" style="font-family:var(--mono);font-size:11px;color:var(--accent2);">1.51 m</span>
+          <span id="chordDerived" style="font-family:var(--mono);font-size:11px;color:var(--accent2);">2.98 m</span>
         </div>
         <div class="editor-row">
           <span class="editor-lbl">Blade thickness (m)</span>
@@ -560,10 +560,10 @@
       <tr><td>Blade height (H_D)</td><td id="spec_HD">7.65 m</td><td>H/D = <span id="spec_darHRatio">1.35</span></td></tr>
       <tr><td>Swept area (A_D)</td><td id="spec_AD">43.6 m²</td><td>A = H × D</td></tr>
       <tr><td>No. of blades</td><td id="spec_darBlades">3</td><td>Standard H-blade</td></tr>
-      <tr><td>Chord (c_D)</td><td id="spec_darChord">0.24 m</td><td>σ = 0.253</td></tr>
-      <tr><td>Solidity (σ_D)</td><td id="spec_darSolidity">0.253</td><td>Optimal 0.20–0.30</td></tr>
+      <tr><td>Chord (c_D)</td><td id="spec_darChord">2.98 m</td><td>σ = 0.5</td></tr>
+      <tr><td>Solidity (σ_D)</td><td id="spec_darSolidity">0.500</td><td>Optimal balance</td></tr>
       <tr><td>Design TSR</td><td>4.0</td><td>NACA 0025 @ Re≈80k</td></tr>
-      <tr><td>Max Cp_D</td><td id="spec_cpDar" style="color:var(--accent3);font-weight:bold;">0.380</td><td>Dynamic via Solidity</td></tr>
+      <tr><td>Max Cp_D</td><td id="spec_cpDar" style="color:var(--accent3);font-weight:bold;">0.355</td><td>Dynamic via Solidity</td></tr>
       <tr><td>Airfoil</td><td>NACA 0025</td><td>Better Cl at low Re</td></tr>
       </table>
     </div>
@@ -622,15 +622,16 @@ function toggleTheme(){
   document.getElementById('themeIcon').textContent = isDayMode ? '☀️' : '🌙';
   document.getElementById('themeLabel').textContent = isDayMode ? 'Day Mode' : 'Night Mode';
   
-  // Rebuild 3D turbine to update material colors based on theme
   if(window.turbine3DGroup) {
       build3DTurbine();
   }
 }
 
 /* ── STATE ── */
-let wind=0, battery=20, angle=0, motorOn=false, loadPct=75, simSpeed=100;
+let wind=0, battery=20, angle=0, motorOn=false, loadPct=100, simSpeed=100;
 const MOTOR_RATED=746, CHART_LEN=100;
+const ACTUAL_MOTOR_DRAW = MOTOR_RATED / 0.90; // Approx 828.9 Watts with 90% efficiency
+
 const BAT_VOLTAGE=12;
 let BAT_AH=400;
 let BAT_WH = BAT_VOLTAGE * BAT_AH; // 4800 Wh
@@ -653,8 +654,8 @@ function updateBatCap(v){
 }
 
 let T = {
-  darBlades:3, darDiameter:5.7, darR:0.41, darSolidity:0.253, darThick:0.034, darHeight:7.65,
-  darC1:'#eab308', darC2:'#eab308', // Changed to Yellow to match reference
+  darBlades:3, darDiameter:5.7, darR:0.41, darSolidity:0.5, darThick:0.034, darHeight:7.65,
+  darC1:'#eab308', darC2:'#eab308', 
   savBuckets:3, savRs:0.16, savArc:0.85, savStroke:0.038,
   savC1:'#2563eb', savC2:'#2563eb', savC3:'#2563eb' 
 };
@@ -669,20 +670,25 @@ const SAV_SCALE = 1.00 / 0.16;
 function getDynamicCp() {
   const D_D = T.darDiameter;
   const R_D = D_D / 2;
-  // Sigma stored directly; chord DERIVED from sigma: c = 2πRσ/N (from paper)
+  
+  // σ = 0.5 per V3 thesis design. c = 2πRσ/N
   const sigma = T.darSolidity;
   const chord_real = (2 * Math.PI * R_D * sigma) / T.darBlades;
-  const darDev = Math.abs(sigma - 0.253);
-  let cpDarMax = 0.38 - (darDev * 0.7);
-  cpDarMax = Math.max(0.15, Math.min(0.42, cpDarMax));
+  
+  // Darrieus: Optimal solidity set to 0.5. Base Max Cp is 0.355 based on NACA 0025 polar data
+  const darDev = Math.abs(sigma - 0.5);
+  let cpDarMax = 0.355 - (darDev * 0.7); 
+  cpDarMax = Math.max(0.15, Math.min(0.42, cpDarMax)); 
+  
   const savDev = Math.abs(T.savArc - 0.85);
   let cpSavMax = 0.20 - (savDev * 0.2);
-  cpSavMax = Math.max(0.08, Math.min(0.25, cpSavMax));
+  cpSavMax = Math.max(0.08, Math.min(0.25, cpSavMax)); 
   return { cpDarMax, cpSavMax, sigma, chord_real };
 }
 
 function getDynamicLosses(sigma) {
-  const deviation = Math.abs(sigma - 0.253);
+  // Optimal solidity is 0.5, giving 90% mechanical efficiency. Deviations increase drag.
+  const deviation = Math.abs(sigma - 0.5);
   let eta_mech = 0.90 - (deviation * 0.8);
   eta_mech = Math.max(0.40, Math.min(0.95, eta_mech)); 
   const eta_total = eta_mech * ETA_GEN * ETA_CONV * ETA_CHG;
@@ -728,7 +734,6 @@ function updateEditor() {
 
   const R_S = T.savRs * SAV_SCALE;
   const D_S = 2 * R_S;
-  // chord_real derived from sigma: c = 2πRσ/N (paper formula)
 
   document.getElementById('spec_RD').textContent       = R_D.toFixed(2) + ' m';
   document.getElementById('spec_DD').textContent       = D_D.toFixed(2) + ' m';
@@ -754,12 +759,12 @@ function updateEditor() {
 }
 
 function resetEditor() {
-  T={darBlades:3,darDiameter:5.7,darR:0.41,darSolidity:0.253,darThick:0.034,darHeight:7.65,darHRatio:1.35,
+  T={darBlades:3,darDiameter:5.7,darR:0.41,darSolidity:0.5,darThick:0.034,darHeight:7.65,darHRatio:1.35,
      darC1:'#eab308',darC2:'#eab308',
      savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038,
      savC1:'#2563eb',savC2:'#2563eb',savC3:'#2563eb'};
   document.getElementById('darBladeCount').value=3;   document.getElementById('darDiameter').value=5.7;
-  document.getElementById('darSolidity').value=0.253; document.getElementById('darThick').value=0.034;
+  document.getElementById('darSolidity').value=0.5;   document.getElementById('darThick').value=0.034;
   document.getElementById('darHeight').value=7.65;    document.getElementById('darHRatio').value=1.35;
   document.getElementById('darColor1').value='#eab308'; document.getElementById('darColor2').value='#eab308';
   document.getElementById('savBucketCount').value=3;  document.getElementById('savRadius').value=0.16;
@@ -882,7 +887,6 @@ function drawTurbine(ctx,cw,ch,ang){
   }
 
   // Savonius - Thin Overlapping Arcs
-  // Arc direction: clockwise (false→true) so open face catches wind in CCW rotation
   const savColors=[T.savC1,T.savC2,T.savC3,T.savC1];
   for(let i=0;i<T.savBuckets;i++){
     const a=ang+i*(Math.PI*2/T.savBuckets);
@@ -892,7 +896,6 @@ function drawTurbine(ctx,cw,ch,ang){
     const offsetX = Rs * 0.35;
 
     ctx.beginPath();
-    // Flipped arc direction: open face of scoop now faces INTO the rotation (CCW)
     ctx.arc(bucketR - offsetX, 0, bucketR, 0, Math.PI, true);
 
     const bc=savColors[i%savColors.length];
@@ -956,7 +959,7 @@ function drawMotor(ctx,w,h,on,rpm){
   if(on){const t=Date.now()/1000;for(let i=0;i<6;i++){const a=t*(rpm/60)*Math.PI*2+i*(Math.PI/3);ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*18,cy+Math.sin(a)*18);ctx.strokeStyle=isDayMode?'rgba(26,145,82,0.5)':'rgba(72,187,120,0.5)';ctx.lineWidth=1.5;ctx.stroke();}}
   ctx.font='10px Space Mono,monospace';ctx.textAlign='center';
   ctx.fillStyle=isDayMode?'#3d5a78':'#718096';ctx.fillText('1-HP MOTOR',cx,cy+40);
-  ctx.fillStyle=col;ctx.fillText(on?Math.round(MOTOR_RATED*loadPct/100)+'W':'STANDBY',cx,cy+52);
+  ctx.fillStyle=col;ctx.fillText(on?Math.round(ACTUAL_MOTOR_DRAW*loadPct/100)+'W':'STANDBY',cx,cy+52);
 }
 
 function drawPowerCurve(ctx,W,H){
@@ -1003,7 +1006,9 @@ function drawWindChart(){
 function rebuildPowerTable(){
   const tbody=document.getElementById('powerTableBody');
   tbody.innerHTML=''; 
-  const motorDraw=Math.round(MOTOR_RATED*0.75);
+  
+  const motorDraw=Math.round(ACTUAL_MOTOR_DRAW*1.00); 
+  
   [0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,4.75,5.0,5.5].forEach(w=>{
     const{pSav,pDar,pTotal}=getPowerComponents(w);
     const rpm=getRPM(w),net=pTotal-motorDraw;
@@ -1035,7 +1040,7 @@ function updateLoad(v){
   if(isNaN(parsed) || v==='' || v===null) return;
   loadPct = Math.max(20, Math.min(100, parsed));
   document.getElementById('loadDisplay').textContent = loadPct+'%';
-  document.getElementById('drawDisplay').textContent = Math.round(MOTOR_RATED*loadPct/100)+' W';
+  document.getElementById('drawDisplay').textContent = Math.round(ACTUAL_MOTOR_DRAW*loadPct/100)+' W';
 }
 
 /* ── 3D THREE.JS RENDERER ── */
@@ -1114,14 +1119,12 @@ function build3DTurbine() {
     const cx = (realSavRadius - overlap) / 2;
     const cr = (realSavRadius + overlap) / 2;
 
-    // Draw the hollow crescent for one bucket
     savShape.moveTo(cx + cr + sThick, 0); 
-    savShape.absarc(cx, 0, cr + sThick, 0, Math.PI, false); // Outer arc
-    savShape.lineTo(cx - cr, 0); // Connect to inner arc
-    savShape.absarc(cx, 0, cr, Math.PI, 0, true); // Inner arc
+    savShape.absarc(cx, 0, cr + sThick, 0, Math.PI, false); 
+    savShape.lineTo(cx - cr, 0); 
+    savShape.absarc(cx, 0, cr, Math.PI, 0, true); 
     savShape.closePath();
 
-    // 120-degree helical twist for realistic look
     const sExtrude = { depth: sHeight, steps: 100, bevelEnabled: false, twist: Math.PI * 0.66 };
     const sGeo = new THREE.ExtrudeGeometry(savShape, sExtrude);
     sGeo.rotateX(-Math.PI / 2);
@@ -1135,7 +1138,7 @@ function build3DTurbine() {
         window.turbine3DGroup.add(sMesh);
     }
 
-    // End Plates (Top and Bottom Caps)
+    // End Plates 
     const capGeo = new THREE.CylinderGeometry(realSavRadius, realSavRadius, 0.04, 32);
     const capTop = new THREE.Mesh(capGeo, metalMat);
     capTop.position.y = sHeight / 2;
@@ -1147,24 +1150,21 @@ function build3DTurbine() {
     // 3. Darrieus (Properly Oriented Airfoils)
     const dRadius = T.darDiameter / 2;
     
-    // Chord derived from solidity: c = 2πRσ/N (paper formula)
     const { chord_real: c_real } = getDynamicCp();
     const c = Math.max(0.18, c_real * 0.28);
     const t = Math.max(0.045, T.darThick * 1.8);
 
-    // True NACA-like Airfoil Shape (pointing along X)
     const shape = new THREE.Shape();
-    shape.moveTo(c/2, 0); // Trailing edge
-    shape.bezierCurveTo(c/2, t*1.5, -c/2+t, t, -c/2, 0); // Top curve to blunt leading edge
-    shape.bezierCurveTo(-c/2+t, -t, c/2, -t*1.5, c/2, 0); // Bottom curve back to trailing edge
+    shape.moveTo(c/2, 0); 
+    shape.bezierCurveTo(c/2, t*1.5, -c/2+t, t, -c/2, 0); 
+    shape.bezierCurveTo(-c/2+t, -t, c/2, -t*1.5, c/2, 0); 
 
     const dExtrude = { depth: T.darHeight, bevelEnabled: false };
     const dGeo = new THREE.ExtrudeGeometry(shape, dExtrude);
     
-    // Stand vertically and orient correctly (tangential to radius)
     dGeo.translate(0, 0, -T.darHeight / 2);
     dGeo.rotateX(-Math.PI / 2);
-    dGeo.rotateY(Math.PI / 2); // Rotates chord to face tangentially!
+    dGeo.rotateY(Math.PI / 2); 
 
     const strutGeo = new THREE.CylinderGeometry(0.03, 0.03, dRadius, 12);
     strutGeo.rotateZ(Math.PI/2);
@@ -1179,7 +1179,6 @@ function build3DTurbine() {
         bMesh.position.x = dRadius;
         bParent.add(bMesh);
 
-        // Top and Bottom Struts connecting to the center shaft
         const sTop = new THREE.Mesh(strutGeo, metalMat);
         sTop.position.y = T.darHeight * 0.45;
         bParent.add(sTop);
@@ -1210,7 +1209,10 @@ function loop(){
   document.getElementById('windDisplay').textContent=wind.toFixed(1)+' m/s';
   const{pSav,pDar,pTotal:gen}=getPowerComponents(wind);
   const rpm=getRPM(wind);
-  const loadDraw=motorOn&&battery>20?MOTOR_RATED*(loadPct/100):0;
+  
+  // Use ACTUAL load draw based on efficiency
+  const loadDraw=motorOn&&battery>20?ACTUAL_MOTOR_DRAW*(loadPct/100):0;
+  
   const net=isNaN(gen)||isNaN(loadDraw)?0:(gen-loadDraw);
   const baseRate = 100 / (BAT_WH * 3600 * 60); 
   const newBat = battery + net * baseRate * simSpeed;
@@ -1239,7 +1241,6 @@ function loop(){
   updateBatteryTimer(net);
   updateDischargeTimer(net);
 
-  // CCW FIX HERE! Pass -angle directly instead of +angle for 2D sync
   angle+=rpm>0?(rpm/60)*2*Math.PI*(1/60):0;
   
   const rb=document.getElementById('rotBadge');
@@ -1254,15 +1255,13 @@ function loop(){
   tick++;
   if(tick%3===0){chartData.gen.push(gen);chartData.load.push(loadDraw);chartData.net.push(net);if(chartData.gen.length>CHART_LEN){chartData.gen.shift();chartData.load.shift();chartData.net.shift();}}
 
-  // Pass -angle to 2D view so it matches 3D's CCW orientation
   drawTurbine(tc,280,280,-angle); 
   drawMotor(mc,150,150,motorOn&&battery>20,rpm);
   drawChart(chartCtx,chartEl.width,chartEl.height);
   drawPowerCurve(pcCtx,pcEl.width,pcEl.height);
   
-  // ── UPDATE AND RENDER 3D MODEL ──
   if(window.turbine3DGroup && renderer3D && scene3D && camera3D) {
-      window.turbine3DGroup.rotation.y = angle; // Spin sync with 2D simulation
+      window.turbine3DGroup.rotation.y = angle; 
       controls3D.update();
       renderer3D.render(scene3D, camera3D);
   }
