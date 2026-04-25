@@ -55,7 +55,7 @@
   
   /* 3D VIEWER CONTAINER */
   .hero-3d-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; }
-  #hero3D { width:340px; height:340px; cursor:grab; border-radius: 50%; background: radial-gradient(circle, rgba(100,180,255,0.08) 0%, transparent 70%); }
+  #hero3D { width:280px; height:280px; cursor:grab; border-radius: 12px; background: radial-gradient(circle, rgba(100,180,255,0.06) 0%, transparent 70%); }
   #hero3D:active { cursor:grabbing; }
   .drag-hint { margin-top: -10px; font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.1em; background: var(--surface2); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.2); animation: float 3s ease-in-out infinite; pointer-events: none; z-index: 10; }
   @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
@@ -202,17 +202,17 @@
     <div class="hero-label">Thesis Simulation</div>
     <h1>Hybrid <span>Darrieus-Savonius</span> Vertical Axis Wind Turbine</h1>
     <p style="color:var(--muted);font-size:14px;">Interactive feasibility simulation for prototype wind energy harnessing in Norzagaray, Bulacan, Philippines.</p>
-    <div class="hero-meta">
-      <p><strong>Study Site:</strong> Norzagaray, Bulacan, Philippines</p>
-      <p><strong>Course:</strong> BS Electrical Engineering</p>
-      <p><strong>Institution:</strong> Bulacan State University</p>
-      <p><strong>Working Title:</strong> Design and Simulation of a Prototype Wind Turbine for Harnessing Wind Energy in the Municipality of Norzagaray, Bulacan</p>
-    </div>
   </div>
-  
-  <div class="hero-3d-wrap">
-    <div id="hero3D"></div>
-    <div class="drag-hint">⟲ DRAG TO ROTATE 3D MODEL</div>
+
+  <div style="display:flex;flex-direction:column;justify-content:center;gap:14px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:10px;">
+      <div style="font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:2px;">STUDY INFORMATION</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <p style="font-family:var(--mono);font-size:13px;color:var(--text);margin:0;"><span style="color:var(--muted);font-size:11px;">STUDY SITE</span><br><strong>Norzagaray, Bulacan, Philippines</strong></p>
+        <p style="font-family:var(--mono);font-size:13px;color:var(--text);margin:0;"><span style="color:var(--muted);font-size:11px;">COURSE</span><br><strong>BS Electrical Engineering</strong></p>
+        <p style="font-family:var(--mono);font-size:13px;color:var(--text);margin:0;"><span style="color:var(--muted);font-size:11px;">INSTITUTION</span><br><strong>Bulacan State University</strong></p>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -233,8 +233,20 @@
   <div class="sim-outer">
 
     <div class="turbine-panel">
-      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;">VAWT ROTOR — 2D TOP VIEW</div>
-      <canvas id="turbineCanvas" width="280" height="280"></canvas>
+
+      <!-- 3D MODEL — on top -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:8px;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;align-self:flex-start;">VAWT ROTOR — 3D MODEL</div>
+        <div id="hero3D" style="width:280px;height:280px;border-radius:12px;"></div>
+        <div class="drag-hint" style="margin-top:2px;">⟲ DRAG TO ROTATE 3D MODEL</div>
+      </div>
+
+      <!-- 2D MODEL — below 3D -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;margin-bottom:8px;">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;align-self:flex-start;">VAWT ROTOR — 2D TOP VIEW</div>
+        <canvas id="turbineCanvas" width="280" height="280"></canvas>
+      </div>
+
       <div id="rotBadge" class="badge badge-idle">IDLE</div>
 
       <div class="metrics-3">
@@ -644,9 +656,9 @@ function updateBatCap(v){
 
 let T = {
   darBlades:3, darDiameter:5.7, darR:0.41, darSolidity:0.253, darThick:0.032, darHeight:7.65,
-  darHRatio:1.35, darC1:'#eab308', darC2:'#eab308',
+  darC1:'#eab308', darC2:'#eab308', // Changed to Yellow to match reference
   savBuckets:3, savRs:0.16, savArc:0.85, savStroke:0.038,
-  savC1:'#2563eb', savC2:'#2563eb', savC3:'#2563eb'
+  savC1:'#2563eb', savC2:'#2563eb', savC3:'#2563eb' 
 };
 
 /* ── DYNAMIC LOSS & CP COMPUTATION ── */
@@ -659,8 +671,7 @@ const SAV_SCALE = 1.00 / 0.16;
 function getDynamicCp() {
   const D_D = T.darDiameter;
   const R_D = D_D / 2;
-  // Sigma is now stored directly; chord is DERIVED from sigma
-  // c = 2πRσ/N  (from paper formula)
+  // Sigma stored directly; chord DERIVED from sigma: c = 2πRσ/N (from paper)
   const sigma = T.darSolidity;
   const chord_real = (2 * Math.PI * R_D * sigma) / T.darBlades;
   const darDev = Math.abs(sigma - 0.253);
@@ -719,24 +730,23 @@ function updateEditor() {
 
   const R_S = T.savRs * SAV_SCALE;
   const D_S = 2 * R_S;
-  // chord_real is now derived from sigma: c = 2πRσ/N
+  // chord_real derived from sigma: c = 2πRσ/N (paper formula)
 
-  document.getElementById('spec_RD').textContent        = R_D.toFixed(2) + ' m';
-  document.getElementById('spec_DD').textContent        = D_D.toFixed(2) + ' m';
-  document.getElementById('spec_HD').textContent        = H_D.toFixed(2) + ' m';
+  document.getElementById('spec_RD').textContent       = R_D.toFixed(2) + ' m';
+  document.getElementById('spec_DD').textContent       = D_D.toFixed(2) + ' m';
+  document.getElementById('spec_HD').textContent       = H_D.toFixed(2) + ' m';
   document.getElementById('spec_darHRatio').textContent = (H_D / D_D).toFixed(2);
-  document.getElementById('spec_AD').textContent        = A_D.toFixed(1) + ' m²';
-  document.getElementById('spec_darBlades').textContent = T.darBlades;
+  document.getElementById('spec_AD').textContent       = A_D.toFixed(1) + ' m²';
+  document.getElementById('spec_darBlades').textContent= T.darBlades;
   document.getElementById('spec_darChord').textContent  = chord_real.toFixed(2) + ' m';
   document.getElementById('spec_darSolidity').textContent = sigma.toFixed(3);
-  // Update the derived chord display in the editor
   const chordEl = document.getElementById('chordDerived');
   if(chordEl) chordEl.textContent = chord_real.toFixed(2) + ' m';
-  document.getElementById('spec_RS').textContent        = R_S.toFixed(2) + ' m';
-  document.getElementById('spec_DS').textContent        = D_S.toFixed(2) + ' m';
-  document.getElementById('spec_HS').textContent        = H_S.toFixed(2) + ' m';
-  document.getElementById('spec_savBuckets').textContent= T.savBuckets;
-  document.getElementById('spec_savArc').textContent    = T.savArc.toFixed(2);
+  document.getElementById('spec_RS').textContent       = R_S.toFixed(2) + ' m';
+  document.getElementById('spec_DS').textContent       = D_S.toFixed(2) + ' m';
+  document.getElementById('spec_HS').textContent       = H_S.toFixed(2) + ' m';
+  document.getElementById('spec_savBuckets').textContent = T.savBuckets;
+  document.getElementById('spec_savArc').textContent   = T.savArc.toFixed(2);
 
   rebuildPowerTable();
   
@@ -746,7 +756,7 @@ function updateEditor() {
 }
 
 function resetEditor() {
-  T={darBlades:3,darDiameter:5.7,darSolidity:0.253,darThick:0.032,darHeight:7.65,darHRatio:1.35,
+  T={darBlades:3,darDiameter:5.7,darR:0.41,darSolidity:0.253,darThick:0.032,darHeight:7.65,darHRatio:1.35,
      darC1:'#eab308',darC2:'#eab308',
      savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038,
      savC1:'#2563eb',savC2:'#2563eb',savC3:'#2563eb'};
@@ -758,7 +768,7 @@ function resetEditor() {
   document.getElementById('savArc').value=0.85;       document.getElementById('savStroke').value=0.038;
   document.getElementById('savColor1').value='#2563eb';
   document.getElementById('savColor2').value='#2563eb';
-  document.getElementById('savColor3').value='#2563eb'; // fixed: was '##2563eb' (double hash typo)
+  document.getElementById('savColor3').value='#2563eb';
   updateEditor();
 }
 
@@ -874,21 +884,22 @@ function drawTurbine(ctx,cw,ch,ang){
   }
 
   // Savonius - Thin Overlapping Arcs
+  // Arc direction: clockwise (false→true) so open face catches wind in CCW rotation
   const savColors=[T.savC1,T.savC2,T.savC3,T.savC1];
   for(let i=0;i<T.savBuckets;i++){
     const a=ang+i*(Math.PI*2/T.savBuckets);
     ctx.save();ctx.translate(cx,cy);ctx.rotate(a);
 
     const bucketR = Rs * 0.65;
-    const offsetX = Rs * 0.35; // overlap center
+    const offsetX = Rs * 0.35;
 
     ctx.beginPath();
-    // Scoop shape using arc (from 0 to -Math.PI for CCW scoop)
-    ctx.arc(bucketR - offsetX, 0, bucketR, 0, -Math.PI, false);
+    // Flipped arc direction: open face of scoop now faces INTO the rotation (CCW)
+    ctx.arc(bucketR - offsetX, 0, bucketR, 0, Math.PI, true);
 
     const bc=savColors[i%savColors.length];
     ctx.strokeStyle=bc;
-    ctx.lineWidth=3.0; // Thin line!
+    ctx.lineWidth=3.0;
     ctx.lineCap='round';
     ctx.stroke();
     ctx.restore();
@@ -1137,11 +1148,10 @@ function build3DTurbine() {
 
     // 3. Darrieus (Properly Oriented Airfoils)
     const dRadius = T.darDiameter / 2;
-
-    // Chord is derived from solidity formula: c = 2πRσ/N (from paper)
-    // Scale for 3D visibility — real chord in meters, divide by DAR_SCALE for visual fraction
+    
+    // Chord derived from solidity: c = 2πRσ/N (paper formula)
     const { chord_real: c_real } = getDynamicCp();
-    const c = Math.max(0.18, c_real * 0.28); // scale down for 3D canvas proportions
+    const c = Math.max(0.18, c_real * 0.28);
     const t = Math.max(0.045, T.darThick * 1.8);
 
     // True NACA-like Airfoil Shape (pointing along X)
