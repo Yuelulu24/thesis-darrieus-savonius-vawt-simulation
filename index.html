@@ -34,6 +34,13 @@
   table.spec-table{width:100%;border-collapse:collapse;font-size:15px;} table.spec-table th{text-align:left;font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:0.08em;padding:9px 12px;border-bottom:1px solid var(--border);} table.spec-table td{padding:10px 12px;border-bottom:1px solid rgba(120,180,255,0.07);} table.spec-table tr:last-child td{border-bottom:none;} table.spec-table td:first-child{font-family:var(--mono);font-size:14px;color:var(--muted);} table.spec-table td:nth-child(2){font-weight:500;color:var(--accent);font-family:var(--mono);} table.spec-table td:nth-child(3){color:var(--muted);font-size:14px;}
   .ref-list{list-style:none;display:flex;flex-direction:column;gap:10px;} .ref-list li{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:1rem;font-size:14px;color:var(--muted);line-height:1.6;border-left:3px solid var(--accent);transition:background .3s;} .ref-list li strong{color:var(--text);font-weight:500;display:block;margin-bottom:2px;} .ref-list a{color:var(--accent);text-decoration:none;word-break:break-all;} .ref-list a:hover{text-decoration:underline;}
   footer{border-top:1px solid var(--border);padding:2rem;text-align:center;font-family:var(--mono);font-size:12px;color:var(--muted);line-height:1.8;transition:border-color .3s;} @media(max-width:700px){.hero{grid-template-columns:1fr;}.sim-outer{grid-template-columns:1fr;}.motor-controls-row{grid-template-columns:1fr;}nav{display:none;}}
+  .wind-banner{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1rem 2rem;transition:background .3s;}
+  .wind-banner-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:2rem;flex-wrap:wrap;}
+  .wind-banner-label{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:0.08em;white-space:nowrap;}
+  .wind-months{display:flex;gap:8px;flex-wrap:wrap;}
+  .wind-month{display:flex;flex-direction:column;align-items:center;gap:2px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:6px 10px;min-width:56px;transition:background .3s;}
+  .wind-month-name{font-size:11px;color:var(--muted);font-family:var(--mono);}
+  .wind-month-val{font-size:14px;font-weight:600;font-family:var(--mono);}
 </style>
 </head>
 <body>
@@ -44,6 +51,7 @@
     <a href="#simulation">Simulation</a>
     <a href="#editor">Turbine Editor</a>
     <a href="#specs">Design Specs</a>
+    <a href="#winddata">Wind Data</a>
     <a href="#references">References</a>
     <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="Toggle theme">
       <span class="theme-icon" id="themeIcon">🌙</span>
@@ -67,6 +75,16 @@
         <p style="font-family:var(--mono);font-size:13px;color:var(--text);margin:0;"><span style="color:var(--muted);font-size:11px;">INSTITUTION</span><br><strong>Bulacan State University</strong></p>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="wind-banner">
+  <div class="wind-banner-inner">
+    <div>
+      <div class="wind-banner-label">NASA POWER MERRA-2 — WS10M Monthly Avg (m/s) · 2015–2025</div>
+      <div class="wind-note" style="font-size:11px;color:var(--muted);margin-top:.25rem;">Coords: 14.9059°N, 121.0477°E · Elev: 260.5m · Annual mean: 2.75 m/s</div>
+    </div>
+    <div class="wind-months" id="windMonths"></div>
   </div>
 </div>
 
@@ -191,6 +209,8 @@
         <div class="editor-row"><span class="editor-lbl">Rotor diameter (m)</span><input type="number" id="darDiameter" min="2.0" max="8.0" step="0.1" value="5.7" class="editor-number" oninput="updateEditor()"></div>
         <div class="editor-row"><span class="editor-lbl">Solidity (σ)</span><input type="number" id="darSolidity" min="0.10" max="0.65" step="0.001" value="0.5" class="editor-number" oninput="updateEditor()"></div>
         <div class="editor-row" style="display:none;"><span class="editor-lbl" style="font-size:10px;">→ Chord c = 2πRσ/N</span><span id="chordDerived" style="font-family:var(--mono);font-size:11px;color:var(--accent2);">2.98 m</span></div>
+        <div class="editor-row"><span class="editor-lbl">Coeff. of Lift (Cl)</span><input type="number" id="darCl" min="0.50" max="1.20" step="0.01" value="0.88" class="editor-number" oninput="updateEditor()"></div>
+        <div class="editor-row"><span class="editor-lbl">Coeff. of Drag (Cd)</span><input type="number" id="darCd" min="0.005" max="0.05" step="0.001" value="0.0145" class="editor-number" oninput="updateEditor()"></div>
         <div class="editor-row"><span class="editor-lbl">Blade thickness (m)</span><input type="number" id="darThick" min="0.015" max="0.06" step="0.005" value="0.034" class="editor-number" oninput="updateEditor()"></div>
         <div class="editor-row"><span class="editor-lbl">Blade height (m)</span><input type="number" id="darHeight" min="2.0" max="12.0" step="0.1" value="7.65" class="editor-number" oninput="updateEditor()"></div>
         <div style="margin-top:10px;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:6px;">BLADE COLORS</div>
@@ -257,8 +277,6 @@
       <tr><td>Solidity (σ_D)</td><td id="spec_darSolidity">0.500</td><td>Optimal balance</td></tr>
       <tr><td>Design TSR (λ)</td><td id="spec_tsr" style="color:var(--accent3);font-weight:bold;">4.0</td><td>λ = ωR/v (dynamic)</td></tr>
       <tr><td>Reynolds No. (Re)</td><td id="spec_re" style="color:var(--accent3);font-weight:bold;">0.00e+0</td><td>Re = ρvc/μ</td></tr>
-      <tr><td>Coeff. of Drag (Cd)</td><td id="spec_cd" style="color:var(--accent3);font-weight:bold;">0.0145</td><td>NACA 0025 @ Re</td></tr>
-      <tr><td>Coeff. of Lift (Cl)</td><td id="spec_cl" style="color:var(--accent3);font-weight:bold;">0.88</td><td>NACA 0025 @ Re</td></tr>
       <tr><td>Max Cp_D</td><td id="spec_cpDar" style="color:var(--accent3);font-weight:bold;">0.354</td><td>Cp=0.593(1−1.1Cd/Clλ)×0.60</td></tr>
       <tr><td>Airfoil</td><td>NACA 0025</td><td>Better Cl at low Re</td></tr>
       </table>
@@ -274,6 +292,20 @@
       <tr><td>Max Cp_S</td><td id="spec_cpSav" style="color:var(--accent3);font-weight:bold;">0.200</td><td>Dynamic via Arc size</td></tr>
       <tr><td>Helical twist</td><td>120°</td><td>Optimal for 3-bucket</td></tr>
       </table>
+    </div>
+  </div>
+</section>
+
+<section id="winddata">
+  <div class="section-label">Site Assessment</div>
+  <h2>Wind Resource — Norzagaray, Bulacan</h2>
+  <div class="card">
+    <canvas id="windChartCanvas" width="800" height="200" style="width:100%;"></canvas>
+    <div style="margin-top:12px;display:flex;gap:24px;flex-wrap:wrap;">
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">ANNUAL AVG — WS10M</span><br><span style="font-family:var(--mono);font-size:1.2rem;color:var(--accent);font-weight:700;">2.75 m/s</span></div>
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">ANNUAL AVG — WS50M</span><br><span style="font-family:var(--mono);font-size:1.2rem;color:var(--accent2);font-weight:700;">4.60 m/s</span></div>
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">PEAK MONTH</span><br><span style="font-family:var(--mono);font-size:1.2rem;color:var(--accent2);font-weight:700;">January</span><span style="font-size:11px;color:var(--muted);"> (Amihan)</span></div>
+      <div><span style="font-size:11px;color:var(--muted);font-family:var(--mono);">DATA SOURCE</span><br><span style="font-family:var(--mono);font-size:1rem;color:var(--text);">NASA POWER MERRA-2</span></div>
     </div>
   </div>
 </section>
@@ -301,6 +333,7 @@ function toggleTheme(){
   document.getElementById('themeIcon').textContent = isDayMode ? '☀️' : '🌙';
   document.getElementById('themeLabel').textContent = isDayMode ? 'Day Mode' : 'Night Mode';
   if(window.turbine3DGroup) build3DTurbine();
+  drawWindChart();
 }
 let wind=0, battery=20, angle=0, motorOn=false, loadPct=100, simSpeed=100;
 const MOTOR_RATED=746, CHART_LEN=100;
@@ -320,7 +353,7 @@ function updateBatCap(v){
   battery = 20;
 }
 
-let T = { darBlades:3, darDiameter:5.7, darR:0.41, darSolidity:0.5, darThick:0.034, darHeight:7.65, darC1:'#eab308', darC2:'#eab308', savBuckets:3, savRs:0.16, savArc:0.85, savStroke:0.038, savC1:'#2563eb', savC2:'#2563eb', savC3:'#2563eb' };
+let T = { darBlades:3, darDiameter:5.7, darR:0.41, darSolidity:0.5, darCl:0.88, darCd:0.0145, darThick:0.034, darHeight:7.65, darC1:'#eab308', darC2:'#eab308', savBuckets:3, savRs:0.16, savArc:0.85, savStroke:0.038, savC1:'#2563eb', savC2:'#2563eb', savC3:'#2563eb' };
 const ETA_GEN=0.85, ETA_CONV=0.95, ETA_CHG=0.97, DAR_SCALE=2.85/0.41, SAV_SCALE=1.00/0.16;  
 
 function getDynamicCp() {
@@ -334,23 +367,11 @@ function getDynamicCp() {
   const mu = 1.81e-5; // dynamic viscosity of air, Pa·s
   const reynolds = (rho * v_design * chord_real) / mu;
 
-  // ── NACA 0025 Cl and Cd lookup from Re (based on paper Table 4) ──
-  // Paper values: Re ~912k→Cd=0.0145,Cl=0.88 | Re ~1108k→Cd=0.012,Cl=0.90 | Re ~635k→Cd=0.011,Cl=0.92
-  // Interpolate linearly across that range
-  let estCd, estCl;
-  if (reynolds <= 635000) {
-    estCd = 0.011; estCl = 0.92;
-  } else if (reynolds <= 912000) {
-    const t = (reynolds - 635000) / (912000 - 635000);
-    estCd = 0.011 + t * (0.0145 - 0.011);
-    estCl = 0.92  - t * (0.92  - 0.88);
-  } else if (reynolds <= 1108000) {
-    const t = (reynolds - 912000) / (1108000 - 912000);
-    estCd = 0.0145 - t * (0.0145 - 0.012);
-    estCl = 0.88   + t * (0.90  - 0.88);
-  } else {
-    estCd = 0.012; estCl = 0.90;
-  }
+  // ── NACA 0025 Cl and Cd — user-defined via Turbine Editor ──
+  const clInput = document.getElementById('darCl');
+  const cdInput = document.getElementById('darCd');
+  const estCl = clInput ? Math.max(0.50, Math.min(1.20, parseFloat(clInput.value) || 0.88)) : 0.88;
+  const estCd = cdInput ? Math.max(0.005, Math.min(0.05, parseFloat(cdInput.value) || 0.0145)) : 0.0145;
 
   // ── Tip Speed Ratio: λ = ωR/v ──
   // ω = (RPM × 2π/60), RPM from paper = 62 rpm at design wind speed
@@ -381,6 +402,8 @@ function updateEditor() {
   const db = parseInt(document.getElementById('darBladeCount').value); if(!isNaN(db)) T.darBlades = db;
   const dd = parseFloat(document.getElementById('darDiameter').value); if(!isNaN(dd)) T.darDiameter = dd;
   const dc = parseFloat(document.getElementById('darSolidity').value); if(!isNaN(dc)) T.darSolidity = dc;
+  const dCl = parseFloat(document.getElementById('darCl').value); if(!isNaN(dCl)) T.darCl = dCl;
+  const dCd = parseFloat(document.getElementById('darCd').value); if(!isNaN(dCd)) T.darCd = dCd;
   const dt = parseFloat(document.getElementById('darThick').value); if(!isNaN(dt)) T.darThick = dt;
   const dh = parseFloat(document.getElementById('darHeight').value); if(!isNaN(dh)) T.darHeight = dh;
   T.darC1 = document.getElementById('darColor1').value; T.darC2 = document.getElementById('darColor2').value;
@@ -396,22 +419,18 @@ function updateEditor() {
 
   // Dynamic spec table updates
   const reEl = document.getElementById('spec_re'); if(reEl) reEl.textContent = reynolds.toExponential(2);
-  const cdEl = document.getElementById('spec_cd'); if(cdEl) cdEl.textContent = estCd.toFixed(4);
-  const clEl = document.getElementById('spec_cl'); if(clEl) clEl.textContent = estCl.toFixed(4);
   const tsrEl = document.getElementById('spec_tsr'); if(tsrEl) tsrEl.textContent = tsr.toFixed(3);
 
   const uiEtaMech = document.getElementById('ui_eta_mech'); if(uiEtaMech) uiEtaMech.textContent = '−' + ((1 - eta_mech) * 100).toFixed(1) + '%';
   const uiEtaOverall = document.getElementById('ui_eta_overall'); if(uiEtaOverall) uiEtaOverall.textContent = (eta_total * 100).toFixed(2) + '%';
 
   const { A_D, A_S, R_D, H_D, D_D, H_S } = getSweptAreas();
-  const { pTotal } = getPowerComponents(wind > 0 ? wind : 4.75);
   
   const editorAD = document.getElementById('editorAD'); if(editorAD) editorAD.textContent = A_D.toFixed(2);
   const editorAS = document.getElementById('editorAS'); if(editorAS) editorAS.textContent = A_S.toFixed(2);
   const editorRD = document.getElementById('editorRD'); if(editorRD) editorRD.textContent = R_D.toFixed(2);
   const editorDD = document.getElementById('editorDD'); if(editorDD) editorDD.textContent = D_D.toFixed(2);
   const editorHD = document.getElementById('editorHD'); if(editorHD) editorHD.textContent = H_D.toFixed(2);
-  const editorPow = document.getElementById('editorPow'); if(editorPow) editorPow.textContent = pTotal;
 
   const R_S = T.savRs * SAV_SCALE; const D_S = 2 * R_S;
 
@@ -445,14 +464,28 @@ function updateEditor() {
 }
 
 function resetEditor() {
-  T={darBlades:3,darDiameter:5.7,darR:0.41,darSolidity:0.5,darThick:0.034,darHeight:7.65,darHRatio:1.35, darC1:'#eab308',darC2:'#eab308', savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038, savC1:'#2563eb',savC2:'#2563eb',savC3:'#2563eb'};
+  T={darBlades:3,darDiameter:5.7,darR:0.41,darSolidity:0.5,darCl:0.88,darCd:0.0145,darThick:0.034,darHeight:7.65,darHRatio:1.35, darC1:'#eab308',darC2:'#eab308', savBuckets:3,savRs:0.16,savArc:0.85,savStroke:0.038, savC1:'#2563eb',savC2:'#2563eb',savC3:'#2563eb'};
   document.getElementById('darBladeCount').value=3;   document.getElementById('darDiameter').value=5.7;
-  document.getElementById('darSolidity').value=0.5;   document.getElementById('darThick').value=0.034;
+  document.getElementById('darSolidity').value=0.5;   document.getElementById('darCl').value=0.88;
+  document.getElementById('darCd').value=0.0145;      document.getElementById('darThick').value=0.034;
   document.getElementById('darHeight').value=7.65;    document.getElementById('darColor1').value='#eab308'; document.getElementById('darColor2').value='#eab308';
   document.getElementById('savBucketCount').value=3;  document.getElementById('savRadius').value=0.16;
   document.getElementById('savArc').value=0.85;       document.getElementById('savStroke').value=0.038;
   document.getElementById('savColor1').value='#2563eb'; document.getElementById('savColor2').value='#2563eb'; document.getElementById('savColor3').value='#2563eb';
   updateEditor();
+}
+
+const windMonthData=[{m:'JAN',v:3.57},{m:'FEB',v:3.46},{m:'MAR',v:3.08},{m:'APR',v:2.73},{m:'MAY',v:2.18},{m:'JUN',v:1.95},{m:'JUL',v:2.40},{m:'AUG',v:2.40},{m:'SEP',v:2.08},{m:'OCT',v:2.52},{m:'NOV',v:3.08},{m:'DEC',v:3.51}];
+const wmEl=document.getElementById('windMonths');
+windMonthData.forEach(d=>{const col=d.v>=3.5?'#48bb78':d.v>=2.5?'#63b3ed':'#718096';wmEl.innerHTML+=`<div class="wind-month"><span class="wind-month-name">${d.m}</span><span class="wind-month-val" style="color:${col}">${d.v}</span></div>`;});
+
+function drawWindChart(){
+  const canvas=document.getElementById('windChartCanvas'),ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);const pad={l:40,r:20,t:20,b:40},iw=W-pad.l-pad.r,ih=H-pad.t-pad.b,maxV=5,n=windMonthData.length,bw=iw/n*0.6,gap=iw/n;
+  const textColor=isDayMode?'#3d5a78':'#4a5568';
+  [0,1,2,3,4,5].forEach(v=>{const y=pad.t+ih*(1-v/maxV);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+iw,y);ctx.strokeStyle='rgba(99,179,237,0.1)';ctx.lineWidth=0.5;ctx.stroke();ctx.fillStyle=textColor;ctx.font='10px Space Mono,monospace';ctx.textAlign='right';ctx.fillText(v,pad.l-4,y+4);});
+  windMonthData.forEach((d,i)=>{const x=pad.l+i*gap+(gap-bw)/2,barH=(d.v/maxV)*ih,y=pad.t+ih-barH,col=d.v>=3.5?(isDayMode?'#1a9152':'#48bb78'):d.v>=2.5?(isDayMode?'#1a6bc4':'#63b3ed'):(isDayMode?'#3d5a78':'#718096');ctx.fillStyle=col+'33';ctx.fillRect(x,y,bw,barH);ctx.strokeStyle=col;ctx.lineWidth=1;ctx.strokeRect(x,y,bw,barH);ctx.fillStyle=col;ctx.font='600 11px Space Mono,monospace';ctx.textAlign='center';ctx.fillText(d.v,x+bw/2,y-4);ctx.fillStyle=textColor;ctx.font='10px Space Mono,monospace';ctx.fillText(d.m,x+bw/2,pad.t+ih+14);});
+  const cutInY=pad.t+ih*(1-1.5/maxV);ctx.beginPath();ctx.moveTo(pad.l,cutInY);ctx.lineTo(pad.l+iw,cutInY);ctx.strokeStyle=isDayMode?'rgba(184,107,0,0.5)':'rgba(246,173,85,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle=isDayMode?'#b86b00':'#f6ad55';ctx.font='9px Space Mono,monospace';ctx.textAlign='left';ctx.fillText('Cut-in: 1.5 m/s',pad.l+4,cutInY-4);
 }
 
 function getSweptAreas(){
@@ -545,12 +578,10 @@ function drawPowerCurve(ctx,W,H){
     ctx.beginPath();ctx.strokeStyle=col;ctx.lineWidth=ci===2?2.5:2;let first=true;
     for(let w=0;w<=5.5;w+=0.05){const v=fn(w)[key];first?ctx.moveTo(toX(w),toY(v)):ctx.lineTo(toX(w),toY(v));first=false;}ctx.stroke();
   });
-  const dX=toX(4.75);ctx.beginPath();ctx.setLineDash([4,4]);ctx.moveTo(dX,pad.t);ctx.lineTo(dX,pad.t+ih);ctx.strokeStyle=isDayMode?'rgba(184,107,0,0.5)':'rgba(246,173,85,0.4)';ctx.lineWidth=1;ctx.stroke();ctx.setLineDash([]);
-  ctx.fillStyle=isDayMode?'rgba(184,107,0,0.8)':'rgba(246,173,85,0.6)';ctx.font='10px Space Mono,monospace';ctx.textAlign='center';ctx.fillText('4.75',dX,pad.t+ih+22);
   const curX=toX(Math.min(wind,5.5));ctx.beginPath();ctx.setLineDash([3,3]);ctx.moveTo(curX,pad.t);ctx.lineTo(curX,pad.t+ih);ctx.strokeStyle=isDayMode?'rgba(26,107,196,0.7)':'rgba(99,179,237,0.7)';ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);
   const{pTotal:curP}=getPowerComponents(wind);
   if(wind>=1.5){ctx.beginPath();ctx.arc(curX,toY(curP),5,0,Math.PI*2);ctx.fillStyle=isDayMode?'#1a9152':'#48bb78';ctx.fill();ctx.fillStyle=isDayMode?'#0f1d30':'#e2e8f0';ctx.font='11px Space Mono,monospace';ctx.textAlign='left';ctx.fillText(Math.round(curP)+'W',curX+7,Math.max(pad.t+14,toY(curP)-4));}
-  ctx.font='11px Space Mono,monospace';ctx.textAlign='center'; [0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,4.75,5.0,5.5].forEach(v=>{ctx.fillStyle=v===4.75?(isDayMode?'#b86b00':'rgba(246,173,85,0.8)'):textColor;ctx.fillText(v%1===0?v.toFixed(0):v.toFixed(2),toX(v),pad.t+ih+16);});
+  ctx.font='11px Space Mono,monospace';ctx.textAlign='center'; [0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5].forEach(v=>{ctx.fillStyle=textColor;ctx.fillText(v%1===0?v.toFixed(0):v.toFixed(1),toX(v),pad.t+ih+16);});
 }
 
 function drawChart(ctx,W,H){
@@ -562,12 +593,12 @@ function drawChart(ctx,W,H){
 
 function rebuildPowerTable(){
   const tbody=document.getElementById('powerTableBody'); tbody.innerHTML=''; const motorDraw=Math.round(ACTUAL_MOTOR_DRAW*1.00); 
-  [0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,4.75,5.0,5.5].forEach(w=>{
+  [0,0.5,1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5].forEach(w=>{
     const{pSav,pDar,pTotal}=getPowerComponents(w); const rpm=getRPM(w),net=pTotal-motorDraw; let mode='—';if(w>=3.0)mode='Full Hybrid';else if(w>=1.5)mode='Savonius only';
-    const isDesign=w===4.75, tr=document.createElement('tr');
-    if(isDesign)tr.classList.add('design-row');else if(pTotal>=motorDraw)tr.classList.add('highlight-row');
+    const tr=document.createElement('tr');
+    if(pTotal>=motorDraw)tr.classList.add('highlight-row');
     const nc=net>=0?'var(--accent2)':'var(--accent4)';
-    tr.innerHTML=`<td style="color:${isDesign?'var(--accent3)':'var(--text)'};font-weight:${isDesign?'700':'400'};">${w.toFixed(2)}</td><td style="color:var(--accent);">${rpm}</td><td style="color:var(--accent3);">${pSav}</td><td style="color:var(--accent);">${pDar}</td><td style="color:var(--accent2);font-weight:600;">${pTotal}</td><td style="color:${w<1.5?'var(--muted)':w<3?'var(--accent3)':'var(--accent2)'}">${mode}</td><td style="color:${nc};font-weight:${Math.abs(net)<50?'700':'400'};">${net>=0?'+':''}${net}</td>`;
+    tr.innerHTML=`<td style="color:var(--text);">${w.toFixed(1)}</td><td style="color:var(--accent);">${rpm}</td><td style="color:var(--accent3);">${pSav}</td><td style="color:var(--accent);">${pDar}</td><td style="color:var(--accent2);font-weight:600;">${pTotal}</td><td style="color:${w<1.5?'var(--muted)':w<3?'var(--accent3)':'var(--accent2)'}">${mode}</td><td style="color:${nc};font-weight:${Math.abs(net)<50?'700':'400'};">${net>=0?'+':''}${net}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -588,7 +619,7 @@ function init3D() {
 function clearGroup(group) { group.children.forEach(c => { if(c.geometry) c.geometry.dispose(); if(c.material) c.material.dispose(); if(c.children) clearGroup(c); }); group.clear(); }
 function build3DTurbine() {
   if(window.turbine3DGroup) { clearGroup(window.turbine3DGroup); scene3D.remove(window.turbine3DGroup); }
-  window.turbine3DGroup = new THREE.Group(); const maxDim = Math.max(T.darDiameter, T.darHeight); camera3D.position.set(0, T.darHeight * 0.2, maxDim * 1.3); controls3D.target.set(0, 0, 0);
+  window.turbine3DGroup = new THREE.Group(); const maxDim = Math.max(T.darDiameter, T.darHeight); camera3D.position.set(0, T.darHeight * 0.1, maxDim * 2.2); controls3D.target.set(0, 0, 0);
   const metalMat = new THREE.MeshStandardMaterial({color: isDayMode ? 0x94a3b8 : 0x64748b, metalness: 0.7, roughness: 0.2}), darkMetal = new THREE.MeshStandardMaterial({color: 0x333333, metalness: 0.8, roughness: 0.4});
   const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, T.darHeight * 1.2, 16), darkMetal); window.turbine3DGroup.add(shaft);
   const sHeight = T.darHeight * 0.8, realSavRadius = T.savRs * SAV_SCALE, savShape = new THREE.Shape(), sThick = 0.04, overlap = realSavRadius * 0.15, cx = (realSavRadius - overlap) / 2, cr = (realSavRadius + overlap) / 2;
@@ -619,6 +650,7 @@ function loop(){
   battery = Math.max(0, Math.min(100, battery + net * (100 / (BAT_WH * 3600 * 60)) * simSpeed));
   document.getElementById('mAh').textContent = Math.round(BAT_AH * battery / 100); document.getElementById('mWh').textContent = '(' + Math.round(BAT_WH * battery / 100) + ' Wh)';
   document.getElementById('mRPM').textContent=rpm; document.getElementById('mGen').textContent=Math.round(gen); document.getElementById('mSav').textContent=Math.round(pSav); document.getElementById('mDar').textContent=Math.round(pDar);
+  const editorPowEl=document.getElementById('editorPow'); if(editorPowEl) editorPowEl.textContent=Math.round(gen);
   // Live TSR = ωR/v = (RPM × 2π/60 × R_D) / v
   if(wind >= 1.5) {
     const R_D_live = T.darDiameter / 2;
@@ -640,7 +672,7 @@ function loop(){
   if(window.turbine3DGroup && renderer3D && scene3D && camera3D) { window.turbine3DGroup.rotation.y = angle; controls3D.update(); renderer3D.render(scene3D, camera3D); }
   requestAnimationFrame(loop);
 }
-updateEditor(); init3D(); loop();
+drawWindChart(); updateEditor(); init3D(); loop();
 </script>
 </body>
 </html>
