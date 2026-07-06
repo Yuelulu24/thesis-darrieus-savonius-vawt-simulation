@@ -499,7 +499,7 @@ function getPowerComponents(w){
   if(w < 1.5) return { pSav:0, pDar:0, pTotal:0, pNet:0 };
   const { A_D, A_S } = getSweptAreas(); const { cpDarMax, cpSavMax, sigma } = getDynamicCp(); const { eta_total } = getDynamicLosses(sigma); 
   const pSav_aero = 0.5 * rho * A_S * Math.pow(w, 3) * cpSavMax;
-  const cpDar = w < 3.0 ? 0 : Math.min(cpDarMax, (cpDarMax / 10) * Math.pow(w - 3.0, 2));
+  const cpDar = w < 3.0 ? 0 : cpDarMax;
   const pDar_aero = 0.5 * rho * A_D * Math.pow(w, 3) * cpDar;
   const pTotal_aero = pSav_aero + pDar_aero; const pNet = pTotal_aero * eta_total;
   return { pSav:Math.round(pSav_aero * eta_total), pDar:Math.round(pDar_aero * eta_total), pTotal:Math.round(pTotal_aero * eta_total), pNet:Math.round(pNet) };
