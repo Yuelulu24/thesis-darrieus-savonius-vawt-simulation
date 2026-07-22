@@ -121,6 +121,14 @@
         </div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;"><span>min: 0</span><span>max: 5.5 m/s</span></div>
       </div>
+      <div class="ctrl-group" style="width:100%;">
+        <div class="ctrl-label"><span>MOTOR RATING</span><span class="ctrl-val" id="motorHPDisplay">1.0 HP</span></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="number" id="motorHPSlider" min="0.5" max="2.5" step="0.1" value="1" style="width:100%;background:var(--surface);border:1px solid var(--border);color:var(--accent);font-family:var(--mono);font-size:14px;font-weight:700;padding:6px 10px;border-radius:6px;outline:none;-moz-appearance:textfield;" oninput="updateMotorHP(this.value)">
+          <span style="font-size:11px;color:var(--muted);font-family:var(--mono);white-space:nowrap;">HP</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px;"><span>min: 0.5 HP</span><span>max: 2.5 HP</span></div>
+      </div>
     </div>
 
     <div class="right-panel">
@@ -169,7 +177,7 @@
 
       <div class="motor-controls-row">
         <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;">1-HP LOAD MOTOR</div>
+          <div id="motorPanelLabel" style="font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;">1.0-HP LOAD MOTOR</div>
           <canvas id="motorCanvas" width="150" height="150"></canvas>
           <div id="motorBadge" class="badge badge-motor-off">OFF</div>
         </div>
@@ -336,9 +344,10 @@ function toggleTheme(){
   if(window.turbine3DGroup) build3DTurbine();
   drawWindChart();
 }
-let wind=0, battery=20, angle=0, motorOn=false, loadPct=100, simSpeed=100;
-const MOTOR_RATED=746, CHART_LEN=100;
-const ACTUAL_MOTOR_DRAW = MOTOR_RATED / 0.90;
+let wind=0, battery=20, angle=0, motorOn=false, loadPct=100, simSpeed=100, motorHP=1;
+const CHART_LEN=100;
+let MOTOR_RATED=motorHP*746;
+let ACTUAL_MOTOR_DRAW = MOTOR_RATED / 0.90;
 const BAT_CUTOFF=20, BAT_CUTOFF_RESUME=25, BAT_RISK=30;
 let motorCutoffActive=false;
 const BAT_VOLTAGE=12; let BAT_AH=400; let BAT_WH = BAT_VOLTAGE * BAT_AH;
@@ -575,7 +584,7 @@ function drawMotor(ctx,w,h,on,rpm){
   [cy-12,cy,cy+12].forEach(y=>{ctx.beginPath();ctx.moveTo(cx-58,y);ctx.lineTo(cx-42,y);ctx.strokeStyle=isDayMode?'rgba(61,90,120,0.6)':'rgba(175,169,236,0.6)';ctx.lineWidth=1.5;ctx.stroke();});
   ctx.beginPath();ctx.arc(cx,cy,20,0,Math.PI*2);ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.stroke();
   if(on){const t=Date.now()/1000;for(let i=0;i<6;i++){const a=t*(rpm/60)*Math.PI*2+i*(Math.PI/3);ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(a)*18,cy+Math.sin(a)*18);ctx.strokeStyle=isDayMode?'rgba(26,145,82,0.5)':'rgba(72,187,120,0.5)';ctx.lineWidth=1.5;ctx.stroke();}}
-  ctx.font='10px Space Mono,monospace';ctx.textAlign='center'; ctx.fillStyle=isDayMode?'#3d5a78':'#718096';ctx.fillText('1-HP MOTOR',cx,cy+40);
+  ctx.font='10px Space Mono,monospace';ctx.textAlign='center'; ctx.fillStyle=isDayMode?'#3d5a78':'#718096';ctx.fillText(motorHP.toFixed(1)+'-HP MOTOR',cx,cy+40);
   ctx.fillStyle=col;ctx.fillText(on?Math.round(ACTUAL_MOTOR_DRAW*loadPct/100)+'W':'STANDBY',cx,cy+52);
 }
 
@@ -615,6 +624,18 @@ function rebuildPowerTable(){
 }
 
 function updateWindInput(v){ const p=parseFloat(v); if(!isNaN(p)) wind=Math.max(0,Math.min(5.5,p)); }
+function updateMotorHP(v){
+  const p=parseFloat(v);
+  if(!isNaN(p)){
+    motorHP=Math.max(0.5,Math.min(2.5,p));
+    MOTOR_RATED=motorHP*746;
+    ACTUAL_MOTOR_DRAW=MOTOR_RATED/0.90;
+    document.getElementById('motorHPDisplay').textContent=motorHP.toFixed(1)+' HP';
+    const panelLbl=document.getElementById('motorPanelLabel'); if(panelLbl) panelLbl.textContent=motorHP.toFixed(1)+'-HP LOAD MOTOR';
+    document.getElementById('drawDisplay').textContent=Math.round(ACTUAL_MOTOR_DRAW*loadPct/100)+' W';
+    rebuildPowerTable();
+  }
+}
 function toggleMotor(){ motorOn=!motorOn; document.getElementById('motorToggle').classList.toggle('on',motorOn); }
 function updateSimSpeed(v){ const p=parseInt(v); if(!isNaN(p)){simSpeed=Math.max(1,Math.min(500,p)); document.getElementById('simSpeedDisplay').textContent=simSpeed+'×';} }
 function updateLoad(v){ const p=parseInt(v); if(!isNaN(p)){loadPct=Math.max(20,Math.min(100,p)); document.getElementById('loadDisplay').textContent=loadPct+'%'; document.getElementById('drawDisplay').textContent=Math.round(ACTUAL_MOTOR_DRAW*loadPct/100)+' W'; rebuildPowerTable();} }
